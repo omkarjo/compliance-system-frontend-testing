@@ -1,25 +1,15 @@
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import SheetLP from "@/components/Dashboard/includes/sheet-lp";
 import ViewList from "@/components/Dashboard/view-list-lp";
-import DataTable from "@/components/includes/data-table";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs } from "@/components/ui/tabs";
 import queryClient from "@/query/queryClient";
 import { lpFromFields } from "@/schemas/form/lpSchema";
 import { lpSchema } from "@/schemas/zod/lpSchema";
 import { apiWithAuth } from "@/utils/api";
 import fileUpload from "@/utils/file-upload";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -29,18 +19,7 @@ export default function LPDashboard() {
     isOpen: false,
   });
 
-  const actionType = [
-    {
-      title: "View",
-      className: "",
-      onClick: (id) => {
-        console.log(id);
-        setSheetTask({ isOpen: true });
-      },
-    },
-    { title: "Edit", className: "", onClick: () => {} },
-    { title: "Delete", className: "text-red-500", onClick: () => {} },
-  ];
+
 
   const [dialogTask, setFialogTask] = useState({
     isOpen: false,
@@ -115,17 +94,7 @@ export default function LPDashboard() {
               <Plus className="size-4" />{" "}
               <span className="max-md:hidden">Onboard Limiting Partner</span>
             </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  className="flex items-center gap-1 text-sm"
-                  variant={"secondary"}
-                >
-                  <span className="max-md:hidden">Action</span>
-                  <ChevronDown className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
-            </DropdownMenu>
+         
           </div>
         </div>
         <main className="mx-4 flex-1">

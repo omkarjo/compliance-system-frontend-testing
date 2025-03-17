@@ -13,16 +13,16 @@ export const taskSchema = z
 
     repeat: z.boolean().default(false),
 
-    recurrence: z
-      .preprocess(
-        (val) => (val === "" ? undefined : val),
-        z.enum(["DAY", "WEEK", "MONTH", "YEAR"], {
+    recurrence: z.preprocess(
+      (val) => (val === "" || val === undefined ? undefined : val),
+      z
+        .enum(["DAY", "WEEK", "MONTH", "YEAR"], {
           required_error: "Recurrence is required",
-        }),
-      )
-      .optional(),
+        })
+        .optional(),
+    ),
 
-    predecessor_task: z.string().nonempty("Predecessor task is required"),
+    predecessor_task: z.string().optional(),
 
     attachements: z
       .array(z.string().nonempty("Attachment is required"))
@@ -40,5 +40,8 @@ export const taskSchema = z
         message: "Required when repeat is enabled",
         path: ["recurrence"],
       });
+    }
+    if (!data.repeat) {
+      data.recurrence = undefined;
     }
   });

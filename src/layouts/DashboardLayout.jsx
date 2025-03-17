@@ -76,7 +76,6 @@ export default function DashboardLayout() {
     return <Navigate to="/login" />;
   }
 
-  console.log(user);
 
   return (
     <SidebarProvider>

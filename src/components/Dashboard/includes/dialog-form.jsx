@@ -24,12 +24,12 @@ export default function DialogForm({
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose} className="">
-      <DialogContent>
+      <DialogContent >
         <DialogHeader>
           {title && <DialogTitle>{title}</DialogTitle>}
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        <ScrollArea className={"max-h-[70vh] ps-2 pe-4"}>
+        <ScrollArea className={"max-h-[70vh] ps-2 pe-4"} tabIndex={0}>
           <FormGenerate
             className=""
             form={form}

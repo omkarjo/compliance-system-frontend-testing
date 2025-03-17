@@ -154,12 +154,19 @@ const FilterComponent = ({
         optionId: null,
         optionLabel: `From: ${range.from.toLocaleDateString()} To: ${range.to.toLocaleDateString()}`,
         optionIcon: null,
+        filterType: "date_range",
       };
 
       setFiltersProps((prev) => [
         ...prev,
-        { filterid: "start_date", optionid: range.from.toLocaleDateString("en-CA") },
-        { filterid: "end_date", optionid: range.to.toLocaleDateString("en-CA") },
+        {
+          filterid: "start_date",
+          optionid: range.from.toLocaleDateString("en-CA"),
+        },
+        {
+          filterid: "end_date",
+          optionid: range.to.toLocaleDateString("en-CA"),
+        },
       ]); // Add separate objects for start_date and end_date
 
       setFilters((prev) => [...prev, newFilter]);
@@ -182,18 +189,32 @@ const FilterComponent = ({
   // Remove filter
   const removeFilter = (filterId) => {
     console.log("Remove filter", filterId, filters);
-    setFilters((prev) => prev.filter((filter) => filter.id !== filterId));
     const filterToRemove = filters.find((filter) => filter.id === filterId);
+
     if (filterToRemove) {
-      setFiltersProps((prev) =>
-        prev.filter(
-          (filter) =>
-            !(
-              filter.filterid === filterToRemove.filterId &&
-              filter.optionid === filterToRemove.optionId
-            ),
-        ),
-      );
+      // Remove from local filters state
+      setFilters((prev) => prev.filter((filter) => filter.id !== filterId));
+
+      // Handle removal from setFiltersProps based on filter type
+      if (filterToRemove.filterType === "date_range") {
+        setFiltersProps((prev) =>
+          prev.filter(
+            (filter) =>
+              filter.filterid !== "start_date" &&
+              filter.filterid !== "end_date",
+          ),
+        );
+      } else {
+        setFiltersProps((prev) =>
+          prev.filter(
+            (filter) =>
+              !(
+                filter.filterid === filterToRemove.filterId &&
+                filter.optionid === filterToRemove.optionId
+              ),
+          ),
+        );
+      }
     }
   };
 
@@ -209,7 +230,7 @@ const FilterComponent = ({
         case "component":
           return (
             <CommandItem
-              key={filter.id}
+              key={`filter-component-${filter.id}`}
               value={filter.id}
               onSelect={() => handleFilterSelect(filter.id)}
             >
@@ -220,11 +241,11 @@ const FilterComponent = ({
             </CommandItem>
           );
         case "divider":
-          return <CommandSeparator key={filter.id} />;
+          return <CommandSeparator key={`filter-divider-${filter.id}`} />;
         case "date_range":
           return (
             <CommandItem
-              key={filter.id}
+              key={`filter-date-range-${filter.id}`}
               value={filter.id}
               onSelect={() => handleFilterSelect(filter.id)}
             >
@@ -254,7 +275,7 @@ const FilterComponent = ({
 
             {/* Relation Dropdown */}
             {filterOptions.find((opt) => opt.id === filter.filterId)?.relation
-              .length > 1 && (
+              ?.length > 1 && (
               <DropdownMenu>
                 <DropdownMenuTrigger className="bg-muted hover:bg-muted/50 text-muted-foreground hover:text-primary shrink-0 px-1.5 py-1 transition">
                   {filter.relation}
@@ -356,9 +377,9 @@ const FilterComponent = ({
                     <CommandEmpty>No results found.</CommandEmpty>
 
                     {selectedFilter &&
-                      selectedFilter.options.map((option) => (
+                      selectedFilter.options.map((option, index) => (
                         <CommandItem
-                          key={option.id}
+                          key={`cm-item-${option.id}-${index}`}
                           value={option.id}
                           onSelect={() => handleOptionSelect(option)}
                         >
@@ -370,7 +391,10 @@ const FilterComponent = ({
                         </CommandItem>
                       ))}
 
-                    {!selectedFilter && filterOptions.map(generateFilterFields)}
+                    {!selectedFilter &&
+                      filterOptions.map((filter) =>
+                        generateFilterFields(filter),
+                      )}
                   </CommandList>
                 </>
               )}

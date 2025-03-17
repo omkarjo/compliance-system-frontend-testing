@@ -17,7 +17,6 @@ const fetchData = async ({ token, pageIndex, pageSize, sortBy, filters }) => {
     }, {}),
   };
 
-  console.log(filters);
   const response = await api.get("/api/tasks", {
     headers: {
       Authorization: `Bearer ${token}`,

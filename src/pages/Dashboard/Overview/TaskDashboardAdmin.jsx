@@ -4,6 +4,7 @@ import ViewCalanderTaskAdmin from "@/components/Dashboard/view-calander-task-adm
 import ViewListTaskAdmin from "@/components/Dashboard/view-list-task-admin";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import queryClient from "@/query/queryClient";
 import {
   taskFormFieldsPart1,
   taskFormFieldsPart2,
@@ -149,10 +150,8 @@ export default function TaskDashboard() {
 
   const createTask = useCallback(
     async (data) => {
-      console.log(data);
       try {
         await apiWithAuth.post("/api/tasks/", data);
-        form.reset();
         toast.success("Task created successfully");
         handleDialogTaskClose(false);
       } catch (error) {
@@ -161,18 +160,16 @@ export default function TaskDashboard() {
         });
       }
     },
-    [handleDialogTaskClose, form],
+    [handleDialogTaskClose],
   );
 
   const editTask = useCallback(
     async (data) => {
-      console.log(data);
       try {
         await apiWithAuth.patch(
           `/api/tasks/${dialogTask.compliance_task_id}`,
           data,
         );
-        form.reset();
         toast.success("Task updated successfully");
         handleDialogTaskClose(false);
       } catch (error) {
@@ -181,27 +178,38 @@ export default function TaskDashboard() {
         });
       }
     },
-    [handleDialogTaskClose, form, dialogTask.compliance_task_id],
+    [handleDialogTaskClose, dialogTask.compliance_task_id],
   );
 
   const onSubmit = useCallback(
     async (data) => {
       console.log("submit", data);
+      if (!data.repeat) {
+        data.recurrence = null;
+      }
       if (dialogTask.variant === "create") {
         await createTask(data);
       } else {
         await editTask(data);
       }
+      form.reset({});
+      queryClient.invalidateQueries("task-querry");
     },
-    [createTask, dialogTask.variant, editTask],
+    [createTask, dialogTask.variant, editTask, form],
   );
 
-  // console.log("task", form.getValues());
-  // console.log("errors", form.formState.errors);
+  console.log("task", form.getValues());
+  console.log("errors", form.formState.errors);
+
+  const defaultTabs = localStorage.getItem("taskTabs") || "list";
+
+  const handelTabChange = useCallback((value) => {
+    localStorage.setItem("taskTabs", value);
+  }, []);
 
   return (
     <section className="">
-      <Tabs defaultValue="list" className="h-full w-full">
+      <Tabs defaultValue={defaultTabs} className="h-full w-full" onValueChange={handelTabChange}>
         <div className="flex items-center justify-between gap-4 px-4 py-2">
           <div className="flex items-center gap-2">
             <Button
@@ -237,6 +245,7 @@ export default function TaskDashboard() {
         </main>
       </Tabs>
       <DialogForm
+        tabinde
         title={DialogTaskVariant[dialogTask.variant]?.title}
         description={DialogTaskVariant[dialogTask.variant]?.description}
         submitText={DialogTaskVariant[dialogTask.variant]?.submit}
