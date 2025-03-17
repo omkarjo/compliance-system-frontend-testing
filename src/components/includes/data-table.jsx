@@ -33,6 +33,8 @@ export default function DataTable({
   setPagination,
   // rowSelection: tableRowSelection,
   setRowSelection: setTableRowSelection = null,
+  search = null,
+  setSearch = null,
   filter,
   openView = null,
 }) {
@@ -112,17 +114,21 @@ export default function DataTable({
   React.useEffect(() => {
     setRowSelection({});
   }, [pagination.pageIndex]);
+
+
   return (
     <div className="w-full">
       <div className="flex items-center justify-between gap-4 py-4">
-        <Input
-          placeholder=""
-          // value={table.getColumn("")?.getFilterValue() ?? ""}
-          // onChange={(event) =>
-          //   table.getColumn("title")?.setFilterValue(event.target.value)
-          // }
-          className="max-w-sm"
-        />
+        <div className="flex-1">
+          {(search || setSearch) && (
+            <Input
+              placeholder="Search..."
+              value={search || ""}
+              onChange={(e) => setSearch(e.target.value || null)}
+              className="max-w-xl"
+            />
+          )}
+        </div>
         <div className="flex items-center justify-end gap-4">
           {filter && (
             <FilterComponent

@@ -3,11 +3,8 @@ import { Button } from "@/components/ui/button";
 import { useGetAllDocuments } from "@/query/docomentsQuerry";
 import { ArrowUpDown } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-
+import useDebounce from "@/hooks/useDebounce";
 export default function ViewListDocument() {
-  const navigate = useNavigate();
-
   const column = [
     {
       accessorKey: "category",
@@ -70,21 +67,20 @@ export default function ViewListDocument() {
   const [sorting, setSorting] = useState("");
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [filters, setFilters] = useState([]);
+  const [search, setSearch] = useState("");
   const [searchOptions, setSearchOptions] = useState({
     filterId: "",
     search: "",
   });
 
+  const debouncedSearch = useDebounce(search, 500);
+
   const { data, isLoading, error } = useGetAllDocuments({
     pageIndex: pagination.pageIndex,
     pageSize: pagination.pageSize,
     sortBy: sorting,
+    search : debouncedSearch,
   });
-
-  const onOpenViewDocument = (documentId) => {
-    console.log("View document with id: ", documentId);
-    navigate(`${documentId.file_path}`);
-  };
 
   return (
     <DataTable
@@ -96,7 +92,8 @@ export default function ViewListDocument() {
       setSorting={setSorting}
       pagination={pagination}
       setPagination={setPagination}
-      // openView={onOpenViewDocument}
+      search={search}
+      setSearch={setSearch}
       error={error?.message}
       filter={{
         filters,

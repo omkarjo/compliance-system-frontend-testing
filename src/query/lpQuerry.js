@@ -22,10 +22,6 @@ const fetchData = async ({ token, pageIndex, pageSize, sortBy }) => {
   });
 
   const data = response.data;
-  // await new Promise((resolve) => setTimeout(resolve, 1000));
-  // const start = pageIndex * pageSize;
-  // const end = start + pageSize;
-  // const slicedData = data.slice(start, end);
   return { data: data, total: data.length };
 };
 
@@ -34,6 +30,6 @@ export const useGetLP = ({ pageIndex, pageSize, sortBy }) => {
   return useQuery({
     queryKey: ["lp-querry", pageIndex, pageSize, sortBy],
     queryFn: () => fetchData({ token, pageIndex, pageSize, sortBy }),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData => keepPreviousData,
   });
 };

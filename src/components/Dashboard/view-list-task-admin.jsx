@@ -12,26 +12,17 @@ import { useGetUserbyName } from "@/query/userQuerry";
 import {
   ArrowUpDown,
   Calendar,
-  CalendarPlus,
   CheckCircle,
   CircleUserRound,
-  Clock,
   Eye,
-  Flag,
   MoreHorizontal,
-  Triangle,
   TriangleAlert,
   Watch,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import BadgeStatusTask from "../includes/badge-status";
 
-export default function ViewList({ actionType, openView = () => {} }) {
-  // const actionType = [
-  //   { title: "Edit", className: "", onClick: () => {} },
-  //   { title: "Delete", className: "text-red-500", onClick: () => {} },
-  // ];
-
+export default function ViewListTaskAdmin({ actionType, openView = () => {} }) {
   const { data: usersData } = useGetUserbyName({
     searchTerm: "",
   });
@@ -54,11 +45,11 @@ export default function ViewList({ actionType, openView = () => {} }) {
       ),
     },
     {
-      accessorKey: "title",
+      accessorKey: "description",
       header: "Title",
       cell: ({ row }) => (
         <div className="max-w-42 truncate text-left md:max-w-52 lg:max-w-64">
-          {row.getValue("title")}
+          {row.getValue("description")}
         </div>
       ),
     },
@@ -111,21 +102,31 @@ export default function ViewList({ actionType, openView = () => {} }) {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const id = row.original.id;
+        const data = row.original;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
+              <Button
+                variant="ghost"
+                className="h-8 w-8 p-0"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <span className="sr-only">Open menu</span>
                 <MoreHorizontal />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent
+              align="end"
+              onClick={(e) => e.stopPropagation()}
+            >
               {actionType?.map((action, index) => (
                 <DropdownMenuItem
                   key={index}
                   className={cn(action?.className)}
-                  onClick={() => action.onClick(id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    action.onClick(data);
+                  }}
                 >
                   {action.title}
                 </DropdownMenuItem>
@@ -176,40 +177,17 @@ export default function ViewList({ actionType, openView = () => {} }) {
       relation: ["equals"],
       options: users,
     },
-    { type: "divider" },
     {
-      type: "component",
-      id: "created_at",
-      name: "Created At",
-      icon: <CalendarPlus />,
-      relation: ["equals", "before", "after"],
-      options: [
-        { id: "today", label: "Today", icon: <Calendar /> },
-        { id: "yesterday", label: "Yesterday", icon: <Calendar /> },
-        { id: "last_7_days", label: "Last 7 days", icon: <Calendar /> },
-        { id: "last_30_days", label: "Last 30 days", icon: <Calendar /> },
-        { id: "this_month", label: "This month", icon: <Calendar /> },
-        { id: "last_month", label: "Last month", icon: <Calendar /> },
-      ],
-    },
-    {
-      type: "component",
-      id: "updated_at",
-      name: "Updated At",
-      icon: <Clock />,
-      relation: ["equals", "before", "after"],
-      options: [
-        { id: "today", label: "Today", icon: <Clock /> },
-        { id: "yesterday", label: "Yesterday", icon: <Clock /> },
-        { id: "last_7_days", label: "Last 7 days", icon: <Clock /> },
-        { id: "this_month", label: "This month", icon: <Clock /> },
-      ],
+      type: "date_range",
+      id: "deadline",
+      name: "Date Range",
+      icon: <Calendar />,
+      relation: ["equals"],
     },
   ];
 
   const [sorting, setSorting] = useState([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const [rowSelection, setRowSelection] = useState({});
   const [filters, setFilters] = useState([]);
   const [searchOptions, setSearchOptions] = useState({
     filterId: "",
@@ -222,8 +200,6 @@ export default function ViewList({ actionType, openView = () => {} }) {
     filters: filters,
   });
 
-
-
   return (
     <DataTable
       columns={taskColumn}
@@ -235,9 +211,7 @@ export default function ViewList({ actionType, openView = () => {} }) {
       pagination={pagination}
       setPagination={setPagination}
       error={error?.response?.data?.detail}
-      rowSelection={rowSelection}
       openView={openView}
-      setRowSelection={setRowSelection}
       filter={{
         filters,
         filterOptions,

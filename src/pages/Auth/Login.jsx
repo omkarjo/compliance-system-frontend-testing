@@ -17,22 +17,19 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { loginSchema } from "@/schemas/zod/authSchema";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setTokenAndFetchUser } from "@/store/slices/userSlice";
 import api from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { useForm, useFormState } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useAppSelector } from "@/store/hooks";
-import { Navigate } from "react-router-dom";
 
 export default function Login() {
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.user);
   const form = useForm({
-
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -44,29 +41,32 @@ export default function Login() {
     control: form.control,
   });
 
-  const handelSubmit = useCallback(async (data) => {
-    console.log(data);
-    const payload = new URLSearchParams();
-    payload.append("username", data.email);
-    payload.append("password", data.password);
-    try {
-      const response = await api.post("/api/auth/login", payload, {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
-      
-      dispatch(setTokenAndFetchUser(response.data.access_token));
+  const handelSubmit = useCallback(
+    async (data) => {
+      console.log(data);
+      const payload = new URLSearchParams();
+      payload.append("username", data.email);
+      payload.append("password", data.password);
+      try {
+        const response = await api.post("/api/auth/login/", payload, {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Access-Control-Allow-Origin": "*",
+          },
+        });
 
-      toast.success("Login successful");
-      console.log(response.data);
-    } catch (error) {
-      toast.error("Login failed", {
-        description: error.response.data.detail,
-      });
-    }
-  }, [dispatch]);
+        dispatch(setTokenAndFetchUser(response.data.access_token));
+
+        toast.success("Login successful");
+        console.log(response.data);
+      } catch (error) {
+        toast.error("Login failed", {
+          description: error?.response?.data?.detail || "Something went wrong",
+        });
+      }
+    },
+    [dispatch],
+  );
 
   if (isAuthenticated) {
     return <Navigate to="/dashboard" />;

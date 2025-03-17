@@ -77,7 +77,7 @@ export default function SheetTask({
   data = {},
   isOpen = true,
   onClose,
-  onEditButtonClick,
+  openEdit = () => {},
 }) {
   const renderCell = useCallback((key, data) => {
     if (!data) return null;
@@ -223,7 +223,11 @@ export default function SheetTask({
           <SheetDescription>
             {data?.description || "No description provided"}
           </SheetDescription>
-          <BadgeStatusTask type="sucess" text={data?.state} className={"mt-2"} />
+          <BadgeStatusTask
+            type="sucess"
+            text={data?.state}
+            className={"mt-2"}
+          />
           {data?.assignee_id && (
             <div className="mt-2 flex items-center gap-2">
               <CircleUserRound className="h-6 w-6" />
@@ -239,10 +243,7 @@ export default function SheetTask({
             {taskDataOrder.map((key) => renderCell(key, data))}
           </tbody>
         </table>
-        <Button
-          onClick={() => onEditButtonClick(data)}
-          className="mx-auto mt-4 w-11/12"
-        >
+        <Button onClick={() => openEdit(data)} className="mx-auto mt-4 w-11/12">
           Edit Task
         </Button>
       </SheetContent>

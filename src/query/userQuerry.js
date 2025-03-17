@@ -26,6 +26,6 @@ export const useGetUserbyName = ({ searchTerm }) => {
   return useQuery({
     queryKey: ["user-name-search", searchTerm],
     queryFn: () => fetchUserbyName({ token, searchTerm }),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData => keepPreviousData,
   });
 };

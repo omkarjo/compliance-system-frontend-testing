@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Command,
   CommandEmpty,
-  CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
@@ -24,7 +23,8 @@ import { cn } from "@/lib/utils";
 import { ListFilter, X } from "lucide-react";
 import { motion } from "motion/react";
 import { nanoid } from "nanoid";
-import React, { useEffect, useRef, useState } from "react";
+import * as React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // AnimateChangeInHeight component for smooth transitions
 const AnimateChangeInHeight = ({ children, className }) => {
@@ -69,23 +69,33 @@ const FilterComponent = ({
   const commandInputRef = useRef(null);
   const [filters, setFilters] = useState([]);
   const [selectedRelation, setSelectedRelation] = useState({});
+  const [dateRange, setDateRange] = useState(null); // State to store selected date range
 
   // Handle filter selection
-  const handleFilterSelect = (filterId) => {
-    const filter = filterOptions.find((opt) => opt.id === filterId);
-    if (filter) {
-      setSelectedFilter(filter);
-      // Set default relation
-      if (filter.relation && filter.relation.length > 0) {
-        setSelectedRelation((prev) => ({
-          ...prev,
-          [filterId]: filter.relation[0],
-        }));
+  const handleFilterSelect = useCallback(
+    (filterId) => {
+      const filter = filterOptions.find((opt) => opt.id === filterId);
+      if (filter) {
+        setSelectedFilter(filter);
+
+        // Open popover if the filter type is date_range
+        if (filter.type === "date_range") {
+          setOpen(true); // Ensure popover opens
+        } else {
+          // Set default relation and focus input for other filter types
+          if (filter.relation && filter.relation.length > 0) {
+            setSelectedRelation((prev) => ({
+              ...prev,
+              [filterId]: filter.relation[0],
+            }));
+          }
+          setCommandInput("");
+          commandInputRef.current?.focus();
+        }
       }
-      setCommandInput("");
-      commandInputRef.current?.focus();
-    }
-  };
+    },
+    [filterOptions],
+  );
 
   useEffect(() => {
     if (setSearchOptions && selectedFilter) {
@@ -132,6 +142,34 @@ const FilterComponent = ({
     }
   };
 
+  // Handle date range selection
+  const handleDateRangeSelect = (range) => {
+    if (range?.from && range?.to) {
+      const newFilter = {
+        id: nanoid(),
+        filterId: selectedFilter.id,
+        filterName: selectedFilter.name,
+        filterIcon: selectedFilter.icon,
+        relation: null,
+        optionId: null,
+        optionLabel: `From: ${range.from.toLocaleDateString()} To: ${range.to.toLocaleDateString()}`,
+        optionIcon: null,
+      };
+
+      setFiltersProps((prev) => [
+        ...prev,
+        { filterid: "start_date", optionid: range.from.toLocaleDateString("en-CA") },
+        { filterid: "end_date", optionid: range.to.toLocaleDateString("en-CA") },
+      ]); // Add separate objects for start_date and end_date
+
+      setFilters((prev) => [...prev, newFilter]);
+
+      setOpen(false); // Close the popover
+      setSelectedFilter(null); // Reset selected filter
+      setDateRange(null); // Clear calendar selection
+    }
+  };
+
   // Handle relation change
   const handleRelationChange = (filterId, relation) => {
     setFilters((prev) =>
@@ -164,6 +202,44 @@ const FilterComponent = ({
     setFilters([]);
     setFiltersProps([]);
   };
+
+  const generateFilterFields = useCallback(
+    (filter) => {
+      switch (filter.type) {
+        case "component":
+          return (
+            <CommandItem
+              key={filter.id}
+              value={filter.id}
+              onSelect={() => handleFilterSelect(filter.id)}
+            >
+              {React.cloneElement(filter.icon, {
+                className: "size-3.5 me-2",
+              })}
+              {filter.name}
+            </CommandItem>
+          );
+        case "divider":
+          return <CommandSeparator key={filter.id} />;
+        case "date_range":
+          return (
+            <CommandItem
+              key={filter.id}
+              value={filter.id}
+              onSelect={() => handleFilterSelect(filter.id)}
+            >
+              {React.cloneElement(filter.icon, {
+                className: "size-3.5 me-2",
+              })}
+              {filter.name}
+            </CommandItem>
+          );
+        default:
+          return null;
+      }
+    },
+    [handleFilterSelect],
+  );
 
   return (
     <div className="flex justify-end gap-2">
@@ -198,7 +274,6 @@ const FilterComponent = ({
               </DropdownMenu>
             )}
 
-            {/* Selected Option */}
             <div className="bg-muted text-muted-foreground flex shrink-0 items-center gap-1.5 rounded-none px-1.5 py-1">
               {filter.optionIcon &&
                 React.cloneElement(filter.optionIcon, {
@@ -220,7 +295,6 @@ const FilterComponent = ({
         ))}
       </div>
 
-      {/* Clear Button */}
       {filters.length > 0 && (
         <Button
           variant="outline"
@@ -241,6 +315,7 @@ const FilterComponent = ({
             setTimeout(() => {
               setSelectedFilter(null);
               setCommandInput("");
+              setDateRange(null); // Clear calendar selection when popover is closed
             }, 200);
           }
         }}
@@ -260,76 +335,58 @@ const FilterComponent = ({
             {!filters.length && "Filter"}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
+        <PopoverContent className="me-2 w-[250px] p-0">
           <AnimateChangeInHeight>
             <Command>
-              <CommandInput
-                placeholder={selectedFilter ? selectedFilter.name : "Filter..."}
-                className="h-9"
-                value={commandInput}
-                onInputCapture={(e) => {
-                  setCommandInput(e.currentTarget.value);
-                }}
-                ref={commandInputRef}
-              />
-              <CommandList>
-                <CommandEmpty>No results found.</CommandEmpty>
+              {/* Render CommandInput and CommandList only for non-date_range filters */}
+              {selectedFilter?.type !== "date_range" && (
+                <>
+                  <CommandInput
+                    placeholder={
+                      selectedFilter ? selectedFilter.name : "Filter..."
+                    }
+                    className="h-9"
+                    value={commandInput}
+                    onInputCapture={(e) => {
+                      setCommandInput(e.currentTarget.value);
+                    }}
+                    ref={commandInputRef}
+                  />
+                  <CommandList>
+                    <CommandEmpty>No results found.</CommandEmpty>
 
-                {selectedFilter ? (
-                  // Show options for selected filter
-                  <CommandGroup>
-                    {selectedFilter.options.map((option) => (
-                      <CommandItem
-                        className="group text-muted-foreground flex items-center gap-2"
-                        key={option.id}
-                        value={option.id}
-                        onSelect={() => handleOptionSelect(option)}
-                      >
-                        <Checkbox
-                          checked={false}
-                          className="hidden opacity-0 group-data-[selected=true]:opacity-100"
-                        />
-                        {option.icon &&
-                          React.cloneElement(option.icon, {
-                            className: "size-3.5",
-                          })}
-                        <span className="text-accent-foreground">
-                          {option.label}
-                        </span>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                ) : (
-                  // Show filter categories
-                  <>
-                    {filterOptions.map((filter, index) => {
-                      if (filter.type === "divider") {
-                        return <CommandSeparator key={`divider-${index}`} />;
-                      }
-
-                      if (filter.type === "component") {
-                        return (
-                          <CommandItem
-                            className="group text-muted-foreground flex items-center gap-2"
-                            key={filter.id}
-                            value={filter.name}
-                            onSelect={() => handleFilterSelect(filter.id)}
-                          >
-                            {React.cloneElement(filter.icon, {
-                              className: "size-3.5",
+                    {selectedFilter &&
+                      selectedFilter.options.map((option) => (
+                        <CommandItem
+                          key={option.id}
+                          value={option.id}
+                          onSelect={() => handleOptionSelect(option)}
+                        >
+                          {option.icon &&
+                            React.cloneElement(option.icon, {
+                              className: "size-3.5 me-2",
                             })}
-                            <span className="text-accent-foreground">
-                              {filter.name}
-                            </span>
-                          </CommandItem>
-                        );
-                      }
+                          {option.label}
+                        </CommandItem>
+                      ))}
 
-                      return null;
-                    })}
-                  </>
-                )}
-              </CommandList>
+                    {!selectedFilter && filterOptions.map(generateFilterFields)}
+                  </CommandList>
+                </>
+              )}
+
+              {/* Render Calendar directly for date_range filters */}
+              {selectedFilter?.type === "date_range" && (
+                <Calendar
+                  mode="range"
+                  selected={dateRange}
+                  onSelect={(range) => {
+                    setDateRange(range);
+                    handleDateRangeSelect(range);
+                  }}
+                  initialFocus
+                />
+              )}
             </Command>
           </AnimateChangeInHeight>
         </PopoverContent>

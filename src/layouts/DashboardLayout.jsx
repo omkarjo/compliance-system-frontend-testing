@@ -6,13 +6,37 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { ADMIN_ROLES } from "@/constant/roles";
 import { useAppSelector } from "@/store/hooks";
+import useCheckRoles from "@/utils/check-roles";
 import { GalleryVerticalEnd } from "lucide-react";
 import { Navigate, Outlet } from "react-router-dom";
 
 const PATH_PREFIX = "/dashboard";
 
 export default function DashboardLayout() {
+  const havePermission = useCheckRoles(ADMIN_ROLES);
+  const activityViewPermission = useCheckRoles(["Fund Manager"]);
+  const complianceMenu = [
+    {
+      title: "Compliance",
+      url: PATH_PREFIX,
+      items: [
+        {
+          title: "Limited Partners",
+          url: PATH_PREFIX + "/limited-partners",
+          icon: GalleryVerticalEnd,
+        },
+        {
+          title: "Portfolio Companies",
+          url: PATH_PREFIX + "/portfolio-companies",
+          icon: GalleryVerticalEnd,
+        },
+      ],
+      hiddenIcon: true,
+    },
+  ];
+
   const menu = [
     {
       title: "Overview",
@@ -33,30 +57,18 @@ export default function DashboardLayout() {
           url: PATH_PREFIX + "/documents",
           icon: GalleryVerticalEnd,
         },
-        {
-          title: "Activity Log",
-          url: PATH_PREFIX + "/activity-log",
-          icon: GalleryVerticalEnd,
-        },
+        ...(activityViewPermission
+          ? [
+              {
+                title: "Activity Log",
+                url: PATH_PREFIX + "/activity-log",
+                icon: GalleryVerticalEnd,
+              },
+            ]
+          : []),
       ],
     },
-    {
-      title: "Compliance",
-      url: PATH_PREFIX,
-      items: [
-        {
-          title: "Limited Partners",
-          url: PATH_PREFIX + "/limited-partners",
-          icon: GalleryVerticalEnd,
-        },
-        {
-          title: "Portfolio Companies",
-          url: PATH_PREFIX + "/portfolio-companies",
-          icon: GalleryVerticalEnd,
-        },
-      ],
-      hiddenIcon: true,
-    },
+    ...(havePermission ? complianceMenu : []),
   ];
 
   const { isAuthenticated, user } = useAppSelector((state) => state.user);

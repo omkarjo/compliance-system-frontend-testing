@@ -24,13 +24,16 @@ import {
   LogOut,
 } from "lucide-react";
 import { useCallback } from "react";
+import { useNavigate } from "react-router";
 
 export default function NavUser({ user }) {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const handleLogout = useCallback(() => {
     dispatch(logoutUser());
-  }, [dispatch]);
+    navigate("/login");
+  }, [dispatch, navigate]);
 
   const { isMobile } = useSidebar();
 

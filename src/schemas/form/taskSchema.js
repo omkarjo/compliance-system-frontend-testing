@@ -1,16 +1,9 @@
 export const taskFormFieldsPart1 = [
   {
-    name: "title",
+    name: "description",
     label: "Title",
     type: "text",
     placeholder: "",
-    required: true,
-  },
-  {
-    name: "description",
-    label: "Description",
-    type: "textarea",
-    placeholder: "Enter the description...",
     required: true,
   },
   {
@@ -44,17 +37,6 @@ export const taskFormFieldsPart1 = [
     ],
   },
   {
-    name: "completion_criteria",
-    label: "Completion Criteria",
-    type: "select",
-    placeholder: "",
-    required: true,
-    options: [
-      { label: "Document Upload", value: "Document Upload" },
-      { label: "Textual Information", value: "Textual Information" },
-    ],
-  },
-  {
     name: "deadline",
     label: "Deadline",
     type: "date",
@@ -73,18 +55,11 @@ export const taskFormFieldsPart1 = [
 
 export const taskFormFieldsPart2 = [
   {
-    name: "every",
-    label: "Every",
-    type: "number",
-    required: true,
-    className: "w-1/2 inline-block pe-1",
-  },
-  {
     name: "recurrence",
     label: "Frequency",
     type: "select",
     required: true,
-    className: "w-1/2 inline-block ps-1",
+    className: "",
     options: [
       { label: "Day", value: "DAY" },
       { label: "Week", value: "WEEK" },
@@ -100,7 +75,7 @@ export const taskFormFieldsPart3 = [
     label: "Predecessor Task",
     type: "select",
     placeholder: "",
-    required: true,
+    required: false,
     options: [
       { label: "Task 1", value: "Task 1" },
       { label: "Task 2", value: "Task 2" },

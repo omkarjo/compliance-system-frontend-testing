@@ -3,18 +3,11 @@ import { Button } from "@/components/ui/button";
 import { currencyFormatter } from "@/lib/formatter";
 import { useGetLP } from "@/query/lpQuerry";
 import {
-  ArrowUpDown,
-  Calendar,
-  CalendarPlus,
-  CheckCircle,
-  Clock,
-  Flag,
+  ArrowUpDown
 } from "lucide-react";
 import { useState } from "react";
-import BadgeStatusTask from "../includes/badge-status";
 
-
-export default function ViewList({ actionType, openView = () => {} }) {
+export default function ViewList({ openView = () => {} }) {
   const taskColumn = [
     {
       accessorKey: "lp_name",
@@ -36,22 +29,8 @@ export default function ViewList({ actionType, openView = () => {} }) {
       ),
     },
     {
-      accessorKey: "state",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Status
-            <ArrowUpDown size={16} />
-          </Button>
-        );
-      },
-      cell: ({ row }) => {
-        const status = row.getValue("state");
-        return <BadgeStatusTask type={"info"} text={status} />;
-      },
+      accessorKey: "email",
+      header: "Email",
     },
     {
       accessorKey: "commitment_amount",
@@ -83,69 +62,10 @@ export default function ViewList({ actionType, openView = () => {} }) {
     },
   ];
 
-  const filterOptions = [
-    { type: "divider" },
-    {
-      type: "component",
-      id: "status",
-      name: "Status",
-      icon: <CheckCircle />,
-      relation: ["equals"],
-      options: [
-        { id: "active", label: "Active", icon: <CheckCircle color="green" /> },
-        {
-          id: "inactive",
-          label: "Inactive",
-          icon: <CheckCircle color="gray" />,
-        },
-      ],
-    },
-    {
-      type: "component",
-      id: "priority",
-      name: "Priority",
-      icon: <Flag />,
-      relation: ["equals", "not_equals"],
-      options: [
-        { id: "low", label: "Low", icon: <Flag color="green" /> },
-        { id: "medium", label: "Medium", icon: <Flag color="orange" /> },
-        { id: "high", label: "High", icon: <Flag color="red" /> },
-      ],
-    },
-    { type: "divider" },
-    {
-      type: "component",
-      id: "created_at",
-      name: "Created At",
-      icon: <CalendarPlus />,
-      relation: ["equals", "before", "after"],
-      options: [
-        { id: "today", label: "Today", icon: <Calendar /> },
-        { id: "yesterday", label: "Yesterday", icon: <Calendar /> },
-        { id: "last_7_days", label: "Last 7 days", icon: <Calendar /> },
-        { id: "last_30_days", label: "Last 30 days", icon: <Calendar /> },
-        { id: "this_month", label: "This month", icon: <Calendar /> },
-        { id: "last_month", label: "Last month", icon: <Calendar /> },
-      ],
-    },
-    {
-      type: "component",
-      id: "updated_at",
-      name: "Updated At",
-      icon: <Clock />,
-      relation: ["equals", "before", "after"],
-      options: [
-        { id: "today", label: "Today", icon: <Clock /> },
-        { id: "yesterday", label: "Yesterday", icon: <Clock /> },
-        { id: "last_7_days", label: "Last 7 days", icon: <Clock /> },
-        { id: "this_month", label: "This month", icon: <Clock /> },
-      ],
-    },
-  ];
+  const filterOptions = [];
 
   const [sorting, setSorting] = useState("");
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const [rowSelection, setRowSelection] = useState({});
   const [filters, setFilters] = useState([]);
   const [searchOptions, setSearchOptions] = useState({
     filterId: "",
@@ -169,7 +89,6 @@ export default function ViewList({ actionType, openView = () => {} }) {
       pagination={pagination}
       setPagination={setPagination}
       error={error?.message}
-      rowSelection={rowSelection}
       // setRowSelection={setRowSelection}
       openView={openView}
       filter={{

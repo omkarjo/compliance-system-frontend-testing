@@ -1,4 +1,5 @@
-import { lazy, Suspense } from "react";
+import { ADMIN_ROLES, ALL_ROLES } from "@/constant/roles";
+import { lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 const DashboardLayout = lazy(() => import("@/layouts/DashboardLayout"));
@@ -18,21 +19,31 @@ const ActivityLog = lazy(
   () => import("@/pages/Dashboard/Overview/ActivityLog"),
 );
 const Docoments = lazy(() => import("@/pages/Dashboard/Overview/Docoments"));
+const DashBoard = lazy(() => import("@/pages/Dashboard/Overview/DashBoard"));
+
+const ProtectRoutes = lazy(() => import("@/pages/Auth/ProtectRoutes"));
 
 const AppRoutes = () => {
   return (
     // <Suspense fallback={<Loading />}>
     <Routes>
       <Route path="/">
-        <Route index element={<Home />} />
+        <Route index element={<Navigate to="/dashboard" />} />
         <Route path="dashboard" element={<DashboardLayout />}>
-          <Route index element={<div>Dashbord</div>} />
-          <Route path="documents" element={<Docoments />} />
-          <Route path="activity-log" element={<ActivityLog />} />
-          <Route path="task" element={<TaskDashboard />} />
-          <Route path="limited-partners" element={<LPDashboard />} />
-
-          <Route path="*" element={<div>Page Not Found</div>} />
+          <Route element={<ProtectRoutes redirect="/login" />}>
+            <Route index element={<DashBoard />} />
+            <Route path="documents" element={<Docoments />} />
+            <Route path="activity-log" element={<ActivityLog />} />
+            <Route path="task" element={<TaskDashboard />} />
+          </Route>
+          <Route
+            element={
+              <ProtectRoutes allowedRoles={ADMIN_ROLES} redirect="/dashboard" />
+            }
+          >
+            <Route path="limited-partners" element={<LPDashboard />} />
+            <Route path="portfolio-companies" element={<div>Portfolio</div>} />
+          </Route>
         </Route>
         <Route element={<AuthLayout />}>
           <Route path="login" element={<Login />} />
