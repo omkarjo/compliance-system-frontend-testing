@@ -1,10 +1,5 @@
 import { Button } from "@/components/ui/button";
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -13,7 +8,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { getStatusStyle } from "@/lib/getStatusStyle";
+import { getStatusStyle, getStatusIcon } from "@/lib/getStatusStyleIcon";
 import { cn } from "@/lib/utils";
 import { useGetTask } from "@/query/taskQuerry";
 import {
@@ -37,12 +32,12 @@ import {
   CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  Loader2Icon,
-  TriangleAlert,
+  TriangleAlert
 } from "lucide-react";
 import * as React from "react";
 import TaskAccordion from "./includes/accordion-task";
 import TaskHoverCard from "./includes/card-hower-task";
+
 
 const colStartClasses = [
   "",
@@ -573,27 +568,28 @@ export default function TaskCalendar() {
                           ) : (
                             <>
                               {/* Task indicators with status colors */}
-                              <div className="mt-1 flex flex-wrap justify-end">
-                                {dayTasks.map((task) => {
-                                  const { bgColor } = getStatusStyle(
+                              <div className="mt-1 flex flex-wrap gap-0.5 justify-end">
+                                {dayTasks.map((task, idx) => {
+                                  const { bgSecondaryColor } = getStatusStyle(
                                     task.state,
                                   );
-                                  const indicatorColor = bgColor.replace(
-                                    "-50",
-                                    "-400",
-                                  );
+                                  
+
+                                  const randomDuration = Math.floor(Math.random() * 2) + 1;
+
 
                                   return (
                                     <motion.span
                                       key={task.compliance_task_id}
                                       initial={{ scale: 0.8 }}
-                                      animate={{ scale: 1.2 }}
+                                      animate={{ scale: 1.5 }}
                                       transition={{
-                                        duration: 1,
+                                        duration: randomDuration,
                                         repeat: Infinity,
                                         repeatType: "reverse",
+
                                       }}
-                                      className={`${indicatorColor} mx-0.5 mt-0.5 h-1.5 w-1.5 rounded-full`}
+                                      className={`${bgSecondaryColor} mx-0.5 mt-0.5 h-1.5 w-1.5 rounded-full`}
                                     />
                                   );
                                 })}

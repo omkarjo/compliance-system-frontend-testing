@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { getStatusStyle } from "@/lib/getStatusStyle";
+import { getStatusStyle } from "@/lib/getStatusStyleIcon";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";

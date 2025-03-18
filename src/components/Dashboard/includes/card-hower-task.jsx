@@ -3,38 +3,16 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { getStatusStyle } from "@/lib/getStatusStyle";
+import { getStatusIcon, getStatusStyle } from "@/lib/getStatusStyleIcon";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import {
   AlertTriangle,
-  CheckCircle,
-  Circle,
-  Clock,
-  Hourglass,
-  UserCircleIcon,
-  XCircle,
+  Clock
 } from "lucide-react";
-import React from "react";
 
 const TaskHoverCard = ({ task, viewMode, onClick }) => {
   // Get status icon based on state
-  const getStatusIcon = (state) => {
-    switch (state) {
-      case "Open":
-        return <Circle size={14} className="text-gray-600" />;
-      case "Pending":
-        return <Hourglass size={14} className="text-blue-600" />;
-      case "Completed":
-        return <CheckCircle size={14} className="text-green-600" />;
-      case "Overdue":
-        return <AlertTriangle size={14} className="text-red-600" />;
-      case "Blocked":
-        return <XCircle size={14} className="text-red-600" />;
-      default:
-        return <Circle size={14} className="text-blue-600" />;
-    }
-  };
 
   // Determine status color based on state
 
