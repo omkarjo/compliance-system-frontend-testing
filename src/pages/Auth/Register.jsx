@@ -82,7 +82,7 @@ export default function Register() {
   }
 
   return (
-    <div className="w-full max-w-sm">
+    <div className="w-11/12 max-w-sm">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Register</CardTitle>

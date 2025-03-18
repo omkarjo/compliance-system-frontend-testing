@@ -52,9 +52,12 @@ const FileSvgDraw = ({ allowedTypes }) => {
         <span className="font-semibold">Click to upload</span>
         &nbsp; or drag and drop
       </p>
+      {allowedTypes && allowedTypes.length > 0 && (
       <p className="text-xs text-gray-500 dark:text-gray-400">
-        {allowedTypes && allowedTypes?.join(", ")}
+        Allowed file types:{" "}
+        {allowedTypes?.join(", ")}
       </p>
+      )}
     </>
   );
 };
@@ -186,7 +189,7 @@ const FormGenerate = ({
                 field.onChange(files);
               }
             }}
-            dropzoneOptions={FormField?.dropZoneConfig}
+            dropzoneOptions={formField?.dropZoneConfig}
             reSelect={true}
             className={cn("bg-background relative rounded-lg p-2")}
           >

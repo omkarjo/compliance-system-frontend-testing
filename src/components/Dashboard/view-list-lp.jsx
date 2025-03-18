@@ -7,6 +7,18 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import { 
+  FileText, 
+  CheckCircle, 
+  Clock, 
+  AlertTriangle, 
+  FileSignature, 
+  Users, 
+  Bell, 
+  FileBarChart, 
+  FileQuestion
+} from "lucide-react";
+
 export default function ViewList({ openView = () => {} }) {
   const taskColumn = [
     {

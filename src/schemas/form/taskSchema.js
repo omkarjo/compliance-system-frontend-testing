@@ -13,10 +13,11 @@ export const taskFormFieldsPart1 = [
     type: "file",
     placeholder: "",
     required: false,
-    multiple: false,
     dropZoneConfig: {
       useFsAccessApi: false,
-      accept: {},
+      accept: {
+        "application/pdf": [".pdf"],
+      },
       maxFiles: 5,
       maxSize: 1024 * 1024 * 4,
       multiple: true,
@@ -61,10 +62,10 @@ export const taskFormFieldsPart2 = [
     required: true,
     className: "",
     options: [
-      { label: "Day", value: "DAY" },
-      { label: "Week", value: "WEEK" },
-      { label: "Month", value: "MONTH" },
-      { label: "Year", value: "YEAR" },
+      { label: "Weekly", value: "Weekly" },
+      { label: "Monthly", value: "Monthly" },
+      { label: "Quarterly", value: "Quarterly" },
+      { label: "Yearly", value: "Yearly" },
     ],
   },
 ];

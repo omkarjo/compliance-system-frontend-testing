@@ -9,8 +9,11 @@ export const lpFromFields = [
     required: false,
     multiple: false,
     dropZoneConfig: {
+      accept: {
+        "application/pdf": [".pdf"],
+      },
+
       useFsAccessApi: false,
-      accept: {},
       maxFiles: 5,
       maxSize: 1024 * 1024 * 4,
       multiple: true,
@@ -130,7 +133,7 @@ export const lpFromFields = [
     ],
   },
   {
-    name: "cml_file",
+    name: "cml",
     label: "CML",
     type: "file",
     placeholder: "",
@@ -138,7 +141,9 @@ export const lpFromFields = [
     multiple: false,
     dropZoneConfig: {
       useFsAccessApi: false,
-      accept: {},
+      accept: {
+        "application/pdf": [".pdf"],
+      },
       maxFiles: 1,
       maxSize: 1024 * 1024 * 4,
       multiple: false,

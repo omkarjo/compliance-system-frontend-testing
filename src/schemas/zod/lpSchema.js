@@ -4,20 +4,19 @@ import { z } from "zod";
 export const lpSchema = z.object({
   docoments: z
     .array(
-      z.object({
-        name: z.string(),
-        file_path: z.string(),
-        document_id: z.string(),
+      z.instanceof(File).refine((file) => file.size < 4 * 1024 * 1024, {
+        message: "File size must be less than 4MB",
       }),
     )
+    .max(1, {
+      message: "Maximum 5 files are allowed",
+    })
     .optional(),
   lp_name: z.string().min(1, "Name is required"),
   gender: z.enum(["male", "female", "others"]),
-  dob: z
-    .date()
-    .refine((date) => date <= new Date(), {
-      message: "Date of birth must be in the past",
-    }),
+  dob: z.date().refine((date) => date <= new Date(), {
+    message: "Date of birth must be in the past",
+  }),
   mobile_no: z
     .string()
     .nonempty("Phone is required")
@@ -33,15 +32,16 @@ export const lpSchema = z.object({
       message: "Commitment amount must be greater than ₹1Cr",
     }),
   acknowledgement_of_ppm: z.enum(["yes", "no"]),
-  cml_file: z
+  cml: z
     .array(
-      z.object({
-        name: z.string(),
-        file_path: z.string(),
-        document_id: z.string(),
+      z.instanceof(File).refine((file) => file.size < 4 * 1024 * 1024, {
+        message: "File size must be less than 4MB",
       }),
     )
-    .nonempty("CML file array is required"),
+    .max(1, {
+      message: "Maximum 5 files are allowed",
+    })
+    .nullable(),
   depository: z.enum(["nsdl", "cdsl"]),
   dpid: z.string().min(1, "Dpid is required"),
   client_id: z.string().min(1, "Client ID is required"),

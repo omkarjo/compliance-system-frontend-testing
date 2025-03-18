@@ -24,16 +24,22 @@ export const taskSchema = z
 
     predecessor_task: z.string().optional(),
 
-    attachements: z
-      .array(z.string().nonempty("Attachment is required"))
-      .optional(),
+    attachments: z
+      .array(
+        z.instanceof(File).refine((file) => file.size < 4 * 1024 * 1024, {
+          message: "File size must be less than 4MB",
+        }),
+      )
+      .max(5, {
+        message: "Maximum 5 files are allowed",
+      })
+      .nullable(),
 
     assignee_id: z.string().nonempty("Assignee ID is required"),
     reviewer_id: z.string().nonempty("Reviewer ID is required"),
     approver_id: z.string().nonempty("Approver ID is required"),
   })
   .superRefine((data, ctx) => {
-    console.log("zod data", data);
     if (data.repeat === true && !data.recurrence) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

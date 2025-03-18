@@ -12,6 +12,7 @@ import {
 } from "@/schemas/form/taskSchema";
 import { taskSchema } from "@/schemas/zod/taskSchema";
 import { apiWithAuth } from "@/utils/api";
+import fileUpload from "@/utils/file-upload";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -148,20 +149,16 @@ export default function TaskDashboard() {
     },
   ];
 
-  const createTask = useCallback(
-    async (data) => {
-      try {
-        await apiWithAuth.post("/api/tasks/", data);
-        toast.success("Task created successfully");
-        handleDialogTaskClose(false);
-      } catch (error) {
-        toast.error("Failed to create task", {
-          description: error?.response?.data?.message || "An error occured",
-        });
-      }
-    },
-    [handleDialogTaskClose],
-  );
+  const createTask = useCallback(async (data) => {
+    try {
+      await apiWithAuth.post("/api/tasks/", data);
+      toast.success("Task created successfully");
+    } catch (error) {
+      toast.error("Failed to create task", {
+        description: error?.response?.data?.message || "An error occured",
+      });
+    }
+  }, []);
 
   const editTask = useCallback(
     async (data) => {
@@ -171,35 +168,85 @@ export default function TaskDashboard() {
           data,
         );
         toast.success("Task updated successfully");
-        handleDialogTaskClose(false);
       } catch (error) {
         toast.error("Failed to update task", {
           description: error?.response?.data?.message || "An error occured",
         });
       }
     },
-    [handleDialogTaskClose, dialogTask.compliance_task_id],
+    [dialogTask.compliance_task_id],
   );
 
   const onSubmit = useCallback(
     async (data) => {
-      console.log("submit", data);
-      if (!data.repeat) {
-        data.recurrence = null;
+      let { attachments, repeat, ...rest } = data;
+      let compliance_task_id = dialogTask.compliance_task_id || null;
+      const category = rest.category;
+      if (!repeat) {
+        rest.recurrence = undefined;
       }
-      if (dialogTask.variant === "create") {
-        await createTask(data);
-      } else {
-        await editTask(data);
-      }
-      form.reset({});
-      queryClient.invalidateQueries("task-querry");
-    },
-    [createTask, dialogTask.variant, editTask, form],
-  );
 
-  console.log("task", form.getValues());
-  console.log("errors", form.formState.errors);
+      console.log("rest", data);
+
+      try {
+        if (dialogTask.variant === "create") {
+          await createTask(rest);
+        } else {
+          await editTask(rest);
+        }
+
+        console.log("attachements", attachments);
+
+        if (attachments?.length) {
+          try {
+            const promises = attachments.map((file) =>
+              fileUpload(file, category),
+            );
+            const uploadResponse = await Promise.all(promises);
+            const document_ids = uploadResponse.map(
+              (res) => res.data.document_id,
+            );
+
+            console.log("document_ids", document_ids);
+
+            const linkPromises = document_ids.map((document_id) => {
+              return apiWithAuth.post(
+                `/api/documents/${document_id}/link-to-task`,
+                {
+                  compliance_task_id: compliance_task_id,
+                  document_id: document_id,
+                },
+              );
+            });
+
+            await Promise.all(linkPromises);
+            toast.success("Files uploaded successfully");
+          } catch (error) {
+            toast.error("Failed to upload file", {
+              description:
+                error?.response?.data?.message || "An error occurred",
+            });
+          }
+        }
+
+        handleDialogTaskClose(false);
+        form.reset({});
+        queryClient.invalidateQueries("task-querry");
+      } catch (error) {
+        toast.error("Failed to process task", {
+          description: error?.response?.data?.message || "An error occurred",
+        });
+      }
+    },
+    [
+      createTask,
+      dialogTask.variant,
+      dialogTask.compliance_task_id,
+      editTask,
+      form,
+      handleDialogTaskClose,
+    ],
+  );
 
   const defaultTabs = localStorage.getItem("taskTabs") || "list";
 
@@ -209,7 +256,11 @@ export default function TaskDashboard() {
 
   return (
     <section className="">
-      <Tabs defaultValue={defaultTabs} className="h-full w-full" onValueChange={handelTabChange}>
+      <Tabs
+        defaultValue={defaultTabs}
+        className="h-full w-full"
+        onValueChange={handelTabChange}
+      >
         <div className="flex items-center justify-between gap-4 px-4 py-2">
           <div className="flex items-center gap-2">
             <Button

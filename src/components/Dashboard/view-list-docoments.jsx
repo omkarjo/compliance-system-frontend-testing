@@ -1,9 +1,21 @@
 import DataTable from "@/components/includes/data-table";
 import { Button } from "@/components/ui/button";
-import { useGetAllDocuments } from "@/query/docomentsQuerry";
-import { ArrowUpDown } from "lucide-react";
-import { useState } from "react";
 import useDebounce from "@/hooks/useDebounce";
+import { useGetAllDocuments } from "@/query/docomentsQuerry";
+import {
+  AlertTriangle,
+  ArrowUpDown,
+  Bell,
+  CheckCircle,
+  Clock,
+  FileBarChart,
+  FileQuestion,
+  FileSignature,
+  FileText,
+  Users,
+} from "lucide-react";
+import { useState } from "react";
+
 export default function ViewListDocument() {
   const column = [
     {
@@ -62,8 +74,67 @@ export default function ViewListDocument() {
     },
   ];
 
-  const filterOptions = [];
-
+  const filterOptions = [
+    { type: "divider" },
+    {
+      type: "component",
+      id: "status",
+      name: "Document Status",
+      icon: <CheckCircle />,
+      relation: ["equals"],
+      options: [
+        {
+          id: "Active",
+          label: "Active",
+          icon: <CheckCircle className="text-green-400" />,
+        },
+        {
+          id: "Pending Approval",
+          label: "Pending Approval",
+          icon: <Clock className="text-blue-400" />,
+        },
+        {
+          id: "Expired",
+          label: "Expired",
+          icon: <AlertTriangle className="text-red-400" />,
+        },
+      ],
+    },
+    {
+      type: "component",
+      id: "category",
+      name: "Document Category",
+      icon: <FileText />,
+      relation: ["equals"],
+      options: [
+        {
+          id: "Contribution Agreement",
+          label: "Contribution Agreement",
+          icon: <FileSignature className="text-indigo-400" />,
+        },
+        {
+          id: "KYC",
+          label: "KYC",
+          icon: <Users className="text-purple-400" />,
+        },
+        {
+          id: "Notification",
+          label: "Notification",
+          icon: <Bell className="text-yellow-400" />,
+        },
+        {
+          id: "Report",
+          label: "Report",
+          icon: <FileBarChart className="text-blue-400" />,
+        },
+        {
+          id: "Other",
+          label: "Other",
+          icon: <FileQuestion className="text-gray-400" />,
+        },
+      ],
+    },
+  ];
   const [sorting, setSorting] = useState("");
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [filters, setFilters] = useState([]);
@@ -79,7 +150,8 @@ export default function ViewListDocument() {
     pageIndex: pagination.pageIndex,
     pageSize: pagination.pageSize,
     sortBy: sorting,
-    search : debouncedSearch,
+    search: debouncedSearch,
+    filters,
   });
 
   return (

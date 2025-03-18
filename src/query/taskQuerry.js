@@ -2,7 +2,6 @@ import { useAppSelector } from "@/store/hooks";
 import api from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 
-
 const fetchData = async ({ token, pageIndex, pageSize, sortBy, filters }) => {
   if (!token) {
     throw new Error("Unauthorized");
@@ -10,7 +9,7 @@ const fetchData = async ({ token, pageIndex, pageSize, sortBy, filters }) => {
   const searchParams = {
     limit: pageSize,
     skip: pageIndex * pageSize,
-    sort: sortBy,
+    ...(sortBy && { sort: sortBy }),
     ...filters.reduce((acc, filter) => {
       acc[filter.filterid] = filter.optionid;
       return acc;
@@ -28,8 +27,8 @@ const fetchData = async ({ token, pageIndex, pageSize, sortBy, filters }) => {
 };
 
 export const useGetTask = ({
-  pageIndex,
-  pageSize,
+  pageIndex = 0,
+  pageSize = 10,
   sortBy = [],
   filters = [],
 }) => {
@@ -43,6 +42,6 @@ export const useGetTask = ({
     queryKey: ["task-querry", pageIndex, pageSize, sort, filters],
     queryFn: () =>
       fetchData({ token, pageIndex, pageSize, sortBy: sort, filters }),
-    placeholderData: keepPreviousData => keepPreviousData,
+    placeholderData: (keepPreviousData) => keepPreviousData,
   });
 };
