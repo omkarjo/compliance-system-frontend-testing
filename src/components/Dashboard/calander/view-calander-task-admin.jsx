@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { getStatusIcon, getStatusStyle } from "@/lib/getStatusStyleIcon";
+import { getStatusStyle } from "@/lib/getStatusStyleIcon";
 import { cn } from "@/lib/utils";
 import { useGetTask } from "@/query/taskQuerry";
 import {
