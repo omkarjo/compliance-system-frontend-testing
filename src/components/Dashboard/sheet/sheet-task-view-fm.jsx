@@ -28,52 +28,8 @@ const taskDataOrder = [
   "updated_at",
 ];
 
-// export const dummyTaskData = {
-//   title: "Create LP Report",
-//   description: "",
-//   supportingDocs: [
-//     {
-//       name: "example.pdf",
-//       size: "2MB",
-//       type: "application/pdf",
-//     },
-//   ],
-//   category: "LP",
-//   status: "In Progress",
-//   completionCriteria: "Document Upload",
-//   dueDate: "2025-02-28",
-//   repeatTask: true,
-//   every: 1,
-//   frequency: "YEAR",
-//   assignee: "Omkar Joshi",
-//   reviewer: "Aviral Bhatnagar",
-//   finalReviewer: "Aviral Bhatnagar",
-//   predecessorTask: "Create LP Report",
-//   createdAt: "2025-02-12",
-//   updatedAt: "2025-02-12",
-//   attachements: [
-//     {
-//       name: "example1.pdf",
-//       size: "2MB",
-//       type: "application/pdf",
-//       link: "#",
-//     },
-//     {
-//       name: "example1.pdf",
-//       size: "2MB",
-//       type: "application/pdf",
-//       link: "#",
-//     },
-//     {
-//       name: "example2.pdf",
-//       size: "2MB",
-//       type: "application/pdf",
-//       link: "#",
-//     },
-//   ],
-// };
 
-export default function SheetTask({
+export default function SheetTaskViewFM({
   data = {},
   isOpen = true,
   onClose,

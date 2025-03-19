@@ -5,9 +5,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 const DashboardLayout = lazy(() => import("@/layouts/DashboardLayout"));
 const AuthLayout = lazy(() => import("@/layouts/AuthLayout"));
 
-const TaskDashboard = lazy(
-  () => import("@/pages/Dashboard/Overview/TaskDashboardAdmin"),
-);
+const TaskPage = lazy(() => import("@/pages/Dashboard/Overview/Task"));
 const LPDashboard = lazy(
   () => import("@/pages/Dashboard/Compliance/LPDashboard"),
 );
@@ -34,7 +32,7 @@ const AppRoutes = () => {
             <Route index element={<DashBoard />} />
             <Route path="documents" element={<Docoments />} />
             <Route path="activity-log" element={<ActivityLog />} />
-            <Route path="task" element={<TaskDashboard />} />
+            <Route path="task" element={<TaskPage />} />
           </Route>
           <Route
             element={

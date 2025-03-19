@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/chart";
 import { Pie, PieChart, Cell, Label } from "recharts";
 
-export default function TaskOverviewChart({ title, description, data, config }) {
-  const totalTasks = data?.reduce((sum, task) => sum + task.value, 0) || 0;
+export default function TaskOverviewChart({ title, description, data, config , total }) {
+  const totalTasks = total || data?.reduce((sum, task) => sum + task.value, 0) || 0;
   
   const isAllZero = data?.every(item => item.value === 0) || false;
   

@@ -1,6 +1,7 @@
 import BadgeStatusTask from "@/components/includes/badge-status";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetClose,
@@ -28,49 +29,22 @@ const taskDataOrder = [
   { key: "mobile_no", label: "Phone" },
   { key: "email", label: "Email" },
   { key: "pan", label: "PAN Number" },
-  { key: "status", label: "Status" },
-  { key: "address", label: "Address" },
-  { key: "geography", label: "Geography" },
-  { key: "citizenship", label: "Citizenship" },
-  { key: "type", label: "Type" },
-  { key: "class_of_shares", label: "Class of Shares" },
-  { key: "commitment_amount", label: "Commitment Amount" },
   { key: "nominee", label: "Nominee" },
+  // { key : "doi", label: "Date of Agreement" },
+  { key: "commitment_amount", label: "Commitment Amount" },
+  { key: "acknowledgement_of_ppm", label: "Acknowledgement of PPM" },
+  { key: "depository", label: "Depository" },
+  { key: "dpid", label: "DPID" },
+  { key: "client_id", label: "Client ID" },
+  { key: "class_of_shares", label: "Class of Shares" },
+  { key: "isin", label: "ISIN" },
+  { key: "type", label: "Type" },
+  { key: "citizenship", label: "Citizenship" },
+  { key: "geography", label: "Geography" },
 ];
 
-export const LPData = {
-  name: "Warren Buffet",
-  email: "test@test.com",
-  status: "Waiting for KYC",
-  gender: "male",
-  dob: "2025-02-28",
-  phone: "1234567890",
-  address: "123, xyz street, abc city, 123456",
-  panNumber: "ABCDE1234F",
-  attachements: [
-    {
-      name: "example1.pdf",
-      size: "2MB",
-      type: "application/pdf",
-      link: "#",
-    },
-    {
-      name: "example1.pdf",
-      size: "2MB",
-      type: "application/pdf",
-      link: "#",
-    },
-    {
-      name: "example2.pdf",
-      size: "2MB",
-      type: "application/pdf",
-      link: "#",
-    },
-  ],
-};
-
-export default function SheetLP({
-  data = LPData,
+export default function SheetLPViewFM({
+  data = {},
   isOpen = true,
   onClose = () => {},
 }) {
@@ -172,13 +146,22 @@ export default function SheetLP({
             </td>
           </tr>
         );
+      case "acknowledgement_of_ppm":
+        return (
+          <tr key={key} className="">
+            <td className="mb-4 flex items-center gap-2 text-gray-500">
+              {label}:
+            </td>
+            <td className="pb-4">{value ? "Yes" : "No"}</td>
+          </tr>
+        );
       default:
         return (
           <tr key={key} className="">
             <td className="mb-4 flex items-center gap-2 text-gray-500">
               {label}:
             </td>
-            <td className="max-w-1/2 pb-4">{value}</td>
+            <td className="max-w-1/2 pb-4 capitalize">{value}</td>
           </tr>
         );
     }
@@ -193,14 +176,15 @@ export default function SheetLP({
           <BadgeStatusTask type="sucess" text="Pending" className={"mt-2"} />
         </SheetHeader>
         <hr className="mx-auto w-11/12" />
-
-        <table className="mx-auto w-11/12 text-sm">
-          <tbody className="">
-            {taskDataOrder.map(({ key, label }) =>
-              renderCell(key, label, data),
-            )}
-          </tbody>
-        </table>
+        <ScrollArea className="overflow-y-auto pb-4">
+          <table className="mx-auto w-11/12 text-sm">
+            <tbody className="">
+              {taskDataOrder.map(({ key, label }) =>
+                renderCell(key, label, data),
+              )}
+            </tbody>
+          </table>
+        </ScrollArea>
       </SheetContent>
     </Sheet>
   );

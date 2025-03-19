@@ -1,6 +1,6 @@
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
-import SheetLP from "@/components/Dashboard/includes/sheet-lp";
-import ViewList from "@/components/Dashboard/view-list-lp";
+import SheetLPViewFM from "@/components/Dashboard/sheet/sheet-lp-view-fm";
+import TableLPViewFM from "@/components/Dashboard/tables/table-lp-view-fm";
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
 import queryClient from "@/query/queryClient";
@@ -10,36 +10,35 @@ import { apiWithAuth } from "@/utils/api";
 import fileUpload from "@/utils/file-upload";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-export default function LPDashboard() {
-  // Complete defaultValues that align exactly with your schema
-  const defaultValues = {
-    lp_name: "",
-    gender: undefined, // enum fields can be undefined initially
-    dob: null,
-    mobile_no: "",
-    email: "",
-    pan: "",
-    address: "",
-    nominee: "",
-    commitment_amount: "",
-    acknowledgement_of_ppm: undefined,
-    cml: [],
-    depository: undefined,
-    dpid: "",
-    client_id: "",
-    class_of_shares: undefined,
-    isin: "",
-    type: undefined,
-    citizenship: undefined,
-    geography: "",
-    emaildrawdowns: "",
-    documents: [], // Not in schema but used in your component
-  };
+const defaultValues = {
+  lp_name: "",
+  gender: undefined,
+  dob: null,
+  mobile_no: "",
+  email: "",
+  pan: "",
+  address: "",
+  nominee: "",
+  commitment_amount: "",
+  acknowledgement_of_ppm: undefined,
+  cml: [],
+  depository: undefined,
+  dpid: "",
+  client_id: "",
+  class_of_shares: undefined,
+  isin: "",
+  type: undefined,
+  citizenship: undefined,
+  geography: "",
+  emaildrawdowns: "",
+  documents: [],
+};
 
+export default function LPDashboard() {
   const [sheetTask, setSheetTask] = useState({
     isOpen: false,
     data: null,
@@ -48,16 +47,15 @@ export default function LPDashboard() {
   const [dialogTask, setDialogTask] = useState({
     isOpen: false,
     variant: "",
-    defaultValues: defaultValues
+    defaultValues: defaultValues,
   });
 
   const form = useForm({
     resolver: zodResolver(lpSchema),
     defaultValues: defaultValues,
-    mode: "onChange" // Validate on change for better user experience
+    mode: "onChange",
   });
 
-  // Reset form when dialog closes to prevent stale values
   useEffect(() => {
     if (!dialogTask.isOpen) {
       form.reset(defaultValues);
@@ -67,33 +65,36 @@ export default function LPDashboard() {
   const handleDialogTaskOpen = useCallback(
     (variant) => {
       if (variant === "create") {
-        // Reset form before opening to ensure clean state
         form.reset(defaultValues);
-        setDialogTask({ isOpen: true, variant: "create", defaultValues: defaultValues });
+        setDialogTask({
+          isOpen: true,
+          variant: "create",
+          defaultValues: defaultValues,
+        });
       } else {
-        // For edit functionality
         // setDialogTask({ isOpen: true, variant: "edit", defaultValues: {} });
       }
     },
-    [defaultValues, form],
+    [form],
   );
 
   const handleDialogTaskClose = useCallback(() => {
-    // Reset form when closing dialog
     form.reset(defaultValues);
     setDialogTask((prev) => ({ ...prev, isOpen: false }));
-  }, [form, defaultValues]);
+  }, [form]);
 
   const onSubmit = useCallback(
     async (data) => {
       const { cml, documents, dob, ...rest } = data;
+
+      console.log("Documents", documents);
+
       const body = {
         ...rest,
         dob: dob ? dob.toISOString().split("T")[0] : null,
       };
 
       try {
-        // Check if cml exists and has at least one file
         if (!cml || !cml.length) {
           toast.error("Please upload the CML document");
           return;
@@ -108,7 +109,6 @@ export default function LPDashboard() {
         toast.success("Limited Partner Added Successfully");
         queryClient.invalidateQueries("lp-querry");
 
-        // Reset form with complete default values
         form.reset(defaultValues);
         handleDialogTaskClose();
       } catch (error) {
@@ -118,7 +118,7 @@ export default function LPDashboard() {
         });
       }
     },
-    [handleDialogTaskClose, form, defaultValues],
+    [handleDialogTaskClose, form],
   );
 
   return (
@@ -136,7 +136,9 @@ export default function LPDashboard() {
           </div>
         </div>
         <main className="mx-4 flex-1">
-          <ViewList openView={(data) => setSheetTask({ isOpen: true, data })} />
+          <TableLPViewFM
+            openView={(data) => setSheetTask({ isOpen: true, data })}
+          />
         </main>
       </Tabs>
       <DialogForm
@@ -152,7 +154,7 @@ export default function LPDashboard() {
         onClose={handleDialogTaskClose}
         variant={dialogTask.variant}
       />
-      <SheetLP
+      <SheetLPViewFM
         isOpen={sheetTask.isOpen}
         data={sheetTask.data}
         onClose={() => setSheetTask({ isOpen: false, data: null })}

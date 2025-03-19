@@ -8,8 +8,6 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-// import { z } from "zod";
-
 export default function DialogForm({
   title,
   description,
@@ -17,19 +15,19 @@ export default function DialogForm({
   isOpen,
   onClose,
   formFields,
-  variant,
   form,
   onSubmit,
   onFileChange,
+  hiddenFields = [],
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose} className="">
-      <DialogContent >
+      <DialogContent>
         <DialogHeader>
           {title && <DialogTitle>{title}</DialogTitle>}
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        <ScrollArea className={"max-h-[70vh] ps-2 pe-4"} tabIndex={0}>
+        <ScrollArea className={"max-h-[70vh] ps-2 pe-4"}>
           <FormGenerate
             className=""
             form={form}
@@ -37,6 +35,7 @@ export default function DialogForm({
             formFields={formFields}
             submitText={submitText}
             onFileChange={onFileChange}
+            hiddenFields={hiddenFields}
           ></FormGenerate>
         </ScrollArea>
       </DialogContent>

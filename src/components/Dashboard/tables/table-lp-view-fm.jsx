@@ -3,23 +3,20 @@ import { Button } from "@/components/ui/button";
 import { currencyFormatter } from "@/lib/formatter";
 import { useGetLP } from "@/query/lpQuerry";
 import {
-  ArrowUpDown
+  AlertTriangle,
+  ArrowUpDown,
+  Bell,
+  CheckCircle,
+  Clock,
+  FileBarChart,
+  FileQuestion,
+  FileSignature,
+  FileText,
+  Users,
 } from "lucide-react";
 import { useState } from "react";
 
-import { 
-  FileText, 
-  CheckCircle, 
-  Clock, 
-  AlertTriangle, 
-  FileSignature, 
-  Users, 
-  Bell, 
-  FileBarChart, 
-  FileQuestion
-} from "lucide-react";
-
-export default function ViewList({ openView = () => {} }) {
+export default function TableLPViewFM({ openView = () => {} }) {
   const taskColumn = [
     {
       accessorKey: "lp_name",

@@ -1,4 +1,4 @@
-import ViewListDocument from "@/components/Dashboard/view-list-docoments";
+import ViewListDocument from "@/components/Dashboard/tables/view-list-docoments";
 
 export default function ActivityLog() {
   return (

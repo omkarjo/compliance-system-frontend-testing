@@ -40,8 +40,7 @@ export const lpSchema = z.object({
     )
     .max(1, {
       message: "Maximum 5 files are allowed",
-    })
-    .nullable(),
+    }),
   depository: z.enum(["nsdl", "cdsl"]),
   dpid: z.string().min(1, "Dpid is required"),
   client_id: z.string().min(1, "Client ID is required"),

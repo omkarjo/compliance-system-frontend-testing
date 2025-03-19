@@ -1,4 +1,4 @@
-import ViewListActivity from "@/components/Dashboard/view-list-activity";
+import ViewListActivity from "@/components/Dashboard/tables/view-list-activity";
 
 export default function ActivityLog() {
   return (

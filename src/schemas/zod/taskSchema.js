@@ -16,7 +16,7 @@ export const taskSchema = z
     recurrence: z.preprocess(
       (val) => (val === "" || val === undefined ? undefined : val),
       z
-        .enum(["DAY", "WEEK", "MONTH", "YEAR"], {
+        .enum(["Weekly", "Monthly", "Quarterly", "Yearly"], {
           required_error: "Recurrence is required",
         })
         .optional(),
@@ -33,7 +33,7 @@ export const taskSchema = z
       .max(5, {
         message: "Maximum 5 files are allowed",
       })
-      .nullable(),
+      .optional(),
 
     assignee_id: z.string().nonempty("Assignee ID is required"),
     reviewer_id: z.string().nonempty("Reviewer ID is required"),

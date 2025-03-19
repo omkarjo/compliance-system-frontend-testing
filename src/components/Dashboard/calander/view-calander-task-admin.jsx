@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { getStatusStyle, getStatusIcon } from "@/lib/getStatusStyleIcon";
+import { getStatusIcon, getStatusStyle } from "@/lib/getStatusStyleIcon";
 import { cn } from "@/lib/utils";
 import { useGetTask } from "@/query/taskQuerry";
 import {
@@ -32,12 +32,11 @@ import {
   CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  TriangleAlert
+  TriangleAlert,
 } from "lucide-react";
 import * as React from "react";
-import TaskAccordion from "./includes/accordion-task";
-import TaskHoverCard from "./includes/card-hower-task";
-
+import TaskAccordion from "../includes/accordion-task";
+import TaskHoverCard from "../includes/card-hower-task";
 
 const colStartClasses = [
   "",
@@ -51,7 +50,7 @@ const colStartClasses = [
 
 const MAX_TASKS_PER_DAY = 3;
 
-export default function TaskCalendar() {
+export default function ViewCalendarTaskFM() {
   const today = startOfToday();
   const [selectedDay, setSelectedDay] = React.useState(today);
   const [currentMonth, setCurrentMonth] = React.useState(
@@ -311,7 +310,9 @@ export default function TaskCalendar() {
         </div>
       </div>
 
-      {isError && <ErrorDisplay refetch={refetch} error={error?.response?.data?.detail} />}
+      {isError && (
+        <ErrorDisplay refetch={refetch} error={error?.response?.data?.detail} />
+      )}
 
       {/* Calendar Grid */}
       {!isError && (
@@ -467,8 +468,17 @@ export default function TaskCalendar() {
                                 ),
                               )
                               .map((task, idx, arr) => {
-                                if (idx > MAX_TASKS_PER_DAY) return null;
-                                if (idx === MAX_TASKS_PER_DAY) {
+                                if (
+                                  viewMode === "month" &&
+                                  idx > MAX_TASKS_PER_DAY
+                                ) {
+                                  return null;
+                                }
+
+                                if (
+                                  viewMode === "month" &&
+                                  idx === MAX_TASKS_PER_DAY
+                                ) {
                                   return (
                                     <div
                                       key={task.compliance_task_id}
@@ -568,15 +578,14 @@ export default function TaskCalendar() {
                           ) : (
                             <>
                               {/* Task indicators with status colors */}
-                              <div className="mt-1 flex flex-wrap gap-0.5 justify-end">
+                              <div className="mt-1 flex flex-wrap justify-end gap-0.5">
                                 {dayTasks.map((task, idx) => {
                                   const { bgSecondaryColor } = getStatusStyle(
                                     task.state,
                                   );
-                                  
 
-                                  const randomDuration = Math.floor(Math.random() * 2) + 1;
-
+                                  const randomDuration =
+                                    Math.floor(Math.random() * 2) + 1;
 
                                   return (
                                     <motion.span
@@ -587,7 +596,6 @@ export default function TaskCalendar() {
                                         duration: randomDuration,
                                         repeat: Infinity,
                                         repeatType: "reverse",
-
                                       }}
                                       className={`${bgSecondaryColor} mx-0.5 mt-0.5 h-1.5 w-1.5 rounded-full`}
                                     />
@@ -621,7 +629,7 @@ export default function TaskCalendar() {
 }
 
 const ErrorDisplay = (refetch, errorMessage) => (
-  <div className="flex flex-col items-center justify-center rounded-lg bg-red-50 p-6 md:p-8 text-center">
+  <div className="flex flex-col items-center justify-center rounded-lg bg-red-50 p-6 text-center md:p-8">
     <AlertCircleIcon className="mb-2 h-10 w-10 text-red-500" />
     <h3 className="mb-2 text-lg font-medium">Error loading tasks</h3>
     <p className="mb-4 text-sm text-gray-500">

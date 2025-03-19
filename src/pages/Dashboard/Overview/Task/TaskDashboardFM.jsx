@@ -1,15 +1,11 @@
+import ViewCalanderTaskAdmin from "@/components/Dashboard/calander/view-calander-task-admin";
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
-import SheetTask from "@/components/Dashboard/includes/sheet-task";
-import ViewCalanderTaskAdmin from "@/components/Dashboard/view-calander-task-admin";
-import ViewListTaskAdmin from "@/components/Dashboard/view-list-task-admin";
+import SheetTaskViewFM from "@/components/Dashboard/sheet/sheet-task-view-fm";
+import TableTaskViewFM from "@/components/Dashboard/tables/table-task-view-fm";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import queryClient from "@/query/queryClient";
-import {
-  taskFormFieldsPart1,
-  taskFormFieldsPart2,
-  taskFormFieldsPart3,
-} from "@/schemas/form/taskSchema";
+import { taskFormFields } from "@/schemas/form/taskSchema";
 import { taskSchema } from "@/schemas/zod/taskSchema";
 import { apiWithAuth } from "@/utils/api";
 import fileUpload from "@/utils/file-upload";
@@ -19,7 +15,7 @@ import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-export default function TaskDashboard() {
+export default function TaskDashboardFundManager() {
   const DialogTaskVariant = {
     create: {
       title: "Create Task",
@@ -67,26 +63,42 @@ export default function TaskDashboard() {
   const handleDialogTaskOpen = useCallback(
     (variant, data, compliance_task_id) => {
       if (variant === "create") {
-        setDialogTask({
-          isOpen: true,
-          variant: "create",
-          defaultValues: {},
-          compliance_task_id: "",
-        });
         form.reset({
           description: "",
           category: "",
           completion_criteria: "",
           repeat: false,
+          recurrence: "",
           predecessor_task: "",
           attachements: [],
           assignee_id: "",
           reviewer_id: "",
           approver_id: "",
         });
-        form.setValue("repeat", false);
-        form.setValue("recurrence", "");
+
+        setDialogTask({
+          isOpen: true,
+          variant: "create",
+          defaultValues: {},
+          compliance_task_id: "",
+        });
       } else {
+        // For edit mode, use a single reset call with all values
+        const formValues = {
+          description: data.description,
+          category: data.category,
+          completion_criteria: data.completion_criteria,
+          repeat: data.recurrence != null,
+          recurrence: data.recurrence || "",
+          predecessor_task: data.predecessor_task,
+          assignee_id: data.assignee_id,
+          reviewer_id: data.reviewer_id,
+          approver_id: data.approver_id,
+          deadline: new Date(data.deadline),
+        };
+
+        form.reset(formValues);
+
         setDialogTask({
           isOpen: true,
           variant: "edit",
@@ -94,15 +106,6 @@ export default function TaskDashboard() {
           compliance_task_id,
         });
         setSheetTask({ isOpen: false, data: null });
-        form.reset(data);
-        form.setValue("deadline", new Date(data.deadline));
-        if (data.recurrence) {
-          form.setValue("repeat", true);
-          form.setValue("recurrence", data.recurrence);
-        } else {
-          form.setValue("repeat", false);
-          form.setValue("recurrence", "");
-        }
       }
     },
     [form],
@@ -131,7 +134,7 @@ export default function TaskDashboard() {
       title: "List",
       value: "list",
       childern: (
-        <ViewListTaskAdmin
+        <TableTaskViewFM
           actionType={actionType}
           openView={(data) => {
             setSheetTask({ isOpen: true, data });
@@ -302,16 +305,13 @@ export default function TaskDashboard() {
         submitText={DialogTaskVariant[dialogTask.variant]?.submit}
         form={form}
         onSubmit={form.handleSubmit((data) => onSubmit(data))}
-        formFields={[
-          ...taskFormFieldsPart1,
-          ...(form.watch("repeat") ? taskFormFieldsPart2 : []),
-          ...taskFormFieldsPart3,
-        ]}
+        formFields={taskFormFields}
         isOpen={dialogTask.isOpen}
         onClose={handleDialogTaskClose}
         variant={dialogTask.variant}
+        hiddenFields={form.watch("repeat") ? [] : ["recurrence"]}
       />
-      <SheetTask
+      <SheetTaskViewFM
         data={sheetTask.data}
         isOpen={sheetTask.isOpen}
         openEdit={(data) =>

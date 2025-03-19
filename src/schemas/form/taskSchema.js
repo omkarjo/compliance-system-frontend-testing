@@ -1,4 +1,4 @@
-export const taskFormFieldsPart1 = [
+export const taskFormFields = [
   {
     name: "description",
     label: "Title",
@@ -52,9 +52,6 @@ export const taskFormFieldsPart1 = [
     type: "checkbox",
     required: false,
   },
-];
-
-export const taskFormFieldsPart2 = [
   {
     name: "recurrence",
     label: "Frequency",
@@ -68,9 +65,6 @@ export const taskFormFieldsPart2 = [
       { label: "Yearly", value: "Yearly" },
     ],
   },
-];
-
-export const taskFormFieldsPart3 = [
   {
     name: "predecessor_task",
     label: "Predecessor Task",

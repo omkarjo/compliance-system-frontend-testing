@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useGetTask } from "@/query/taskQuerry";
-import { useGetUserbyName } from "@/query/userQuerry";
 import {
   ArrowUpDown,
   Calendar,
@@ -19,22 +18,10 @@ import {
   TriangleAlert,
   Watch,
 } from "lucide-react";
-import { useMemo, useState } from "react";
-import BadgeStatusTask from "../includes/badge-status";
+import { useState } from "react";
+import BadgeStatusTask from "../../includes/badge-status";
 
-export default function ViewListTaskAdmin({ actionType, openView = () => {} }) {
-  const { data: usersData } = useGetUserbyName({
-    searchTerm: "",
-  });
-
-  const users = useMemo(() => {
-    if (!usersData) return [];
-    return usersData?.map((user) => ({
-      id: user.UserId,
-      label: user.UserName,
-      icon: <CircleUserRound size={16} />,
-    }));
-  }, [usersData]);
+export default function TableTaskViewFM({ actionType, openView = () => {} }) {
 
   const taskColumn = [
     {
@@ -170,12 +157,9 @@ export default function ViewListTaskAdmin({ actionType, openView = () => {} }) {
       ],
     },
     {
-      type: "component",
+      type: "user_select",
       id: "assignee_id",
       name: "Assignee",
-      icon: <CircleUserRound />,
-      relation: ["equals"],
-      options: users,
     },
     {
       type: "date_range",

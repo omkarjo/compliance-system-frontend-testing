@@ -10,15 +10,11 @@ const overviewStatsValues = [
 
 // Chart configuration object
 const chartConfig = {
-  tooltip: {
-    content: {
-      hideLabel: true
-    }
-  },
-  colors: {
-    Overdue: "#FF4D4F",
-    Completed: "#52C41A",
-  },
+  // tooltip: {
+  //   content: {
+  //     hideLabel: true
+  //   }
+  // },
 };
 
 export default function DashBoard() {
@@ -32,6 +28,7 @@ export default function DashBoard() {
   // Create taskData from API response if available, otherwise use fallback
   const taskData = overviewStats ? [
     { name: "Overdue", value: overviewStats.overdue_tasks || 0, fill: "#FF4D4F" },
+    { name: "Required Review", value: (overviewStats.total_tasks - overviewStats.completed_tasks - overviewStats.overdue_tasks) || 0, fill: "#FFA940" },
     { name: "Completed", value: overviewStats.completed_tasks || 0, fill: "#52C41A" },
   ] : [
     { name: "Overdue", value: 20, fill: "#FF4D4F" },
@@ -58,6 +55,7 @@ export default function DashBoard() {
             description="Task completion status" 
             data={taskData}
             config={chartConfig}
+            total={overviewStats.total_tasks}
           />
         </div>
       </main>

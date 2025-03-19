@@ -13,10 +13,35 @@ import {
   FileSignature,
   FileText,
   Users,
+  DownloadIcon,
+  ViewIcon,
+  MoreHorizontal
 } from "lucide-react";
 import { useState } from "react";
+import { cloneElement} from "react";
 
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 export default function ViewListDocument() {
+  const actionType = [
+    {
+      title: "View",
+      className: "",
+      icon : <ViewIcon />
+    },
+    {
+      title: "Download",
+      className: "",
+      icon : <DownloadIcon />
+    },
+  ];
+
   const column = [
     {
       accessorKey: "category",
@@ -25,6 +50,11 @@ export default function ViewListDocument() {
     {
       accessorKey: "name",
       header: "Name",
+      cell: ({ row }) => (
+        <div className="max-w-42 truncate text-left md:max-w-52 lg:max-w-64">
+          {row.getValue("name")}
+        </div>
+      ),
     },
 
     {
@@ -69,6 +99,53 @@ export default function ViewListDocument() {
               <div className="text-xs text-gray-500">Invalid Date</div>
             )}
           </div>
+        );
+      },
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: () => {
+        // const data = row.original;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+          variant="ghost"
+          className="h-8 w-8 p-0"
+          onClick={(e) => e.stopPropagation()}
+              >
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {actionType?.map((action, index) => (
+          <DropdownMenuItem
+            key={index}
+            className={cn(
+              "text-sm",
+              action?.className)}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <div className="flex items-center">
+              {
+                cloneElement(action.icon, {
+                  className: "w-5 h-5"
+                })
+
+              }
+              <span className="ms-2">{action.title}</span>
+            </div>
+          </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     },
