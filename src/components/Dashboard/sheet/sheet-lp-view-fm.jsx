@@ -33,6 +33,7 @@ const taskDataOrder = [
   // { key : "doi", label: "Date of Agreement" },
   { key: "commitment_amount", label: "Commitment Amount" },
   { key: "acknowledgement_of_ppm", label: "Acknowledgement of PPM" },
+  { key: "doi", label: "Date of Incorporation" },
   { key: "depository", label: "Depository" },
   { key: "dpid", label: "DPID" },
   { key: "client_id", label: "Client ID" },

@@ -154,8 +154,9 @@ export default function TaskDashboardFundManager() {
 
   const createTask = useCallback(async (data) => {
     try {
-      await apiWithAuth.post("/api/tasks/", data);
+      const response =  await apiWithAuth.post("/api/tasks/", data);
       toast.success("Task created successfully");
+      return response;
     } catch (error) {
       toast.error("Failed to create task", {
         description: error?.response?.data?.message || "An error occured",
@@ -166,11 +167,12 @@ export default function TaskDashboardFundManager() {
   const editTask = useCallback(
     async (data) => {
       try {
-        await apiWithAuth.patch(
+        const response = await apiWithAuth.patch(
           `/api/tasks/${dialogTask.compliance_task_id}`,
           data,
         );
         toast.success("Task updated successfully");
+        return response;
       } catch (error) {
         toast.error("Failed to update task", {
           description: error?.response?.data?.message || "An error occured",
@@ -182,28 +184,34 @@ export default function TaskDashboardFundManager() {
 
   const onSubmit = useCallback(
     async (data) => {
-      let { attachments, repeat, ...rest } = data;
+      let { attachments, repeat, document_type, ...rest } = data;
       let compliance_task_id = dialogTask.compliance_task_id || null;
-      const category = rest.category;
       if (!repeat) {
         rest.recurrence = undefined;
       }
 
-      console.log("rest", data);
-
+      
       try {
         if (dialogTask.variant === "create") {
-          await createTask(rest);
+          const response = await createTask(rest);
+          console.log("response", response);
+          compliance_task_id = response.data.compliance_task_id;
+          console.log("compliance_task_id", compliance_task_id);
+          if (!compliance_task_id) {
+            toast.error("Failed to create task", {
+              description: "Unable to get task id",
+            });
+            return;
+          }
+          console.log("data", data);
         } else {
           await editTask(rest);
         }
 
-        console.log("attachements", attachments);
-
         if (attachments?.length) {
           try {
             const promises = attachments.map((file) =>
-              fileUpload(file, category),
+              fileUpload(file, document_type),
             );
             const uploadResponse = await Promise.all(promises);
             const document_ids = uploadResponse.map(

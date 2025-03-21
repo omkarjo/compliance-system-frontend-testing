@@ -12,10 +12,8 @@ export default function TaskPage() {
     switch (role) {
       case "Fund Manager":
         return <TaskDashboardFundManager />;
-    case "LP":
-        return <TaskDashboardLimitedPartner />;
       default:
-        return <Navigate to="/dashboard" />;
+        return <TaskDashboardLimitedPartner />;
     }
   }, []);
 

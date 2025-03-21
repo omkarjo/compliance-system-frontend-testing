@@ -73,7 +73,7 @@ const FormGenerate = ({
 }) => {
   const { isSubmitting } = useFormState({ control: form?.control });
 
-  console.log("formFields", form.getValues());
+  // console.log("formFields", form.getValues());
 
   const genrateField = useCallback(
     (field, formField, index) => {

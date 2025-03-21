@@ -9,6 +9,21 @@ export const taskSchema = z
         required_error: "Category is required",
       }),
     ),
+    document_type: z.preprocess(
+      (val) => (val === "" ? undefined : val),
+      z.enum(
+        [
+          "Contribution Agreement",
+          "KYC",
+          "Notification",
+          "Report",
+          "Others",
+        ],
+        {
+          required_error: "Document Category is required",
+        },
+      ),
+    ),
     deadline: z.date(),
 
     repeat: z.boolean().default(false),

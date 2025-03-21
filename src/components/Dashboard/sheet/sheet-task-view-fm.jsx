@@ -28,7 +28,6 @@ const taskDataOrder = [
   "updated_at",
 ];
 
-
 export default function SheetTaskViewFM({
   data = {},
   isOpen = true,

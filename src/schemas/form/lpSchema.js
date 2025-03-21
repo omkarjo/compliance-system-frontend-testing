@@ -150,16 +150,23 @@ export const lpFromFields = [
     },
   },
   {
-    name: "depository", // Not sure about this field
-    label: "Depository",
-    type: "select",
+    name: "doi",
+    label: "Date of Incorporation",
+    type: "date",
     placeholder: "",
     required: true,
-    options: [
-      { label: "NSDL", value: "nsdl" },
-      { label: "CDSL", value: "cdsl" },
-    ],
   },
+  // {
+  //   name: "depository", // Not sure about this field
+  //   label: "Depository",
+  //   type: "select",
+  //   placeholder: "",
+  //   required: true,
+  //   options: [
+  //     { label: "NSDL", value: "nsdl" },
+  //     { label: "CDSL", value: "cdsl" },
+  //   ],
+  // },
   {
     name: "dpid",
     label: "Dpid",

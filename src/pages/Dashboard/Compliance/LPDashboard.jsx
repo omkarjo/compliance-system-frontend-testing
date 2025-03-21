@@ -26,7 +26,8 @@ const defaultValues = {
   commitment_amount: "",
   acknowledgement_of_ppm: undefined,
   cml: [],
-  depository: undefined,
+  doi: null,
+  // depository: undefined,
   dpid: "",
   client_id: "",
   class_of_shares: undefined,
@@ -85,12 +86,13 @@ export default function LPDashboard() {
 
   const onSubmit = useCallback(
     async (data) => {
-      const { cml, documents, dob, ...rest } = data;
+      const { cml, documents, dob, doi, ...rest } = data;
 
       console.log("Documents", documents);
 
       const body = {
         ...rest,
+        doi: doi ? doi.toISOString().split("T")[0] : null,
         dob: dob ? dob.toISOString().split("T")[0] : null,
       };
 

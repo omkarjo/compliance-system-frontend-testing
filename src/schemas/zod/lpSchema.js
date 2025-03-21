@@ -41,7 +41,8 @@ export const lpSchema = z.object({
     .max(1, {
       message: "Maximum 5 files are allowed",
     }),
-  depository: z.enum(["nsdl", "cdsl"]),
+  doi : z.date(),
+  // depository: z.enum(["nsdl", "cdsl"]),
   dpid: z.string().min(1, "Dpid is required"),
   client_id: z.string().min(1, "Client ID is required"),
   class_of_shares: z.enum(["INF1C8N22014", "INF1C8N22022"]),
