@@ -32,256 +32,280 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import {
-  Calendar as CalendarIcon,
-  FormInput,
-  Paperclip,
-  Upload,
-} from "lucide-react";
-import { useCallback } from "react";
+import { Calendar as CalendarIcon, Paperclip, Upload } from "lucide-react";
+import { memo, useMemo } from "react";
 import { useFormState } from "react-hook-form";
 import { CountryDropdown } from "../extension/country-dropdown";
 import { PhoneInput } from "../extension/phone-input";
+import { TagsInput, tagsInputFieldGenerator } from "./tags-input";
 import UserSelect from "./user-select";
 
-const FileSvgDraw = ({ allowedTypes }) => {
-  return (
-    <>
-      <Upload size={36} className="mb-2" />
-      <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-        <span className="font-semibold">Click to upload</span>
-        &nbsp; or drag and drop
+const FileSvgDraw = memo(({ allowedTypes }) => (
+  <>
+    <Upload size={36} className="mb-2" />
+    <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+      <span className="font-semibold">Click to upload</span>
+      &nbsp; or drag and drop
+    </p>
+    {allowedTypes?.length > 0 && (
+      <p className="text-xs text-gray-500 dark:text-gray-400">
+        Allowed file types: {allowedTypes.join(", ")}
       </p>
-      {allowedTypes && allowedTypes.length > 0 && (
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          Allowed file types: {allowedTypes?.join(", ")}
-        </p>
-      )}
-    </>
-  );
-};
+    )}
+  </>
+));
+
+FileSvgDraw.displayName = "FileSvgDraw";
+
+const HeadingField = memo(({ label, className }) => (
+  <h1 className={cn("mb-1 text-lg", className)}>{label}</h1>
+));
+
+HeadingField.displayName = "HeadingField";
+
+const SubheadingField = memo(({ label, className }) => (
+  <h2 className={cn("text-sm", className)}>{label}</h2>
+));
+
+SubheadingField.displayName = "SubheadingField";
 
 const FormGenerate = ({
   form,
   formFields,
-  submitText,
+  submitText = "Submit",
   onFileChange,
   onSubmit,
-  childern,
+  children,
   className,
   hiddenFields = [],
 }) => {
   const { isSubmitting } = useFormState({ control: form?.control });
 
-  // console.log("formFields", form.getValues());
+  const generateField = useMemo(() => {
+    const fieldGenerators = {
+      text: (field, formField) => (
+        <Input
+          className={formField?.className}
+          placeholder={formField?.placeholder || ""}
+          disabled={isSubmitting}
+          {...field}
+        />
+      ),
 
-  const genrateField = useCallback(
-    (field, formField, index) => {
-      switch (formField.type) {
-        case "text":
-          return (
-            <Input
-              key={index}
-              className={formField?.className}
-              placeholder={formField?.placeholder || ""}
-              {...field}
-            />
-          );
-        case "textarea":
-          return (
-            <Textarea
-              key={index}
-              placeholder={formField?.placeholder || ""}
-              {...field}
-            />
-          );
-        case "email":
-          return (
-            <Input
-              key={index}
-              type={"email"}
-              className={formField?.className}
-              placeholder={formField?.placeholder || ""}
-              {...field}
-            />
-          );
-        case "number":
-          return (
-            <Input
-              key={index}
-              type="number"
-              placeholder={formField?.placeholder || ""}
-              min={formField?.min}
-              max={formField?.max}
-              className={cn("no-spinner")}
-              onKeyDown={(e) => {
-                if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-                  e.preventDefault(); // Prevent value change with arrows
-                }
-              }}
-              {...field}
-            />
-          );
-        case "select":
-          return (
-            <Select
-              onValueChange={field.onChange}
-              defaultValue={field.value}
-              key={index}
-            >
-              <SelectTrigger className={cn("w-full")}>
-                <SelectValue placeholder={formField?.placeholder || ""} />
-              </SelectTrigger>
-              <SelectContent className="w-full">
-                {formField.options?.map((option, i) => {
-                  return (
-                    <SelectItem key={i} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          );
-        case "date":
-          return (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !field.value && "text-muted-foreground",
-                  )}
-                >
-                  <CalendarIcon />
-                  {field.value ? (
-                    format(field.value, "PPP")
-                  ) : (
-                    <span>Pick a date</span>
-                  )}{" "}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={field.value}
-                  onSelect={field.onChange}
-                  initialFocus
-                  disabled={(date) => {
-                    const today = new Date();
-                    if (formField?.pastDisable) {
-                      return date < today;
-                    }
-                    if (formField?.futureDisable) {
-                      return date > today;
-                    }
-                  }}
-                />
-              </PopoverContent>
-            </Popover>
-          );
-        case "file":
-          return (
-            <FileUploader
-              value={field.value}
-              onValueChange={(files) => {
-                if (typeof onFileChange === "function") {
-                  onFileChange(files, field.onChange);
-                } else {
-                  field.onChange(files);
-                }
-              }}
-              dropzoneOptions={formField?.dropZoneConfig}
-              reSelect={true}
-              className={cn("bg-background relative rounded-lg p-2")}
-            >
-              <FileInput className="outline-1 outline-gray-400 outline-dashed">
-                <div className="flex w-full flex-col items-center justify-center pt-3 pb-4">
-                  <FileSvgDraw
-                    allowedTypes={Object.values(
-                      formField?.dropZoneConfig?.accept,
-                    )}
-                  />
-                </div>
-              </FileInput>
-              {field.value && field.value.length > 0 && (
-                <FileUploaderContent>
-                  {field.value.map((file, i) => (
-                    <FileUploaderItem key={i} index={i}>
-                      <Paperclip className="h-4 w-4 stroke-current" />
-                      <span>{file.name}</span>
-                    </FileUploaderItem>
-                  ))}
-                </FileUploaderContent>
+      textarea: (field, formField) => (
+        <Textarea
+          placeholder={formField?.placeholder || ""}
+          disabled={isSubmitting}
+          {...field}
+        />
+      ),
+
+      email: (field, formField) => (
+        <Input
+          type="email"
+          className={formField?.className}
+          placeholder={formField?.placeholder || ""}
+          disabled={isSubmitting}
+          {...field}
+        />
+      ),
+
+      number: (field, formField) => (
+        <Input
+          type="number"
+          placeholder={formField?.placeholder || ""}
+          min={formField?.min}
+          max={formField?.max}
+          className={cn("no-spinner")}
+          disabled={isSubmitting}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+              e.preventDefault();
+            }
+          }}
+          {...field}
+        />
+      ),
+
+      select: (field, formField) => (
+        <Select
+          onValueChange={field.onChange}
+          defaultValue={field.value}
+          disabled={isSubmitting}
+        >
+          <SelectTrigger className="w-full" disabled={isSubmitting}>
+            <SelectValue placeholder={formField?.placeholder || ""} />
+          </SelectTrigger>
+          <SelectContent className="w-full">
+            {formField.options?.map((option, i) => (
+              <SelectItem key={i} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ),
+
+      date: (field, formField) => (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-full justify-start text-left font-normal",
+                !field.value && "text-muted-foreground",
               )}
-            </FileUploader>
-          );
-        case "checkbox":
-          return (
-            <div className={cn("flex items-center gap-1")}>
-              <Checkbox
-                checked={field.value || false}
-                onCheckedChange={(checked) => {
-                  field.onChange(checked);
-                }}
-              />
-              <div className="space-y-1 leading-none">
-                {formField.placeholder}
-              </div>
-            </div>
-          );
-        case "phone":
-          return (
-            <PhoneInput {...field} defaultCountry="IN" autoComplete="tel" />
-          );
-        case "country_select":
-          return (
-            <CountryDropdown
-              placeholder="Country"
-              defaultValue={field.value}
-              onChange={(country) => {
-                field.onChange(country.alpha3);
+              disabled={isSubmitting}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {field.value ? (
+                format(field.value, "PPP")
+              ) : (
+                <span>Pick a date</span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0">
+            <Calendar
+              mode="single"
+              selected={field.value}
+              onSelect={field.onChange}
+              initialFocus
+              disabled={(date) => {
+                const today = new Date();
+                if (formField?.pastDisable) return date < today;
+                if (formField?.futureDisable) return date > today;
+                return isSubmitting || false;
               }}
             />
-          );
-        case "user_select":
-          return (
-            <UserSelect
-              onValueChange={field.onChange}
-              defaultValue={field.value}
-              key={index}
-            />
-          );
-        default:
-          return null;
-      }
-    },
-    [onFileChange],
-  );
+          </PopoverContent>
+        </Popover>
+      ),
+
+      file: (field, formField) => (
+        <FileUploader
+          value={field.value}
+          onValueChange={(files) => {
+            if (typeof onFileChange === "function") {
+              onFileChange(files, field.onChange);
+            } else {
+              field.onChange(files);
+            }
+          }}
+          dropzoneOptions={{
+            ...formField?.dropZoneConfig,
+            disabled: isSubmitting,
+          }}
+          reSelect={!isSubmitting}
+          className={cn("bg-background relative rounded-lg p-2")}
+        >
+          <FileInput className="outline-1 outline-gray-400 outline-dashed">
+            <div className="flex w-full flex-col items-center justify-center pt-3 pb-4">
+              <FileSvgDraw
+                allowedTypes={Object.values(
+                  formField?.dropZoneConfig?.accept || {},
+                )}
+              />
+            </div>
+          </FileInput>
+          {field.value?.length > 0 && (
+            <FileUploaderContent>
+              {field.value.map((file, i) => (
+                <FileUploaderItem key={i} index={i} disabled={isSubmitting}>
+                  <Paperclip className="h-4 w-4 stroke-current" />
+                  <span>{file.name}</span>
+                </FileUploaderItem>
+              ))}
+            </FileUploaderContent>
+          )}
+        </FileUploader>
+      ),
+
+      checkbox: (field, formField) => (
+        <div className="flex items-center gap-1">
+          <Checkbox
+            checked={field.value || false}
+            onCheckedChange={field.onChange}
+            disabled={isSubmitting}
+          />
+          <div className="space-y-1 leading-none">{formField.placeholder}</div>
+        </div>
+      ),
+
+      phone: (field) => (
+        <PhoneInput
+          {...field}
+          defaultCountry="IN"
+          autoComplete="tel"
+          disabled={isSubmitting}
+        />
+      ),
+
+      country_select: (field) => (
+        <CountryDropdown
+          placeholder="Country"
+          defaultValue={field.value}
+          onChange={(country) => {
+            field.onChange(country.alpha3);
+          }}
+          disabled={isSubmitting}
+        />
+      ),
+
+      user_select: (field) => (
+        <UserSelect
+          onValueChange={field.onChange}
+          defaultValue={field.value}
+          disabled={isSubmitting}
+        />
+      ),
+
+      tags_input: (field, formField) => (
+        <TagsInput
+          value={field.value || []}
+          onChange={field.onChange}
+          placeholder={formField?.placeholder || "Add item..."}
+          separators={formField?.separators || [",", " ", ";", "Enter"]}
+          maxTags={formField?.maxTags}
+          minTags={formField?.minTags}
+          validateTag={formField?.validateTag}
+          disabled={isSubmitting}
+          className={formField?.inputClassName}
+        />
+      ),
+    };
+
+    return (field, formField) => {
+      const generator = fieldGenerators[formField.type];
+      return generator ? generator(field, formField) : null;
+    };
+  }, [isSubmitting, onFileChange]);
 
   return (
     <Form {...form}>
       <form onSubmit={onSubmit} className={cn("relative space-y-4", className)}>
         {formFields.map((formField, index) => {
-          if (formField?.type == "hr") {
+          if (formField?.type === "hr") {
             return <hr key={index} className={cn(formField?.className)} />;
           }
-          if (formField?.type == "heading") {
+
+          if (formField?.type === "heading") {
             return (
-              <h1
+              <HeadingField
                 key={index}
-                className={cn("mb-1 text-lg", formField?.className)}
-              >
-                {formField.label}
-              </h1>
+                label={formField.label}
+                className={formField?.className}
+              />
             );
           }
-          if (formField?.type == "subheading") {
+
+          if (formField?.type === "subheading") {
             return (
-              <h2 key={index} className={cn("text-sm", formField?.className)}>
-                {formField.label}
-              </h2>
+              <SubheadingField
+                key={index}
+                label={formField.label}
+                className={formField?.className}
+              />
             );
           }
 
@@ -298,27 +322,23 @@ const FormGenerate = ({
                 >
                   {formField?.label && (
                     <FormLabel>
-                      <span>
-                        {formField.label}
-                        {formField.required && (
-                          <span className="text-red-500">*</span>
-                        )}
-                      </span>
+                      {formField.label}
+                      {formField.required && (
+                        <span className="text-red-500">*</span>
+                      )}
                     </FormLabel>
                   )}
                   {formField?.description && (
                     <FormDescription>{formField.description}</FormDescription>
                   )}
-                  <FormControl>
-                    {genrateField(field, formField, index)}
-                  </FormControl>
+                  <FormControl>{generateField(field, formField)}</FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           );
         })}
-        {childern}
+        {children}
         <Button
           type="submit"
           disabled={isSubmitting}
@@ -331,4 +351,4 @@ const FormGenerate = ({
   );
 };
 
-export default FormGenerate;
+export default memo(FormGenerate);

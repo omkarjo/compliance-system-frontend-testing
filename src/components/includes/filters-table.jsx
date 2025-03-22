@@ -24,26 +24,22 @@ import { ListFilter, User, X } from "lucide-react";
 import { motion } from "motion/react";
 import { nanoid } from "nanoid";
 import * as React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import UserSelect from "./user-select";
 
 const AnimateChangeInHeight = ({ children, className }) => {
   const containerRef = useRef(null);
   const [height, setHeight] = useState("auto");
 
-  React.useEffect(() => {
-    if (containerRef.current) {
-      const resizeObserver = new ResizeObserver((entries) => {
-        const observedHeight = entries[0].contentRect.height;
-        setHeight(observedHeight);
-      });
+  useEffect(() => {
+    if (!containerRef.current) return;
+    
+    const resizeObserver = new ResizeObserver((entries) => {
+      setHeight(entries[0].contentRect.height);
+    });
 
-      resizeObserver.observe(containerRef.current);
-
-      return () => {
-        resizeObserver.disconnect();
-      };
-    }
+    resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
   }, []);
 
   return (
@@ -69,26 +65,26 @@ const FilterComponent = ({
   const commandInputRef = useRef(null);
   const [filters, setFilters] = useState([]);
   const [selectedRelation, setSelectedRelation] = useState({});
-  const [dateRange, setDateRange] = useState(null); 
+  const [dateRange, setDateRange] = useState(null);
 
   const handleFilterSelect = useCallback(
     (filterId) => {
       const filter = filterOptions.find((opt) => opt.id === filterId);
-      if (filter) {
-        setSelectedFilter(filter);
+      if (!filter) return;
+      
+      setSelectedFilter(filter);
 
-        if (filter.type === "date_range" || filter.type === "user_select") {
-          setOpen(true); // Ensure popover opens
-        } else {
-          if (filter.relation && filter.relation.length > 0) {
-            setSelectedRelation((prev) => ({
-              ...prev,
-              [filterId]: filter.relation[0],
-            }));
-          }
-          setCommandInput("");
-          commandInputRef.current?.focus();
+      if (filter.type === "date_range" || filter.type === "user_select") {
+        setOpen(true);
+      } else {
+        if (filter.relation?.length > 0) {
+          setSelectedRelation((prev) => ({
+            ...prev,
+            [filterId]: filter.relation[0],
+          }));
         }
+        setCommandInput("");
+        commandInputRef.current?.focus();
       }
     },
     [filterOptions],
@@ -103,147 +99,148 @@ const FilterComponent = ({
     }
   }, [setSearchOptions, selectedFilter, commandInput]);
 
-  const handleOptionSelect = (option) => {
-    if (selectedFilter) {
-      const existingFilter = filters.find(
-        (filter) =>
-          filter.filterId === selectedFilter.id &&
-          filter.optionId === option.id,
-      );
+  const handleOptionSelect = useCallback((option) => {
+    if (!selectedFilter) return;
+    
+    const existingFilter = filters.find(
+      (filter) =>
+        filter.filterId === selectedFilter.id &&
+        filter.optionId === option.id,
+    );
 
-      if (!existingFilter) {
-        const newFilter = {
-          id: nanoid(),
-          filterId: selectedFilter.id,
-          filterName: selectedFilter.name,
-          filterIcon: selectedFilter.icon || <User />, 
-          relation:
-            selectedRelation[selectedFilter.id] || 
-            (selectedFilter.relation && selectedFilter.relation[0]),
-          optionId: option.id,
-          optionLabel: option.label,
-          optionIcon: option.icon,
-        };
-
-        const filterProps = {
-          filterid: selectedFilter.id,
-          optionid: option.id,
-        };
-        setFiltersProps((prev) => [...prev, filterProps]);
-        setFilters((prev) => [...prev, newFilter]);
-      }
-
+    if (existingFilter) {
       setSelectedFilter(null);
       setCommandInput("");
       setOpen(false);
+      return;
     }
-  };
 
-  const handleUserSelect = (userData) => {
-    if (selectedFilter && userData) {
-      const newFilter = {
-        id: nanoid(),
-        filterId: selectedFilter.id,
-        filterName: selectedFilter.name,
-        filterIcon: selectedFilter.icon || <User />, 
-        optionId: userData.id,
-        optionLabel: userData.name, 
-        optionIcon: null,
-        filterType: "user_select",
-        userData: userData,
-      };
+    const newFilter = {
+      id: nanoid(),
+      filterId: selectedFilter.id,
+      filterName: selectedFilter.name,
+      filterIcon: selectedFilter.icon || <User />,
+      relation:
+        selectedRelation[selectedFilter.id] ||
+        (selectedFilter.relation && selectedFilter.relation[0]),
+      optionId: option.id,
+      optionLabel: option.label,
+      optionIcon: option.icon,
+    };
 
-      setFiltersProps((prev) => [
-        ...prev,
-        {
-          filterid: selectedFilter.id,
-          optionid: userData.id,
-          optionData: userData,
-        },
-      ]);
+    const filterProps = {
+      filterid: selectedFilter.id,
+      optionid: option.id,
+    };
+    
+    setFiltersProps((prev) => [...prev, filterProps]);
+    setFilters((prev) => [...prev, newFilter]);
+    setSelectedFilter(null);
+    setCommandInput("");
+    setOpen(false);
+  }, [selectedFilter, filters, selectedRelation, setFiltersProps]);
 
-      setFilters((prev) => [...prev, newFilter]);
+  const handleUserSelect = useCallback((userData) => {
+    if (!selectedFilter || !userData) return;
+    
+    const newFilter = {
+      id: nanoid(),
+      filterId: selectedFilter.id,
+      filterName: selectedFilter.name,
+      filterIcon: selectedFilter.icon || <User />,
+      optionId: userData.id,
+      optionLabel: userData.name,
+      optionIcon: null,
+      filterType: "user_select",
+      userData: userData,
+    };
 
-      setOpen(false); 
-      setSelectedFilter(null); 
-    }
-  };
+    setFiltersProps((prev) => [
+      ...prev,
+      {
+        filterid: selectedFilter.id,
+        optionid: userData.id,
+        optionData: userData,
+      },
+    ]);
 
-  const handleDateRangeSelect = (range) => {
-    if (range?.from && range?.to) {
-      const newFilter = {
-        id: nanoid(),
-        filterId: selectedFilter.id,
-        filterName: selectedFilter.name,
-        filterIcon: selectedFilter.icon || <User />, 
-        relation: null,
-        optionId: null,
-        optionLabel: `From: ${range.from.toLocaleDateString()} To: ${range.to.toLocaleDateString()}`,
-        optionIcon: null,
-        filterType: "date_range",
-      };
+    setFilters((prev) => [...prev, newFilter]);
+    setOpen(false);
+    setSelectedFilter(null);
+  }, [selectedFilter, setFiltersProps]);
 
-      setFiltersProps((prev) => [
-        ...prev,
-        {
-          filterid: "start_date",
-          optionid: range.from.toLocaleDateString("en-CA"),
-        },
-        {
-          filterid: "end_date",
-          optionid: range.to.toLocaleDateString("en-CA"),
-        },
-      ]); 
+  const handleDateRangeSelect = useCallback((range) => {
+    if (!range?.from || !range?.to || !selectedFilter) return;
+    
+    const newFilter = {
+      id: nanoid(),
+      filterId: selectedFilter.id,
+      filterName: selectedFilter.name,
+      filterIcon: selectedFilter.icon || <User />,
+      relation: null,
+      optionId: null,
+      optionLabel: `From: ${range.from.toLocaleDateString()} To: ${range.to.toLocaleDateString()}`,
+      optionIcon: null,
+      filterType: "date_range",
+    };
 
-      setFilters((prev) => [...prev, newFilter]);
+    setFiltersProps((prev) => [
+      ...prev,
+      {
+        filterid: "start_date",
+        optionid: range.from.toLocaleDateString("en-CA"),
+      },
+      {
+        filterid: "end_date",
+        optionid: range.to.toLocaleDateString("en-CA"),
+      },
+    ]);
 
-      setOpen(false); 
-      setSelectedFilter(null);
-      setDateRange(null);
-    }
-  };
+    setFilters((prev) => [...prev, newFilter]);
+    setOpen(false);
+    setSelectedFilter(null);
+    setDateRange(null);
+  }, [selectedFilter, setFiltersProps]);
 
-  const handleRelationChange = (filterId, relation) => {
+  const handleRelationChange = useCallback((filterId, relation) => {
     setFilters((prev) =>
       prev.map((filter) =>
         filter.id === filterId ? { ...filter, relation } : filter,
       ),
     );
-  };
+  }, []);
 
-  const removeFilter = (filterId) => {
-    console.log("Remove filter", filterId, filters);
+  const removeFilter = useCallback((filterId) => {
     const filterToRemove = filters.find((filter) => filter.id === filterId);
+    if (!filterToRemove) return;
+    
+    setFilters((prev) => prev.filter((filter) => filter.id !== filterId));
 
-    if (filterToRemove) {
-      setFilters((prev) => prev.filter((filter) => filter.id !== filterId));
-
-      if (filterToRemove.filterType === "date_range") {
-        setFiltersProps((prev) =>
-          prev.filter(
-            (filter) =>
-              filter.filterid !== "start_date" &&
-              filter.filterid !== "end_date",
-          ),
-        );
-      } else {
-        setFiltersProps((prev) =>
-          prev.filter(
-            (filter) =>
-              !(
-                filter.filterid === filterToRemove.filterId &&
-                filter.optionid === filterToRemove.optionId
-              ),
-          ),
-        );
-      }
+    if (filterToRemove.filterType === "date_range") {
+      setFiltersProps((prev) =>
+        prev.filter(
+          (filter) =>
+            filter.filterid !== "start_date" &&
+            filter.filterid !== "end_date",
+        ),
+      );
+    } else {
+      setFiltersProps((prev) =>
+        prev.filter(
+          (filter) =>
+            !(
+              filter.filterid === filterToRemove.filterId &&
+              filter.optionid === filterToRemove.optionId
+            ),
+        ),
+      );
     }
-  };
+  }, [filters, setFiltersProps]);
 
-  const clearAllFilters = () => {
+  const clearAllFilters = useCallback(() => {
     setFilters([]);
     setFiltersProps([]);
-  };
+  }, [setFiltersProps]);
 
   const generateFilterFields = useCallback(
     (filter) => {
@@ -290,11 +287,90 @@ const FilterComponent = ({
     [handleFilterSelect],
   );
 
- 
+  const popoverCloseHandler = useCallback((open) => {
+    setOpen(open);
+    if (!open) {
+      setTimeout(() => {
+        setSelectedFilter(null);
+        setCommandInput("");
+        setDateRange(null);
+      }, 200);
+    }
+  }, []);
+
+  const renderFilterContent = useMemo(() => {
+    if (selectedFilter?.type === "user_select") {
+      return (
+        <div className="p-2">
+          <UserSelect 
+            isFilter={true}
+            returnFullObject={true}
+            onValueChange={handleUserSelect} 
+          />
+        </div>
+      );
+    } 
+    
+    if (selectedFilter?.type === "date_range") {
+      return (
+        <Calendar
+          mode="range"
+          selected={dateRange}
+          onSelect={(range) => {
+            setDateRange(range);
+            handleDateRangeSelect(range);
+          }}
+          initialFocus
+        />
+      );
+    }
+    
+    return (
+      <>
+        <CommandInput
+          placeholder={selectedFilter ? selectedFilter.name : "Filter..."}
+          className="h-9"
+          value={commandInput}
+          onInputCapture={(e) => setCommandInput(e.currentTarget.value)}
+          ref={commandInputRef}
+        />
+        <CommandList>
+          <CommandEmpty>No results found.</CommandEmpty>
+
+          {selectedFilter?.options?.map((option, index) => (
+            <CommandItem
+              key={`cm-item-${option.id}-${index}`}
+              value={option.id}
+              onSelect={() => handleOptionSelect(option)}
+            >
+              {option.icon ? 
+                React.cloneElement(option.icon, {
+                  className: "size-3.5 me-2",
+                }) : 
+                null
+              }
+              {option.label}
+            </CommandItem>
+          ))}
+
+          {!selectedFilter &&
+            filterOptions.map((filter) => generateFilterFields(filter))}
+        </CommandList>
+      </>
+    );
+  }, [
+    selectedFilter, 
+    dateRange, 
+    commandInput, 
+    handleUserSelect, 
+    handleDateRangeSelect, 
+    handleOptionSelect, 
+    filterOptions, 
+    generateFilterFields
+  ]);
 
   return (
     <div className="flex justify-end gap-2">
-      {/* Active Filters */}
       <div className="flex flex-wrap gap-2">
         {filters.map((filter) => (
           <div key={filter.id} className="flex items-center gap-[1px] text-xs">
@@ -306,9 +382,7 @@ const FilterComponent = ({
               {filter.filterName}
             </div>
 
-            {/* Relation Dropdown */}
-            {filterOptions.find((opt) => opt.id === filter.filterId)?.relation
-              ?.length > 1 && (
+            {filterOptions.find((opt) => opt.id === filter.filterId)?.relation?.length > 1 && (
               <DropdownMenu>
                 <DropdownMenuTrigger className="bg-muted hover:bg-muted/50 text-muted-foreground hover:text-primary shrink-0 px-1.5 py-1 transition">
                   {filter.relation}
@@ -336,7 +410,6 @@ const FilterComponent = ({
               {filter.optionLabel}
             </div>
 
-            {/* Remove Button */}
             <Button
               variant="ghost"
               size="icon"
@@ -360,20 +433,7 @@ const FilterComponent = ({
         </Button>
       )}
 
-      {/* Filter Popover */}
-      <Popover
-        open={open}
-        onOpenChange={(open) => {
-          setOpen(open);
-          if (!open) {
-            setTimeout(() => {
-              setSelectedFilter(null);
-              setCommandInput("");
-              setDateRange(null); 
-            }, 200);
-          }
-        }}
-      >
+      <Popover open={open} onOpenChange={popoverCloseHandler}>
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
@@ -392,66 +452,7 @@ const FilterComponent = ({
         <PopoverContent className="me-2 w-[250px] p-0">
           <AnimateChangeInHeight>
             <Command>
-              {/* Render UserSelect for user_select filter type */}
-              {selectedFilter?.type === "user_select" ? (
-                <div className="p-2">
-                  <UserSelect 
-                    isFilter={true}
-                    returnFullObject={true}
-                    onValueChange={handleUserSelect} 
-                  />
-                </div>
-              ) : selectedFilter?.type === "date_range" ? (
-                <Calendar
-                  mode="range"
-                  selected={dateRange}
-                  onSelect={(range) => {
-                    setDateRange(range);
-                    handleDateRangeSelect(range);
-                  }}
-                  initialFocus
-                />
-              ) : (
-                <>
-                  <CommandInput
-                    placeholder={
-                      selectedFilter ? selectedFilter.name : "Filter..."
-                    }
-                    className="h-9"
-                    value={commandInput}
-                    onInputCapture={(e) => {
-                      setCommandInput(e.currentTarget.value);
-                    }}
-                    ref={commandInputRef}
-                  />
-                  <CommandList>
-                    <CommandEmpty>No results found.</CommandEmpty>
-
-                    {selectedFilter &&
-                      selectedFilter.options &&
-                      selectedFilter.options.map((option, index) => (
-                        <CommandItem
-                          key={`cm-item-${option.id}-${index}`}
-                          value={option.id}
-                          onSelect={() => handleOptionSelect(option)}
-                        >
-                          {option.icon ? 
-                            React.cloneElement(option.icon, {
-                              className: "size-3.5 me-2",
-                            }) : 
-                            null
-                          }
-                          {option.label}
-                        </CommandItem>
-                      ))}
-
-                    {!selectedFilter &&
-                      filterOptions.map((filter) =>
-                        generateFilterFields(filter),
-                      )}
-                  </CommandList>
-                </>
-              )}
+              {renderFilterContent}
             </Command>
           </AnimateChangeInHeight>
         </PopoverContent>

@@ -1,7 +1,6 @@
-import DataTable from "@/components/includes/data-table";
 import { Button } from "@/components/ui/button";
-import useDebounce from "@/hooks/useDebounce";
-import { useGetAllDocuments } from "@/query/docomentsQuerry";
+import DataTable from "@/components/includes/data-table";
+import { useGetAllDocuments } from "@/query/docomentsQuery";
 import {
   AlertTriangle,
   ArrowUpDown,
@@ -17,10 +16,7 @@ import {
   ViewIcon,
   MoreHorizontal
 } from "lucide-react";
-import { useState } from "react";
-import { cloneElement} from "react";
-
-
+import { cloneElement } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,21 +24,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+
 export default function ViewListDocument() {
   const actionType = [
     {
       title: "View",
       className: "",
-      icon : <ViewIcon />
+      icon: <ViewIcon />
     },
     {
       title: "Download",
       className: "",
-      icon : <DownloadIcon />
+      icon: <DownloadIcon />
     },
   ];
 
-  const column = [
+  const columns = [
     {
       accessorKey: "category",
       header: "Category",
@@ -56,7 +53,6 @@ export default function ViewListDocument() {
         </div>
       ),
     },
-
     {
       accessorKey: "process_id",
       header: "Linked Task",
@@ -106,17 +102,16 @@ export default function ViewListDocument() {
       id: "actions",
       enableHiding: false,
       cell: () => {
-        // const data = row.original;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-          variant="ghost"
-          className="h-8 w-8 p-0"
-          onClick={(e) => e.stopPropagation()}
+                variant="ghost"
+                className="h-8 w-8 p-0"
+                onClick={(e) => e.stopPropagation()}
               >
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal />
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -124,25 +119,24 @@ export default function ViewListDocument() {
               onClick={(e) => e.stopPropagation()}
             >
               {actionType?.map((action, index) => (
-          <DropdownMenuItem
-            key={index}
-            className={cn(
-              "text-sm",
-              action?.className)}
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            <div className="flex items-center">
-              {
-                cloneElement(action.icon, {
-                  className: "w-5 h-5"
-                })
-
-              }
-              <span className="ms-2">{action.title}</span>
-            </div>
-          </DropdownMenuItem>
+                <DropdownMenuItem
+                  key={index}
+                  className={cn(
+                    "text-sm",
+                    action?.className)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  <div className="flex items-center">
+                    {
+                      cloneElement(action.icon, {
+                        className: "w-5 h-5"
+                      })
+                    }
+                    <span className="ms-2">{action.title}</span>
+                  </div>
+                </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -212,45 +206,15 @@ export default function ViewListDocument() {
       ],
     },
   ];
-  const [sorting, setSorting] = useState("");
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const [filters, setFilters] = useState([]);
-  const [search, setSearch] = useState("");
-  const [searchOptions, setSearchOptions] = useState({
-    filterId: "",
-    search: "",
-  });
-
-  const debouncedSearch = useDebounce(search, 500);
-
-  const { data, isLoading, error } = useGetAllDocuments({
-    pageIndex: pagination.pageIndex,
-    pageSize: pagination.pageSize,
-    sortBy: sorting,
-    search: debouncedSearch,
-    filters,
-  });
 
   return (
     <DataTable
-      columns={column}
-      data={data?.data ?? []}
-      totalCount={data?.totalCount ?? 0}
-      loading={isLoading}
-      sorting={sorting}
-      setSorting={setSorting}
-      pagination={pagination}
-      setPagination={setPagination}
-      search={search}
-      setSearch={setSearch}
-      error={error?.message}
-      filter={{
-        filters,
-        filterOptions,
-        searchOptions,
-        setFilters,
-        setSearchOptions,
-      }}
+      columns={columns}
+      fetchData={useGetAllDocuments}
+      filterOptions={filterOptions}
+      initialPageSize={10}
+      searchBox={true}
+      searchBoxPlaceholder="Search documents..."
     />
   );
 }

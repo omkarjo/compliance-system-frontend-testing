@@ -15,6 +15,19 @@ import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+const defaultValues = {
+  description: "",
+  category: "",
+  completion_criteria: "",
+  repeat: false,
+  predecessor_task: "",
+  attachments: [],
+  assignee_id: "",
+  reviewer_id: "",
+  approver_id: "",
+  document_type: "",
+};
+
 export default function TaskDashboardFundManager() {
   const DialogTaskVariant = {
     create: {
@@ -47,34 +60,13 @@ export default function TaskDashboardFundManager() {
 
   const form = useForm({
     resolver: zodResolver(taskSchema),
-    defaultValues: {
-      description: "",
-      category: "",
-      completion_criteria: "",
-      repeat: false,
-      predecessor_task: "",
-      attachements: [],
-      assignee_id: "",
-      reviewer_id: "",
-      approver_id: "",
-    },
+    defaultValues: defaultValues,
   });
 
   const handleDialogTaskOpen = useCallback(
     (variant, data, compliance_task_id) => {
       if (variant === "create") {
-        form.reset({
-          description: "",
-          category: "",
-          completion_criteria: "",
-          repeat: false,
-          recurrence: "",
-          predecessor_task: "",
-          attachements: [],
-          assignee_id: "",
-          reviewer_id: "",
-          approver_id: "",
-        });
+        form.reset(defaultValues);
 
         setDialogTask({
           isOpen: true,
@@ -154,7 +146,7 @@ export default function TaskDashboardFundManager() {
 
   const createTask = useCallback(async (data) => {
     try {
-      const response =  await apiWithAuth.post("/api/tasks/", data);
+      const response = await apiWithAuth.post("/api/tasks/", data);
       toast.success("Task created successfully");
       return response;
     } catch (error) {
@@ -190,7 +182,6 @@ export default function TaskDashboardFundManager() {
         rest.recurrence = undefined;
       }
 
-      
       try {
         if (dialogTask.variant === "create") {
           const response = await createTask(rest);
@@ -220,17 +211,17 @@ export default function TaskDashboardFundManager() {
 
             console.log("document_ids", document_ids);
 
-            const linkPromises = document_ids.map((document_id) => {
-              return apiWithAuth.post(
-                `/api/documents/${document_id}/link-to-task`,
-                {
-                  compliance_task_id: compliance_task_id,
-                  document_id: document_id,
-                },
-              );
-            });
+            // const linkPromises = document_ids.map((document_id) => {
+            //   return apiWithAuth.post(
+            //     `/api/documents/${document_id}/link-to-task`,
+            //     {
+            //       compliance_task_id: compliance_task_id,
+            //       document_id: document_id,
+            //     },
+            //   );
+            // });
 
-            await Promise.all(linkPromises);
+            // await Promise.all(linkPromises);
             toast.success("Files uploaded successfully");
           } catch (error) {
             toast.error("Failed to upload file", {
@@ -264,6 +255,7 @@ export default function TaskDashboardFundManager() {
   const handelTabChange = useCallback((value) => {
     localStorage.setItem("taskTabs", value);
   }, []);
+
 
   return (
     <section className="">
@@ -317,7 +309,10 @@ export default function TaskDashboardFundManager() {
         isOpen={dialogTask.isOpen}
         onClose={handleDialogTaskClose}
         variant={dialogTask.variant}
-        hiddenFields={form.watch("repeat") ? [] : ["recurrence"]}
+        hiddenFields={[
+          ...(form.watch("repeat") ? [] : ["recurrence"]),
+          ...((form.watch("attachments")?.length > 0) ? [] : ["document_type"]),
+        ]}
       />
       <SheetTaskViewFM
         data={sheetTask.data}

@@ -1,4 +1,5 @@
 import DataTable from "@/components/includes/data-table";
+import UserBadge from "@/components/includes/user-badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,23 +8,31 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { useGetTask } from "@/query/taskQuerry";
+import { useGetTask } from "@/query/taskQuery";
 import {
   ArrowUpDown,
   Calendar,
   CheckCircle,
-  CircleUserRound,
   Eye,
   MoreHorizontal,
   TriangleAlert,
   Watch,
 } from "lucide-react";
-import { useState } from "react";
 import BadgeStatusTask from "../../includes/badge-status";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function TableTaskViewFM({ actionType, openView = () => {} }) {
-
-  const taskColumn = [
+  const columns = [
     {
       accessorKey: "category",
       header: "Category",
@@ -42,17 +51,15 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
     },
     {
       accessorKey: "deadline",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Due Date
-            <ArrowUpDown size={16} />
-          </Button>
-        );
-      },
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Due Date
+          <ArrowUpDown size={16} />
+        </Button>
+      ),
       cell: ({ row }) => {
         const dueDate = row.getValue("deadline");
         const formatted = dueDate
@@ -64,26 +71,16 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
     {
       accessorKey: "state",
       header: "Status",
-      cell: ({ row }) => {
-        const status = row.getValue("state");
-
-        return <BadgeStatusTask text={status} />;
-      },
+      cell: ({ row }) => <BadgeStatusTask text={row.getValue("state")} />,
     },
     {
-      accessorKey: "assignee_id",
+      accessorKey: "assignee_name",
       header: "Assignee",
-      cell: ({ row }) => {
-        const assignee = row.getValue("assignee_id");
-        return (
-          <div className="flex items-center text-left">
-            <div className="mr-2">
-              <CircleUserRound size={24} />
-            </div>
-            {assignee}
-          </div>
-        );
-      },
+      cell: ({ row }) => (
+        <div className="flex items-center">
+          <UserBadge name={row.getValue("assignee_name")} />
+        </div>
+      ),
     },
     {
       id: "actions",
@@ -156,11 +153,7 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
         },
       ],
     },
-    {
-      type: "user_select",
-      id: "assignee_id",
-      name: "Assignee",
-    },
+    { type: "user_select", id: "assignee_id", name: "Assignee" },
     {
       type: "date_range",
       id: "deadline",
@@ -170,39 +163,13 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
     },
   ];
 
-  const [sorting, setSorting] = useState([]);
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const [filters, setFilters] = useState([]);
-  const [searchOptions, setSearchOptions] = useState({
-    filterId: "",
-    search: "",
-  });
-  const { data, isLoading, error } = useGetTask({
-    pageIndex: pagination.pageIndex,
-    pageSize: pagination.pageSize,
-    sortBy: sorting,
-    filters: filters,
-  });
-
   return (
     <DataTable
-      columns={taskColumn}
-      data={data?.data ?? []}
-      totalCount={data?.totalCount ?? 0}
-      loading={isLoading}
-      sorting={sorting}
-      setSorting={setSorting}
-      pagination={pagination}
-      setPagination={setPagination}
-      error={error?.response?.data?.detail}
+      columns={columns}
+      fetchData={useGetTask}
+      filterOptions={filterOptions}
       openView={openView}
-      filter={{
-        filters,
-        filterOptions,
-        searchOptions,
-        setFilters,
-        setSearchOptions,
-      }}
+      actionType={actionType}
     />
   );
 }

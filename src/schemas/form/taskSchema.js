@@ -24,20 +24,6 @@ export const taskFormFields = [
     },
   },
   {
-    name: "category",
-    label: "Category",
-    type: "select",
-    placeholder: "Please select a category",
-    required: true,
-    options: [
-      { label: "SEBI", value: "SEBI" },
-      { label: "RBI", value: "RBI" },
-      { label: "IT/GST", value: "IT/GST" },
-      { label: "LP", value: "LP" },
-      { label: "Portfolio Company", value: "Portfolio Company" },
-    ],
-  },
-  {
     name: "document_type",
     label: "Document Category",
     type: "select",
@@ -49,6 +35,20 @@ export const taskFormFields = [
       { label: "Notification", value: "Notification" },
       { label: "Report", value: "Report" },
       { label: "Others", value: "Others" },
+    ],
+  },
+  {
+    name: "category",
+    label: "Category",
+    type: "select",
+    placeholder: "Please select a category",
+    required: true,
+    options: [
+      { label: "SEBI", value: "SEBI" },
+      { label: "RBI", value: "RBI" },
+      { label: "IT/GST", value: "IT/GST" },
+      { label: "LP", value: "LP" },
+      { label: "Portfolio Company", value: "Portfolio Company" },
     ],
   },
   {

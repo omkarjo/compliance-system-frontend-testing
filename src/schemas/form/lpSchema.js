@@ -1,6 +1,11 @@
+
+const validateEmail = (email) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
 export const lpFromFields = [
   {
-    name: "docoments",
+    name: "documents",
     label: "Upload Contribution Agreement",
     description:
       "Make sure the contribution agreement is in the specified format. You can download the template from here.",
@@ -47,7 +52,7 @@ export const lpFromFields = [
     name: "gender",
     label: "Gender",
     type: "select",
-    placeholder: "",
+    placeholder: "Select gender",
     required: true,
     options: [
       { label: "Male", value: "male" },
@@ -87,7 +92,7 @@ export const lpFromFields = [
   },
   {
     name: "address",
-    label: "Adress",
+    label: "Address",
     type: "textarea",
     placeholder: "",
     required: true,
@@ -152,6 +157,13 @@ export const lpFromFields = [
   {
     name: "doi",
     label: "Date of Incorporation",
+    type: "date",
+    placeholder: "",
+    required: true,
+  },
+  {
+    name: "date_of_agreement",
+    label: "Date of Agreement",
     type: "date",
     placeholder: "",
     required: true,
@@ -234,10 +246,13 @@ export const lpFromFields = [
   },
   {
     name: "emaildrawdowns",
+    type: "tags_input",
     label: "Email For Drawdowns",
     description: "You can add multiple emails separated by a comma",
-    type: "text",
-    placeholder: "",
-    required: true,
+    placeholder: "Please enter email",
+    required : true,
+    separators: [',', ';', 'Enter'],
+    maxTags: 5,
+    validateTag: validateEmail,
   },
 ];

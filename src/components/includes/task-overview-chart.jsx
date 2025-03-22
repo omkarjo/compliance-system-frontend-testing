@@ -10,23 +10,19 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Pie, PieChart, Cell, Label } from "recharts";
+import { Cell, Label, Pie, PieChart } from "recharts";
 
-export default function TaskOverviewChart({ title, description, data, config , total }) {
-  const totalTasks = total || data?.reduce((sum, task) => sum + task.value, 0) || 0;
-  
-  const isAllZero = data?.every(item => item.value === 0) || false;
-  
-  const chartConfig = config || {
+export default function TaskOverviewChart({ title, description, data, total }) {
+  const totalTasks =
+    total || data?.reduce((sum, task) => sum + task.value, 0) || 0;
+
+  const isAllZero = data?.every((item) => item.value === 0) || false;
+
+  const chartConfig = {
     tooltip: {
       content: {
-        hideLabel: true
-      }
-    },
-    colors: {
-      Overdue: "#FF4D4F",
-      Completed: "#52C41A",
-      Empty: "#E0E0E0"
+        hideLabel: true,
+      },
     },
   };
 
@@ -41,9 +37,7 @@ export default function TaskOverviewChart({ title, description, data, config , t
     );
   }
 
-  const emptyStateData = [
-    { name: "Empty", value: 1, fill: "#E0E0E0" }
-  ];
+  const emptyStateData = [{ name: "Empty", value: 1, fill: "#E0E0E0" }];
 
   return (
     <Card className="flex flex-col gap-0">
@@ -52,7 +46,7 @@ export default function TaskOverviewChart({ title, description, data, config , t
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent className="flex-1 pb-0">
-        <ChartContainer 
+        <ChartContainer
           config={chartConfig}
           className="mx-auto aspect-square h-64"
         >
@@ -96,7 +90,6 @@ export default function TaskOverviewChart({ title, description, data, config , t
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          {/* complaince */}
                         </tspan>
                       </text>
                     );

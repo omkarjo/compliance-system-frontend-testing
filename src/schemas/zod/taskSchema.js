@@ -23,7 +23,7 @@ export const taskSchema = z
           required_error: "Document Category is required",
         },
       ),
-    ),
+    ).optional(),
     deadline: z.date(),
 
     repeat: z.boolean().default(false),
@@ -62,6 +62,23 @@ export const taskSchema = z
         path: ["recurrence"],
       });
     }
+
+
+    if (data.attachments && data.attachments.length > 0) {
+      if (!data.document_type) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Required document type for attachments",
+          path: ["document_type"],
+        });
+      }
+    }
+
+    if (!data.attachments || data.attachments.length === 0) {
+      data.attachments = undefined;
+    }
+
+
     if (!data.repeat) {
       data.recurrence = undefined;
     }

@@ -6,16 +6,9 @@ import {
 import { getStatusIcon, getStatusStyle } from "@/lib/getStatusStyleIcon";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import {
-  AlertTriangle,
-  Clock
-} from "lucide-react";
+import { AlertTriangle, Clock, UserCircleIcon } from "lucide-react";
 
 const TaskHoverCard = ({ task, viewMode, onClick }) => {
-  // Get status icon based on state
-
-  // Determine status color based on state
-
   const isOverdue = task.state === "Overdue";
   const { bgColor, textColor, borderColor } = getStatusStyle(task.state);
   const statusIcon = getStatusIcon(task.state);
@@ -108,12 +101,12 @@ const TaskHoverCard = ({ task, viewMode, onClick }) => {
               </span>
             </p>
           )}
-          {task.assignee_id && (
+          {task.assignee_name && (
             <p className="flex items-center">
               <span className="w-20 font-medium">Assignee:</span>
               <span className="flex items-center">
-                {/* <UserCircleIcon size={12} className="mr-1" /> */}
-                {task.assignee_id}
+                <UserCircleIcon size={12} className="mr-1" />
+                {task.assignee_name}
               </span>
             </p>
           )}

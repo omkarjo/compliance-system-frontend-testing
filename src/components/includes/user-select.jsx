@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/popover";
 import useDebounce from "@/hooks/useDebounce";
 import { cn } from "@/lib/utils";
-import { useGetUserbyName } from "@/query/userQuerry";
+import { useGetUserbyName } from "@/query/userQuery";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import UserBadge from "./user-badge";
@@ -26,46 +26,43 @@ const UserCommandList = ({
   isLoading,
   search,
   setSearch,
-}) => {
-  return (
-    <Command className="border-0">
-      <CommandInput
-        placeholder="Search by name or email..."
-        value={search}
-        onValueChange={setSearch}
-        autoFocus
-      />
-      <CommandList>
-        <CommandEmpty>
-          {isLoading ? "Loading..." : "No user found"}
-        </CommandEmpty>
-        <CommandGroup>
-          {users.map((user) => (
-            <CommandItem
-              key={user.value}
-              onSelect={() => handleSelect(user.value)}
-              className="flex items-center justify-between"
-              value={`${user.label.toLowerCase()} ${user.email.toLowerCase()}`}
-            >
-              <UserBadge
-                name={user.label}
-                email={user.email}
-                avatar={user.avatar}
-              />
-
-              <Check
-                className={cn(
-                  "ml-2 h-4 w-4 flex-shrink-0",
-                  selectedValue === user.value ? "opacity-100" : "opacity-0",
-                )}
-              />
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
-    </Command>
-  );
-};
+}) => (
+  <Command className="border-0">
+    <CommandInput
+      placeholder="Search by name or email..."
+      value={search}
+      onValueChange={setSearch}
+      autoFocus
+    />
+    <CommandList>
+      <CommandEmpty>
+        {isLoading ? "Loading..." : "No user found"}
+      </CommandEmpty>
+      <CommandGroup>
+        {users.map((user) => (
+          <CommandItem
+            key={user.value}
+            onSelect={() => handleSelect(user.value)}
+            className="flex items-center justify-between"
+            value={`${user.label.toLowerCase()} ${user.email.toLowerCase()}`}
+          >
+            <UserBadge
+              name={user.label}
+              email={user.email}
+              avatar={user.avatar}
+            />
+            <Check
+              className={cn(
+                "ml-2 h-4 w-4 flex-shrink-0",
+                selectedValue === user.value ? "opacity-100" : "opacity-0",
+              )}
+            />
+          </CommandItem>
+        ))}
+      </CommandGroup>
+    </CommandList>
+  </Command>
+);
 
 export default function UserSelect({
   defaultValue,
@@ -78,9 +75,11 @@ export default function UserSelect({
 }) {
   const [open, setOpen] = useState(isFilter);
   const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 500);
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedUserData, setSelectedUserData] = useState(null);
+  const debouncedSearch = useDebounce(search, 500);
+  const popoverId = `user-popover-${id}`;
+  const commandId = `user-command-${id}`;
 
   useEffect(() => {
     if (defaultValue) {
@@ -94,7 +93,7 @@ export default function UserSelect({
 
   const users = useMemo(() => {
     if (!data) return [];
-    return data?.map((user) => ({
+    return data.map((user) => ({
       value: user.UserId,
       label: user.UserName,
       email: user.email || "",
@@ -126,9 +125,6 @@ export default function UserSelect({
       setOpen(false);
     }
   };
-
-  const popoverId = `user-popover-${id}`;
-  const commandId = `user-command-${id}`;
 
   if (isFilter) {
     return (

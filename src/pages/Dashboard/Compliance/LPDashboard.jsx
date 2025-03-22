@@ -17,7 +17,6 @@ import { toast } from "sonner";
 const defaultValues = {
   lp_name: "",
   gender: undefined,
-  dob: null,
   mobile_no: "",
   email: "",
   pan: "",
@@ -26,7 +25,6 @@ const defaultValues = {
   commitment_amount: "",
   acknowledgement_of_ppm: undefined,
   cml: [],
-  doi: null,
   // depository: undefined,
   dpid: "",
   client_id: "",
@@ -35,7 +33,7 @@ const defaultValues = {
   type: undefined,
   citizenship: undefined,
   geography: "",
-  emaildrawdowns: "",
+  emaildrawdowns: [],
   documents: [],
 };
 
@@ -54,7 +52,7 @@ export default function LPDashboard() {
   const form = useForm({
     resolver: zodResolver(lpSchema),
     defaultValues: defaultValues,
-    mode: "onChange",
+    // mode: "onChange",
   });
 
   useEffect(() => {
@@ -86,7 +84,7 @@ export default function LPDashboard() {
 
   const onSubmit = useCallback(
     async (data) => {
-      const { cml, documents, dob, doi, ...rest } = data;
+      const { cml, documents, dob, doi, date_of_agreement, emaildrawdowns , ...rest } = data;
 
       console.log("Documents", documents);
 
@@ -94,6 +92,10 @@ export default function LPDashboard() {
         ...rest,
         doi: doi ? doi.toISOString().split("T")[0] : null,
         dob: dob ? dob.toISOString().split("T")[0] : null,
+        date_of_agreement: date_of_agreement
+          ? date_of_agreement.toISOString().split("T")[0]
+          : null,
+        emaildrawdowns: emaildrawdowns.join(",") 
       };
 
       try {
@@ -109,7 +111,7 @@ export default function LPDashboard() {
         const response = await apiWithAuth.post("/api/lps", body);
         console.log(response);
         toast.success("Limited Partner Added Successfully");
-        queryClient.invalidateQueries("lp-querry");
+        queryClient.invalidateQueries("lp-query");
 
         form.reset(defaultValues);
         handleDialogTaskClose();
@@ -122,6 +124,7 @@ export default function LPDashboard() {
     },
     [handleDialogTaskClose, form],
   );
+
 
   return (
     <section className="">

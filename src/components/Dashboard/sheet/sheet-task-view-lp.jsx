@@ -28,12 +28,15 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
-const taskDataOrder = ["deadline", "attachements"];
+const taskDataOrder = ["deadline", "attachments"];
 
 const SHEET_TITLE = "Upload KYC Document";
 const SHEET_DESCRIPTION =
   "We need you to upload the following documents for KYC";
 const LIST = ["Passport", "TAX IDs", "Proof of Address"];
+
+
+// Unoptimized code
 
 export default function SheetTaskViewLP({
   data = {},
@@ -59,11 +62,11 @@ export default function SheetTaskViewLP({
           </tr>
         );
 
-      case "attachements":
+      case "attachments":
         return (
           <tr key={key} className="">
             <td className="mb-4 flex items-center gap-2 text-gray-500">
-              Attachements:
+              attachments:
             </td>
             <td className="pb-4">
               {value?.map((file, index) => (

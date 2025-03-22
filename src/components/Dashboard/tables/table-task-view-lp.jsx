@@ -1,7 +1,7 @@
 import DataTable from "@/components/includes/data-table";
 import { Button } from "@/components/ui/button";
 import { useGetCurrentUser } from "@/hooks/useGetCurrentUser";
-import { useGetTask } from "@/query/taskQuerry";
+import { useGetTask } from "@/query/taskQuery";
 import {
   ArrowUpDown,
   Calendar,

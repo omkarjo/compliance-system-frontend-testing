@@ -38,10 +38,14 @@ export const lpSchema = z.object({
         message: "File size must be less than 4MB",
       }),
     )
+    .min(1, {
+      message: "Required",
+    })
     .max(1, {
       message: "Maximum 5 files are allowed",
     }),
-  doi : z.date(),
+  doi: z.date(),
+  date_of_agreement: z.date(),
   // depository: z.enum(["nsdl", "cdsl"]),
   dpid: z.string().min(1, "Dpid is required"),
   client_id: z.string().min(1, "Client ID is required"),
@@ -50,10 +54,7 @@ export const lpSchema = z.object({
   type: z.enum(["individual", "corporate", "partnership", "trust"]),
   citizenship: z.enum(["resident", "nro", "nre", "non-resident"]),
   geography: z.string().min(1, "Geography is required"),
-  emaildrawdowns: z
-    .string()
-    .regex(
-      /^([\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,},?)+$/,
-      "Invalid email format for drawdowns",
-    ),
+  emaildrawdowns: z.array(z.string().email("Invalid email address")).min(1, {
+    message: "At least one email is required",
+  }),
 });
