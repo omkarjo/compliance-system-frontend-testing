@@ -43,9 +43,9 @@ export default function NavUser({ user }) {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <UserBadge
-                name={user.name}
-                email={user.email}
-                avatar={user.profile}
+                 name={user?.name || "No Name"}
+                 email={user?.email || "No Email"}
+                 avatar={user?.profile || ""}
               />
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -59,9 +59,9 @@ export default function NavUser({ user }) {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <UserBadge
-                  name={user.name}
-                  email={user.email}
-                  avatar={user.profile}
+                  name={user?.name || "No Name"}
+                  email={user?.email || "No Email"}
+                  avatar={user?.profile || ""}
                 />
               </div>
             </DropdownMenuLabel>

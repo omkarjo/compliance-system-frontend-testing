@@ -2,14 +2,13 @@ import { logoutUser } from "@/store/slices/userSlice";
 import store from "@/store/store";
 import axios from "axios";
 
-// Environment configuration
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 const baseConfig = {
   baseURL: API_URL,
-  withCredentials: true,
+  withCredentials: import.meta.env.MODE === "production",
   headers: {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
   },
 };
 
@@ -26,7 +25,7 @@ api.interceptors.response.use(
       logout();
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 const apiWithAuth = axios.create(baseConfig);
@@ -46,7 +45,7 @@ apiWithAuth.interceptors.response.use(
       logout();
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export { api, apiWithAuth };

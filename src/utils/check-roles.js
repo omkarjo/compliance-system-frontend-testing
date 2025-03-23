@@ -9,6 +9,11 @@ const useCheckRoles = (allowedRoles) => {
   if (!allowedRoles) {
     return true;
   }
+
+  if(!user?.role) {
+    return false
+  }
+
   const hasPermission = allowedRoles.includes(user.role);
 
   return hasPermission;

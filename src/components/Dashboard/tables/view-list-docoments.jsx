@@ -24,13 +24,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function ViewListDocument() {
   const actionType = [
     {
       title: "View",
       className: "",
-      icon: <ViewIcon />
+      icon: <ViewIcon />,
+      onClick: (data) => {
+        if(!data.drive_link) {
+          toast.error("No Link Found");
+          return;
+        }
+        window.open(data.drive_link, "_blank");
+      }
     },
     {
       title: "Download",
@@ -101,7 +109,8 @@ export default function ViewListDocument() {
     {
       id: "actions",
       enableHiding: false,
-      cell: () => {
+      cell: ({ row }) => {
+        const data = row.original;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -126,6 +135,7 @@ export default function ViewListDocument() {
                     action?.className)}
                   onClick={(e) => {
                     e.stopPropagation();
+                    action.onClick(data);
                   }}
                 >
                   <div className="flex items-center">

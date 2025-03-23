@@ -14,6 +14,7 @@ import { Plus } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
 
 const defaultValues = {
   description: "",
@@ -199,10 +200,11 @@ export default function TaskDashboardFundManager() {
           await editTask(rest);
         }
 
+        handleDialogTaskClose(false);
         if (attachments?.length) {
           try {
             const promises = attachments.map((file) =>
-              fileUpload(file, document_type),
+              fileUpload(file, document_type, compliance_task_id),
             );
             const uploadResponse = await Promise.all(promises);
             const document_ids = uploadResponse.map(
@@ -210,18 +212,6 @@ export default function TaskDashboardFundManager() {
             );
 
             console.log("document_ids", document_ids);
-
-            // const linkPromises = document_ids.map((document_id) => {
-            //   return apiWithAuth.post(
-            //     `/api/documents/${document_id}/link-to-task`,
-            //     {
-            //       compliance_task_id: compliance_task_id,
-            //       document_id: document_id,
-            //     },
-            //   );
-            // });
-
-            // await Promise.all(linkPromises);
             toast.success("Files uploaded successfully");
           } catch (error) {
             toast.error("Failed to upload file", {
@@ -231,9 +221,8 @@ export default function TaskDashboardFundManager() {
           }
         }
 
-        handleDialogTaskClose(false);
         form.reset({});
-        queryClient.invalidateQueries("task-querry");
+        queryClient.invalidateQueries("task-query");
       } catch (error) {
         toast.error("Failed to process task", {
           description: error?.response?.data?.message || "An error occurred",

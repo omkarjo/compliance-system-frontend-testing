@@ -166,9 +166,10 @@ export const TagsInput = React.forwardRef(
             size="sm" 
             onClick={handleAddButtonClick}
             disabled={disabled || !inputValue || isMaxed}
+            className={cn("flex justify-center items-center", isMaxed && "cursor-not-allowed")}
           >
             <Plus size={16} className="mr-1" />
-            Add
+            <span className='sr-only'>Add</span>
           </Button>
         </div>
         
