@@ -1,14 +1,14 @@
 [build]
   base = "/"
-  publish = "dist"                            # Build output directory
-  command = "npm ci --force && npm run build"  # Force install and build
+  publish = "dist"  
+  command = "npm install --legacy-peer-deps && npm run build"  # Bypass peer dependency issues
 
 [[redirects]]
-  from = "/*"                                  # Catch-all for React Router DOM
-  to = "/index.html"                           # Serve index.html for SPA
+  from = "/*"
+  to = "/index.html"
   status = 200
 
 [[redirects]]
-  from = "/not-found"                                # Custom 404 route
-  to = "/not-found"                            # Redirect to your custom 404 page
+  from = "/404"
+  to = "/not-found"
   status = 404
