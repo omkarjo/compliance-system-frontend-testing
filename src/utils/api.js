@@ -3,6 +3,7 @@ import store from "@/store/store";
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const TIMEOUT = 10000; // 10 seconds timeout
 
 const baseConfig = {
   baseURL: API_URL,
@@ -10,6 +11,7 @@ const baseConfig = {
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: TIMEOUT,
 };
 
 const logout = () => {
@@ -25,7 +27,7 @@ api.interceptors.response.use(
       logout();
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 const apiWithAuth = axios.create(baseConfig);
@@ -45,7 +47,7 @@ apiWithAuth.interceptors.response.use(
       logout();
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 export { api, apiWithAuth };

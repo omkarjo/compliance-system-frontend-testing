@@ -1,5 +1,6 @@
 // netlify/functions/proxy.js
 const axios = require('axios');
+const querystring = require('querystring');
 
 exports.handler = async (event) => {
   // Handle OPTIONS preflight requests
@@ -18,31 +19,47 @@ exports.handler = async (event) => {
   const targetUrl = `http://aa09e3ae27a144cd0aaf0fbce7f0ab1c-bcccf20eeb9b21bd.elb.ap-south-1.amazonaws.com${event.path.replace('/.netlify/functions/proxy', '')}`;
 
   try {
-    // Detailed logging
+    // Determine content type and parse body accordingly
+    const contentType = event.headers['content-type'] || event.headers['Content-Type'] || '';
+    let requestBody = null;
+
+    if (contentType.includes('application/json')) {
+      requestBody = event.body ? JSON.parse(event.body) : null;
+    } else if (contentType.includes('application/x-www-form-urlencoded')) {
+      requestBody = event.body ? querystring.parse(event.body) : null;
+    }
+
     console.log('Proxy Request Details:', {
       method: event.httpMethod,
       path: event.path,
       targetUrl: targetUrl,
-      body: event.body,
+      contentType: contentType,
+      body: requestBody,
       headers: event.headers
     });
-
-    // Parse body safely
-    const requestBody = event.body ? JSON.parse(event.body) : null;
 
     const response = await axios({
       method: event.httpMethod,
       url: targetUrl,
       data: requestBody,
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': contentType,
         ...Object.fromEntries(
           Object.entries(event.headers).filter(([key]) => 
             ['authorization', 'content-type'].includes(key.toLowerCase())
           )
         )
       },
-      timeout: 10000 // 10 seconds timeout
+      timeout: 10000, // 10 seconds timeout
+      transformRequest: [
+        (data, headers) => {
+          // Custom transform for x-www-form-urlencoded
+          if (headers['Content-Type'] === 'application/x-www-form-urlencoded') {
+            return querystring.stringify(data);
+          }
+          return data;
+        }
+      ]
     });
 
     return {
@@ -56,7 +73,6 @@ exports.handler = async (event) => {
       }
     };
   } catch (error) {
-    // More comprehensive error logging
     console.error('Detailed Proxy Error:', {
       message: error.message,
       code: error.code,
