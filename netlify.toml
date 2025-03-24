@@ -1,14 +1,4 @@
-[build]
-  base = "/"
-  publish = "dist"  
-  command = "npm install --legacy-peer-deps && npm run build"  # Bypass peer dependency issues
-
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/"
   status = 200
-
-[[redirects]]
-  from = "/404"
-  to = "/not-found"
-  status = 404
