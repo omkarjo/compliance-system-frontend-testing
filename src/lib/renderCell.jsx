@@ -12,6 +12,8 @@ export const renderCell = (key, label, type, icon, data) => {
   const value = data[key];
   if (!value && value !== false) return null;
 
+  if (type === "file" && !value.length) return null;
+
   const renderLabel = () => (
     <td className="mb-4 flex items-center gap-2 text-gray-500">
       {icon && icon}
@@ -47,8 +49,10 @@ export const renderCell = (key, label, type, icon, data) => {
               value.map((file, index) => (
                 <Link
                   key={index}
-                  to={file.link}
+                  to={file.drive_link || "#"}
                   className="my-1 flex items-center gap-2"
+                  target="_blank"
+                  rel="noreferrer noopener"
                 >
                   <File size={20} className="text-gray-500" />
                   <span className="text-blue-600/60 hover:underline">

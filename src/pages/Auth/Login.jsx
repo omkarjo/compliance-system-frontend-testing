@@ -43,7 +43,6 @@ export default function Login() {
 
   const handelSubmit = useCallback(
     async (data) => {
-      console.log(data);
       const payload = new URLSearchParams();
       payload.append("username", data.email);
       payload.append("password", data.password);

@@ -27,7 +27,7 @@ const taskDataSchema = [
     icon: <Calendar size={20} />,
   },
   {
-    key: "attachments",
+    key: "documents",
     label: "Attachments",
     type: "file",
     icon: <File size={20} />,

@@ -430,7 +430,7 @@ export default function ViewCalendarTaskFM() {
                               "text-muted-foreground",
                             (isEqual(day, selectedDay) || isToday(day)) && "font-semibold",
                             "hover:bg-muted relative flex w-full flex-col border-r border-b px-2 py-1 focus:z-10",
-                            viewMode === "week" ? "h-20" : "h-12"
+                            // viewMode === "week" ? "h-20" : "h-12"
                           )}
                         >
                           {hasOverdueTasks && (
@@ -456,7 +456,22 @@ export default function ViewCalendarTaskFM() {
                           ) : (
                             <>
                               <div className="mt-1 flex flex-wrap justify-end gap-0.5">
-                                {dayTasks.map((task) => {
+                                {dayTasks.map((task, index) => {
+
+                                  if (viewMode === "month" && index > MAX_TASKS_PER_DAY) {
+                                    return null;
+                                  }
+
+                                  if (viewMode === "month" && index === MAX_TASKS_PER_DAY) {
+                                    return (
+                                      <div key={task.compliance_task_id} className="mt-0.5 flex items-center justify-start">
+                                        <span className="text-muted-foreground rounded-full px-2 py-0.5 text-xs font-semibold">
+                                          +{dayTasks.length - MAX_TASKS_PER_DAY}
+                                        </span>
+                                      </div>
+                                    );
+                                  }
+
                                   const { bgSecondaryColor } = getStatusStyle(task.state);
                                   const randomDuration = Math.floor(Math.random() * 2) + 1;
 

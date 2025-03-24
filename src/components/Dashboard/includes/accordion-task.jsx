@@ -188,12 +188,14 @@ const TaskAccordion = ({ data, defaultOpen }) => {
                 </div>
                 <div>
                   <p className="mb-1 text-xs text-gray-500">Attachments</p>
-                  {data?.attachments?.length > 0 ? (
+                  {data?.documents?.length > 0 ? (
                     <div className="flex flex-col gap-1 text-xs">
                       {data.attachments.map((attachment, index) => (
                         <Link
                           key={index}
-                          to={attachment.url}
+                          to={attachment.drive_link}
+                          target="_blank"
+                          rel="noreferrer noopener"
                           className="flex items-center gap-1 truncate"
                         >
                           <Paperclip size={14} className="text-gray-500" />

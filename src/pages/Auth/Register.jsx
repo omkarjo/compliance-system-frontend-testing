@@ -63,7 +63,6 @@ export default function Register() {
   });
 
   const handelSubmit = useCallback(async (data) => {
-    console.log(data);
     try {
       await api.post("/users", data);
       toast.success("Registration successful", {

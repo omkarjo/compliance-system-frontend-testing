@@ -26,6 +26,7 @@ import { nanoid } from "nanoid";
 import * as React from "react";
 import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import UserSelect from "./user-select";
+import { format } from "date-fns";
 
 const AnimateChangeInHeight = ({ children, className }) => {
   const containerRef = useRef(null);
@@ -179,7 +180,7 @@ const FilterComponent = ({
       filterIcon: selectedFilter.icon || <User />,
       relation: null,
       optionId: null,
-      optionLabel: `From: ${range.from.toLocaleDateString()} To: ${range.to.toLocaleDateString()}`,
+      optionLabel: `From: ${format(range.from, "dd/MM/yyyy")} To: ${format(range.to, "dd/MM/yyyy")}`,
       optionIcon: null,
       filterType: "date_range",
     };
