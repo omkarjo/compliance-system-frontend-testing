@@ -1,0 +1,14 @@
+[build]
+  base = "/"
+  publish = "dist"                            # Build output directory
+  command = "npm ci --force && npm run build"  # Force install and build
+
+[[redirects]]
+  from = "/*"                                  # Catch-all for React Router DOM
+  to = "/index.html"                           # Serve index.html for SPA
+  status = 200
+
+[[redirects]]
+  from = "/not-found"                                # Custom 404 route
+  to = "/not-found"                            # Redirect to your custom 404 page
+  status = 404
