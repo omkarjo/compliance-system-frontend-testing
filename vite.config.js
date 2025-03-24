@@ -14,11 +14,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api": {
-        target: process.env.VITE_BACKEND_URL,
+      '/api': {
+        target: 'http://aa09e3ae27a144cd0aaf0fbce7f0ab1c-bcccf20eeb9b21bd.elb.ap-south-1.amazonaws.com',
         changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, ""),
+        rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
   }
