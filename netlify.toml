@@ -1,4 +1,11 @@
 [[redirects]]
+  from = "/api/*"
+  to = "${VITE_BACKEND_URL}/:splat"   # Use the environment variable
+  status = 200
+  force = true
+
+
+[[redirects]]
   from = "/*"
   to = "/"
   status = 200

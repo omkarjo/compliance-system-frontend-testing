@@ -12,6 +12,16 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      "/api": {
+        target: process.env.VITE_BACKEND_URL,
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      }
+    }
+  }
 });
 
 
