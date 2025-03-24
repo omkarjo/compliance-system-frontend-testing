@@ -1,9 +1,10 @@
+[build]
+  functions = "netlify/functions"
+
 [[redirects]]
-  from = "/api/*"
-  to = "http://aa09e3ae27a144cd0aaf0fbce7f0ab1c-bcccf20eeb9b21bd.elb.ap-south-1.amazonaws.com/:splat"
+  from = "/proxy/*"
+  to = "/.netlify/functions/proxy/:splat"
   status = 200
-  force = true
-  headers = {X-Forwarded-Proto = "http"}
 
 [[redirects]]
   from = "/*"
