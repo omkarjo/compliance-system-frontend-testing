@@ -1,2 +1,1 @@
-/api/*  http://aa09e3ae27a144cd0aaf0fbce7f0ab1c-bcccf20eeb9b21bd.elb.ap-south-1.amazonaws.com/:splat  200
-/*       /index.html  200
+/* https://ajvc-compliance-system.com/:splat 301!
