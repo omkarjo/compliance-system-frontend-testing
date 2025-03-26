@@ -33,7 +33,7 @@ export default function TaskDashboardLimitedPartner() {
   ];
 
   const onSubmit = useCallback(async (data) => {
-    console.log("rest", data);
+    // console.log("rest", data);
     toast.success("Task created successfully");
     queryClient.invalidateQueries("tasks");
   }, []);

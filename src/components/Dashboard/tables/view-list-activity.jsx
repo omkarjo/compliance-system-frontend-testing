@@ -56,7 +56,7 @@ export default function ViewListActivity() {
   const { data: usersData } = useGetUserbyName({ searchTerm: "" });
 
   const users = useMemo(() => {
-    console.log("usersData", usersData);
+    // console.log("usersData", usersData);
     if (!usersData || !usersData?.length) return [];
     return usersData.map((user) => ({
       id: user.UserName,

@@ -58,7 +58,7 @@ export default function Login() {
         dispatch(setTokenAndFetchUser(response.data.access_token));
 
         toast.success("Login successful");
-        console.log(response.data);
+        // console.log(response.data);
       } catch (error) {
         toast.error("Login failed", {
           description: error?.response?.data?.detail || "Something went wrong",

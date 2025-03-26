@@ -109,7 +109,7 @@ export default function TableTaskViewLP({ openView = () => {} }) {
     search: "",
   });
 
-  console.log(user);
+  // console.log(user);
   const { data, isLoading, error } = useGetTask({
     pageIndex: pagination.pageIndex,
     pageSize: pagination.pageSize,

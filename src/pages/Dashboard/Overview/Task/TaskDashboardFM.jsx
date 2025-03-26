@@ -187,16 +187,16 @@ export default function TaskDashboardFundManager() {
       try {
         if (dialogTask.variant === "create") {
           const response = await createTask(rest);
-          console.log("response", response);
+          // console.log("response", response);
           compliance_task_id = response.data.compliance_task_id;
-          console.log("compliance_task_id", compliance_task_id);
+          // console.log("compliance_task_id", compliance_task_id);
           if (!compliance_task_id) {
             toast.error("Failed to create task", {
               description: "Unable to get task id",
             });
             return;
           }
-          console.log("data", data);
+          // console.log("data", data);
         } else {
           await editTask(rest);
         }
@@ -212,7 +212,7 @@ export default function TaskDashboardFundManager() {
               (res) => res.data.document_id,
             );
 
-            console.log("document_ids", document_ids);
+            // console.log("document_ids", document_ids);
             toast.success("Files uploaded successfully");
           } catch (error) {
             toast.error("Failed to upload file", {

@@ -87,7 +87,7 @@ export default function LPDashboard() {
     async (data) => {
       const { cml, documents, dob, doi, date_of_agreement, emaildrawdowns , ...rest } = data;
 
-      console.log("Documents", documents);
+      // console.log("Documents", documents);
 
       const body = {
         ...rest,
@@ -110,14 +110,14 @@ export default function LPDashboard() {
         body.cml = uploadResponse.data.document_id;
 
         const response = await apiWithAuth.post(limitedPartnersApiPaths.createLimitedPartner, body);
-        console.log(response);
+        // console.log(response);
         toast.success("Limited Partner Added Successfully");
         queryClient.invalidateQueries("lp-query");
 
         form.reset(defaultValues);
         handleDialogTaskClose();
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         toast.error("Failed to onboard Limited Partner", {
           description: error.response?.data?.detail || "Unknown error occurred",
         });
