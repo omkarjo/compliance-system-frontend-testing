@@ -15,6 +15,7 @@ import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
+import { taskApiPaths } from "@/constant/apiPaths";
 
 const defaultValues = {
   description: "",
@@ -147,7 +148,7 @@ export default function TaskDashboardFundManager() {
 
   const createTask = useCallback(async (data) => {
     try {
-      const response = await apiWithAuth.post("/api/tasks/", data);
+      const response = await apiWithAuth.post(taskApiPaths.createTask, data);
       toast.success("Task created successfully");
       return response;
     } catch (error) {
@@ -161,7 +162,7 @@ export default function TaskDashboardFundManager() {
     async (data) => {
       try {
         const response = await apiWithAuth.patch(
-          `/api/tasks/${dialogTask.compliance_task_id}`,
+          `${taskApiPaths.updateTaskPrefix}${dialogTask.compliance_task_id}`,
           data,
         );
         toast.success("Task updated successfully");

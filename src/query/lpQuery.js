@@ -1,3 +1,4 @@
+import { limitedPartnersApiPaths } from "@/constant/apiPaths";
 import { apiWithAuth } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -15,9 +16,9 @@ const fetchData = async ({ pageIndex, pageSize, sortBy, search }) => {
     let response;
     if (search) {
       params.name = search;
-      response = await apiWithAuth.get("/api/lps/search/", { params });
+      response = await apiWithAuth.get(limitedPartnersApiPaths.searchLimitedPartners, { params });
     } else {
-      response = await apiWithAuth.get("/api/lps/", { params });
+      response = await apiWithAuth.get(limitedPartnersApiPaths.getLimitedPartners, { params });
     }
     const data = response.data;
 

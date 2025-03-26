@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useGetOverviewStats = () => {
   return useQuery({
-    queryKey: ["stats-overview-querry"],
-    queryFn: () => apiWithAuth.get("/api/reports/tasks-stats/"),
+    queryKey: ["stats-overview-query"],
+    queryFn: () => apiWithAuth.get("/api/reports/tasks-stats"),
   });
 };

@@ -1,3 +1,4 @@
+import { auditLogApiPaths } from "@/constant/apiPaths";
 import { apiWithAuth } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -12,7 +13,7 @@ const fetchData = async ({ pageIndex, pageSize, sortBy, filters }) => {
         return acc;
       }, {}),
     };
-    const response = await apiWithAuth.get("/api/audit/logs", {
+    const response = await apiWithAuth.get(auditLogApiPaths.getAuditLog, {
       params: searchParams,
     });
     const { logs, total } = response.data;

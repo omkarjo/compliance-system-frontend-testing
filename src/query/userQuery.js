@@ -1,9 +1,10 @@
+import { authApiPaths } from "@/constant/apiPaths";
 import { apiWithAuth } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 
 const fetchUserbyName = async ({ searchTerm }) => {
   try {
-    const response = await apiWithAuth.get("/api/users/search", {
+    const response = await apiWithAuth.get(authApiPaths.search, {
       params: {
         username: searchTerm,
       },

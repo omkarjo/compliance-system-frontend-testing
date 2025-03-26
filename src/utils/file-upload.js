@@ -1,3 +1,4 @@
+import { documentApiPaths } from "@/constant/apiPaths";
 import { apiWithAuth } from "./api";
 
 export default function fileUpload(file, category, task_id ){
@@ -13,7 +14,7 @@ export default function fileUpload(file, category, task_id ){
     formData.append("category", category);
     formData.append("task_id", task_id);
 
-    return apiWithAuth.post("/api/documents/upload", formData, {
+    return apiWithAuth.post(documentApiPaths.uploadDocument, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

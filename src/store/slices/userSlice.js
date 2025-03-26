@@ -1,3 +1,4 @@
+import { authApiPaths } from "@/constant/apiPaths";
 import api from "@/utils/api";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
@@ -19,7 +20,7 @@ export const fetchUser = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const state = thunkAPI.getState();
-      const response = await api.get("/api/users/me", {
+      const response = await api.get(authApiPaths.me, {
         headers: { Authorization: `Bearer ${state.user.token}` },
       });
       localStorage.setItem("user", JSON.stringify(response.data));

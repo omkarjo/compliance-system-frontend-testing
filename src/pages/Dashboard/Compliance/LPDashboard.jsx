@@ -3,6 +3,7 @@ import SheetLPViewFM from "@/components/Dashboard/sheet/sheet-lp-view-fm";
 import TableLPViewFM from "@/components/Dashboard/tables/table-lp-view-fm";
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
+import { limitedPartnersApiPaths } from "@/constant/apiPaths";
 import queryClient from "@/query/queryClient";
 import { lpFromFields } from "@/schemas/form/lpSchema";
 import { lpSchema } from "@/schemas/zod/lpSchema";
@@ -108,7 +109,7 @@ export default function LPDashboard() {
         const uploadResponse = await fileUpload(file, "Contribution Agreement");
         body.cml = uploadResponse.data.document_id;
 
-        const response = await apiWithAuth.post("/api/lps", body);
+        const response = await apiWithAuth.post(limitedPartnersApiPaths.createLimitedPartner, body);
         console.log(response);
         toast.success("Limited Partner Added Successfully");
         queryClient.invalidateQueries("lp-query");

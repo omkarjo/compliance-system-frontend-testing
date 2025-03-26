@@ -1,3 +1,4 @@
+import { taskApiPaths } from "@/constant/apiPaths";
 import { apiWithAuth } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -13,7 +14,7 @@ const fetchData = async ({ pageIndex, pageSize, sortBy, filters }) => {
       }, {}),
     };
 
-    const response = await apiWithAuth.get("/api/tasks", {
+    const response = await apiWithAuth.get(taskApiPaths.getTask, {
       params: searchParams,
     });
     const { tasks, total } = response.data;

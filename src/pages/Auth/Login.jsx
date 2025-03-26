@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { authApiPaths } from "@/constant/apiPaths";
 import { loginSchema } from "@/schemas/zod/authSchema";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setTokenAndFetchUser } from "@/store/slices/userSlice";
@@ -47,7 +48,7 @@ export default function Login() {
       payload.append("username", data.email);
       payload.append("password", data.password);
       try {
-        const response = await api.post("/api/auth/login", payload, {
+        const response = await api.post(authApiPaths.login, payload, {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
             "Access-Control-Allow-Origin": "*",

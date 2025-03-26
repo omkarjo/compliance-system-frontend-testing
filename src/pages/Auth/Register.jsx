@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { authApiPaths } from "@/constant/apiPaths";
 import { cn } from "@/lib/utils";
 import { registerSchema } from "@/schemas/zod/authSchema";
 import { useAppSelector } from "@/store/hooks";
@@ -64,7 +65,7 @@ export default function Register() {
 
   const handelSubmit = useCallback(async (data) => {
     try {
-      await api.post("/users", data);
+      await api.post(authApiPaths.register, data);
       toast.success("Registration successful", {
         description: "Please login to continue",
       });
