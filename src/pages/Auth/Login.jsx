@@ -47,7 +47,7 @@ export default function Login() {
       payload.append("username", data.email);
       payload.append("password", data.password);
       try {
-        const response = await api.post("/api/auth/login/", payload, {
+        const response = await api.post("/api/auth/login", payload, {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
             "Access-Control-Allow-Origin": "*",
