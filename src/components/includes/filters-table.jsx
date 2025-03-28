@@ -20,13 +20,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 import { ListFilter, User, X } from "lucide-react";
 import { motion } from "motion/react";
 import { nanoid } from "nanoid";
 import * as React from "react";
-import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import UserSelect from "./user-select";
-import { format } from "date-fns";
 
 const AnimateChangeInHeight = ({ children, className }) => {
   const containerRef = useRef(null);
@@ -34,7 +34,7 @@ const AnimateChangeInHeight = ({ children, className }) => {
 
   useEffect(() => {
     if (!containerRef.current) return;
-    
+
     const resizeObserver = new ResizeObserver((entries) => {
       setHeight(entries[0].contentRect.height);
     });
@@ -72,7 +72,7 @@ const FilterComponent = ({
     (filterId) => {
       const filter = filterOptions.find((opt) => opt.id === filterId);
       if (!filter) return;
-      
+
       setSelectedFilter(filter);
 
       if (filter.type === "date_range" || filter.type === "user_select") {
@@ -100,108 +100,126 @@ const FilterComponent = ({
     }
   }, [setSearchOptions, selectedFilter, commandInput]);
 
-  const handleOptionSelect = useCallback((option) => {
-    if (!selectedFilter) return;
-    
-    const existingFilter = filters.find(
-      (filter) =>
-        filter.filterId === selectedFilter.id &&
-        filter.optionId === option.id,
-    );
+  const handleOptionSelect = useCallback(
+    (option) => {
+      if (!selectedFilter) return;
 
-    if (existingFilter) {
+      // Clear filter
+      clearAllFilters();
+
+      const existingFilter = filters.find(
+        (filter) =>
+          filter.filterId === selectedFilter.id &&
+          filter.optionId === option.id,
+      );
+
+      if (existingFilter) {
+        setSelectedFilter(null);
+        setCommandInput("");
+        setOpen(false);
+        return;
+      }
+
+      const newFilter = {
+        id: nanoid(),
+        filterId: selectedFilter.id,
+        filterName: selectedFilter.name,
+        filterIcon: selectedFilter.icon || <User />,
+        relation:
+          selectedRelation[selectedFilter.id] ||
+          (selectedFilter.relation && selectedFilter.relation[0]),
+        optionId: option.id,
+        optionLabel: option.label,
+        optionIcon: option.icon,
+      };
+
+      const filterProps = {
+        filterid: selectedFilter.id,
+        optionid: option.id,
+      };
+
+      setFiltersProps((prev) => [...prev, filterProps]);
+      setFilters((prev) => [...prev, newFilter]);
       setSelectedFilter(null);
       setCommandInput("");
       setOpen(false);
-      return;
-    }
+    },
+    [selectedFilter, filters, selectedRelation, setFiltersProps],
+  );
 
-    const newFilter = {
-      id: nanoid(),
-      filterId: selectedFilter.id,
-      filterName: selectedFilter.name,
-      filterIcon: selectedFilter.icon || <User />,
-      relation:
-        selectedRelation[selectedFilter.id] ||
-        (selectedFilter.relation && selectedFilter.relation[0]),
-      optionId: option.id,
-      optionLabel: option.label,
-      optionIcon: option.icon,
-    };
+  const handleUserSelect = useCallback(
+    (userData) => {
+      if (!selectedFilter || !userData) return;
 
-    const filterProps = {
-      filterid: selectedFilter.id,
-      optionid: option.id,
-    };
-    
-    setFiltersProps((prev) => [...prev, filterProps]);
-    setFilters((prev) => [...prev, newFilter]);
-    setSelectedFilter(null);
-    setCommandInput("");
-    setOpen(false);
-  }, [selectedFilter, filters, selectedRelation, setFiltersProps]);
+      // Clear filter
+      clearAllFilters();
 
-  const handleUserSelect = useCallback((userData) => {
-    if (!selectedFilter || !userData) return;
-    
-    const newFilter = {
-      id: nanoid(),
-      filterId: selectedFilter.id,
-      filterName: selectedFilter.name,
-      filterIcon: selectedFilter.icon || <User />,
-      optionId: userData.id,
-      optionLabel: userData.name,
-      optionIcon: null,
-      filterType: "user_select",
-      userData: userData,
-    };
+      const newFilter = {
+        id: nanoid(),
+        filterId: selectedFilter.id,
+        filterName: selectedFilter.name,
+        filterIcon: selectedFilter.icon || <User />,
+        optionId: userData.id,
+        optionLabel: userData.name,
+        optionIcon: null,
+        filterType: "user_select",
+        userData: userData,
+      };
 
-    setFiltersProps((prev) => [
-      ...prev,
-      {
-        filterid: selectedFilter.id,
-        optionid: userData.id,
-        optionData: userData,
-      },
-    ]);
+      setFiltersProps((prev) => [
+        ...prev,
+        {
+          filterid: selectedFilter.id,
+          optionid: userData.id,
+          optionData: userData,
+        },
+      ]);
 
-    setFilters((prev) => [...prev, newFilter]);
-    setOpen(false);
-    setSelectedFilter(null);
-  }, [selectedFilter, setFiltersProps]);
+      setFilters((prev) => [...prev, newFilter]);
+      setOpen(false);
+      setSelectedFilter(null);
+    },
+    [selectedFilter, setFiltersProps],
+  );
 
-  const handleDateRangeSelect = useCallback((range) => {
-    if (!range?.from || !range?.to || !selectedFilter) return;
-    
-    const newFilter = {
-      id: nanoid(),
-      filterId: selectedFilter.id,
-      filterName: selectedFilter.name,
-      filterIcon: selectedFilter.icon || <User />,
-      relation: null,
-      optionId: null,
-      optionLabel: `From: ${format(range.from, "dd/MM/yyyy")} To: ${format(range.to, "dd/MM/yyyy")}`,
-      optionIcon: null,
-      filterType: "date_range",
-    };
+  const handleDateRangeSelect = useCallback(
+    (range) => {
+      if (!range?.from || !range?.to || !selectedFilter) return;
 
-    setFiltersProps((prev) => [
-      ...prev,
-      {
-        filterid: "start_date",
-        optionid: range.from.toLocaleDateString("en-CA"),
-      },
-      {
-        filterid: "end_date",
-        optionid: range.to.toLocaleDateString("en-CA"),
-      },
-    ]);
+      // Clear filter
+      clearAllFilters();
 
-    setFilters((prev) => [...prev, newFilter]);
-    setOpen(false);
-    setSelectedFilter(null);
-    setDateRange(null);
-  }, [selectedFilter, setFiltersProps]);
+      const newFilter = {
+        id: nanoid(),
+        filterId: selectedFilter.id,
+        filterName: selectedFilter.name,
+        filterIcon: selectedFilter.icon || <User />,
+        relation: null,
+        optionId: null,
+        optionLabel: `From: ${format(range.from, "dd/MM/yyyy")} To: ${format(range.to, "dd/MM/yyyy")}`,
+        optionIcon: null,
+        filterType: "date_range",
+      };
+
+      setFiltersProps((prev) => [
+        ...prev,
+        {
+          filterid: "start_date",
+          optionid: range.from.toLocaleDateString("en-CA"),
+        },
+        {
+          filterid: "end_date",
+          optionid: range.to.toLocaleDateString("en-CA"),
+        },
+      ]);
+
+      setFilters((prev) => [...prev, newFilter]);
+      setOpen(false);
+      setSelectedFilter(null);
+      setDateRange(null);
+    },
+    [selectedFilter, setFiltersProps],
+  );
 
   const handleRelationChange = useCallback((filterId, relation) => {
     setFilters((prev) =>
@@ -211,32 +229,35 @@ const FilterComponent = ({
     );
   }, []);
 
-  const removeFilter = useCallback((filterId) => {
-    const filterToRemove = filters.find((filter) => filter.id === filterId);
-    if (!filterToRemove) return;
-    
-    setFilters((prev) => prev.filter((filter) => filter.id !== filterId));
+  const removeFilter = useCallback(
+    (filterId) => {
+      const filterToRemove = filters.find((filter) => filter.id === filterId);
+      if (!filterToRemove) return;
 
-    if (filterToRemove.filterType === "date_range") {
-      setFiltersProps((prev) =>
-        prev.filter(
-          (filter) =>
-            filter.filterid !== "start_date" &&
-            filter.filterid !== "end_date",
-        ),
-      );
-    } else {
-      setFiltersProps((prev) =>
-        prev.filter(
-          (filter) =>
-            !(
-              filter.filterid === filterToRemove.filterId &&
-              filter.optionid === filterToRemove.optionId
-            ),
-        ),
-      );
-    }
-  }, [filters, setFiltersProps]);
+      setFilters((prev) => prev.filter((filter) => filter.id !== filterId));
+
+      if (filterToRemove.filterType === "date_range") {
+        setFiltersProps((prev) =>
+          prev.filter(
+            (filter) =>
+              filter.filterid !== "start_date" &&
+              filter.filterid !== "end_date",
+          ),
+        );
+      } else {
+        setFiltersProps((prev) =>
+          prev.filter(
+            (filter) =>
+              !(
+                filter.filterid === filterToRemove.filterId &&
+                filter.optionid === filterToRemove.optionId
+              ),
+          ),
+        );
+      }
+    },
+    [filters, setFiltersProps],
+  );
 
   const clearAllFilters = useCallback(() => {
     setFilters([]);
@@ -253,12 +274,13 @@ const FilterComponent = ({
               value={filter.id}
               onSelect={() => handleFilterSelect(filter.id)}
             >
-              {filter.icon ? 
+              {filter.icon ? (
                 React.cloneElement(filter.icon, {
                   className: "size-3.5 me-2",
-                }) : 
-                <User className="size-3.5 me-2" />
-              }
+                })
+              ) : (
+                <User className="me-2 size-3.5" />
+              )}
               {filter.name}
             </CommandItem>
           );
@@ -272,12 +294,13 @@ const FilterComponent = ({
               value={filter.id}
               onSelect={() => handleFilterSelect(filter.id)}
             >
-              {filter.icon ? 
+              {filter.icon ? (
                 React.cloneElement(filter.icon, {
                   className: "size-3.5 me-2",
-                }) : 
-                <User className="size-3.5 me-2" />
-              }
+                })
+              ) : (
+                <User className="me-2 size-3.5" />
+              )}
               {filter.name}
             </CommandItem>
           );
@@ -303,15 +326,15 @@ const FilterComponent = ({
     if (selectedFilter?.type === "user_select") {
       return (
         <div className="p-2">
-          <UserSelect 
+          <UserSelect
             isFilter={true}
             returnFullObject={true}
-            onValueChange={handleUserSelect} 
+            onValueChange={handleUserSelect}
           />
         </div>
       );
-    } 
-    
+    }
+
     if (selectedFilter?.type === "date_range") {
       return (
         <Calendar
@@ -325,7 +348,7 @@ const FilterComponent = ({
         />
       );
     }
-    
+
     return (
       <>
         <CommandInput
@@ -344,12 +367,11 @@ const FilterComponent = ({
               value={option.id}
               onSelect={() => handleOptionSelect(option)}
             >
-              {option.icon ? 
-                React.cloneElement(option.icon, {
-                  className: "size-3.5 me-2",
-                }) : 
-                null
-              }
+              {option.icon
+                ? React.cloneElement(option.icon, {
+                    className: "size-3.5 me-2",
+                  })
+                : null}
               {option.label}
             </CommandItem>
           ))}
@@ -360,14 +382,14 @@ const FilterComponent = ({
       </>
     );
   }, [
-    selectedFilter, 
-    dateRange, 
-    commandInput, 
-    handleUserSelect, 
-    handleDateRangeSelect, 
-    handleOptionSelect, 
-    filterOptions, 
-    generateFilterFields
+    selectedFilter,
+    dateRange,
+    commandInput,
+    handleUserSelect,
+    handleDateRangeSelect,
+    handleOptionSelect,
+    filterOptions,
+    generateFilterFields,
   ]);
 
   return (
@@ -376,14 +398,16 @@ const FilterComponent = ({
         {filters.map((filter) => (
           <div key={filter.id} className="flex items-center gap-[1px] text-xs">
             <div className="bg-muted flex shrink-0 items-center gap-1.5 rounded-l px-1.5 py-1">
-              {filter.filterIcon ? 
-                React.cloneElement(filter.filterIcon, { className: "size-3.5" }) :
+              {filter.filterIcon ? (
+                React.cloneElement(filter.filterIcon, { className: "size-3.5" })
+              ) : (
                 <User className="size-3.5" />
-              }
+              )}
               {filter.filterName}
             </div>
 
-            {filterOptions.find((opt) => opt.id === filter.filterId)?.relation?.length > 1 && (
+            {filterOptions.find((opt) => opt.id === filter.filterId)?.relation
+              ?.length > 1 && (
               <DropdownMenu>
                 <DropdownMenuTrigger className="bg-muted hover:bg-muted/50 text-muted-foreground hover:text-primary shrink-0 px-1.5 py-1 transition">
                   {filter.relation}
@@ -404,10 +428,11 @@ const FilterComponent = ({
             )}
 
             <div className="bg-muted text-muted-foreground flex shrink-0 items-center gap-1.5 rounded-none px-1.5 py-1">
-              {filter.optionIcon ? 
-                React.cloneElement(filter.optionIcon, { className: "size-3.5" }) : 
-                null
-              }
+              {filter.optionIcon
+                ? React.cloneElement(filter.optionIcon, {
+                    className: "size-3.5",
+                  })
+                : null}
               {filter.optionLabel}
             </div>
 
@@ -452,9 +477,7 @@ const FilterComponent = ({
         </PopoverTrigger>
         <PopoverContent className="me-2 w-[250px] p-0">
           <AnimateChangeInHeight>
-            <Command>
-              {renderFilterContent}
-            </Command>
+            <Command>{renderFilterContent}</Command>
           </AnimateChangeInHeight>
         </PopoverContent>
       </Popover>

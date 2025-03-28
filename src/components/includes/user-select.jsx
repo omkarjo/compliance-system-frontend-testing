@@ -29,7 +29,7 @@ const UserCommandList = ({
 }) => (
   <Command className="border-0">
     <CommandInput
-      placeholder="Search by name or email..."
+      placeholder="Search by name"
       value={search}
       onValueChange={setSearch}
       autoFocus

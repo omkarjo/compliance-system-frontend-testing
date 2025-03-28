@@ -13,14 +13,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { CheckIcon, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 
-const PhoneInput = React.forwardRef(({ className, onChange, ...props }, ref) => {
+const PhoneInput = React.forwardRef((props, ref) => {
+  const { className, onChange, ...restProps } = props;
+
   return (
     <RPNInput.default
       ref={ref}
@@ -29,39 +30,51 @@ const PhoneInput = React.forwardRef(({ className, onChange, ...props }, ref) => 
       countrySelectComponent={CountrySelect}
       inputComponent={InputComponent}
       smartCaret={false}
-      /**
-       * Handles the onChange event.
-       *
-       * react-phone-number-input might trigger the onChange event as undefined
-       * when a valid phone number is not entered. To prevent this,
-       * the value is coerced to an empty string.
-       *
-       * @param {E164Number | undefined} value - The entered value
-       */
       onChange={(value) => onChange?.(value || "")}
-      {...props}
+      {...restProps}
     />
   );
 });
 PhoneInput.displayName = "PhoneInput";
 
-const InputComponent = React.forwardRef(({ className, ...props }, ref) => (
-  <Input
-    className={cn("rounded-s-none rounded-e-lg", className)}
-    {...props}
-    ref={ref}
-  />
-));
+const InputComponent = React.forwardRef((props, ref) => {
+  const { className, ...restProps } = props;
+  return (
+    <Input
+      className={cn("rounded-s-none rounded-e-lg", className)}
+      {...restProps}
+      ref={ref}
+    />
+  );
+});
 InputComponent.displayName = "InputComponent";
 
-const CountrySelect = ({
-  disabled,
-  value: selectedCountry,
-  options: countryList,
-  onChange,
-}) => {
+const CountrySelect = (props) => {
+  const {
+    disabled,
+    value: selectedCountry,
+    options: countryList,
+    onChange,
+  } = props;
+  const [open, setOpen] = React.useState(false);
+  const scrollAreaRef = React.useRef(null);
+
+  const handleScroll = React.useCallback((event) => {
+    const scrollArea = scrollAreaRef.current;
+    if (!scrollArea) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = scrollArea;
+    const isAtTop = scrollTop === 0;
+    const isAtBottom = scrollTop + clientHeight >= scrollHeight;
+
+    // Prevent event propagation when scrolling is possible
+    if ((event.deltaY > 0 && !isAtBottom) || (event.deltaY < 0 && !isAtTop)) {
+      event.stopPropagation();
+    }
+  }, []);
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           type="button"
@@ -81,26 +94,46 @@ const CountrySelect = ({
           />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0">
+      <PopoverContent
+        className="max-h-[300px] w-[300px] overflow-auto p-0"
+        align="start"
+        side="bottom"
+        sideOffset={5}
+      >
         <Command>
           <CommandInput placeholder="Search country..." />
           <CommandList>
-            <ScrollArea className="h-72">
+            <div
+              ref={scrollAreaRef}
+              className="max-h-[250px] overflow-y-auto"
+              onWheel={handleScroll}
+            >
               <CommandEmpty>No country found.</CommandEmpty>
               <CommandGroup>
                 {countryList.map(({ value, label }) =>
                   value ? (
-                    <CountrySelectOption
+                    <CommandItem
                       key={value}
-                      country={value}
-                      countryName={label}
-                      selectedCountry={selectedCountry}
-                      onChange={onChange}
-                    />
+                      value={value}
+                      onSelect={() => {
+                        onChange(value);
+                        setOpen(false);
+                      }}
+                      className="gap-2"
+                    >
+                      <FlagComponent country={value} countryName={label} />
+                      <span className="flex-1 text-sm">{label}</span>
+                      <span className="text-foreground/50 text-sm">
+                        {`+${RPNInput.getCountryCallingCode(value)}`}
+                      </span>
+                      <CheckIcon
+                        className={`ml-auto size-4 ${value === selectedCountry ? "opacity-100" : "opacity-0"}`}
+                      />
+                    </CommandItem>
                   ) : null,
                 )}
               </CommandGroup>
-            </ScrollArea>
+            </div>
           </CommandList>
         </Command>
       </PopoverContent>
@@ -108,29 +141,11 @@ const CountrySelect = ({
   );
 };
 
-const CountrySelectOption = ({
-  country,
-  countryName,
-  selectedCountry,
-  onChange,
-}) => {
-  return (
-    <CommandItem className="gap-2" onSelect={() => onChange(country)}>
-      <FlagComponent country={country} countryName={countryName} />
-      <span className="flex-1 text-sm">{countryName}</span>
-      <span className="text-foreground/50 text-sm">{`+${RPNInput.getCountryCallingCode(country)}`}</span>
-      <CheckIcon
-        className={`ml-auto size-4 ${country === selectedCountry ? "opacity-100" : "opacity-0"}`}
-      />
-    </CommandItem>
-  );
-};
-
 const FlagComponent = ({ country, countryName }) => {
   const Flag = flags[country];
 
   return (
-    <span className="bg-foreground/20 flex h-4 w-6 overflow-hidden rounded-sm [&_svg]:size-full">
+    <span className="flex h-6 w-6 items-center justify-center overflow-hidden rounded-sm [&_svg]:size-full">
       {Flag && <Flag title={countryName} />}
     </span>
   );

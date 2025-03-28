@@ -1,3 +1,5 @@
+import { UpdateTaskStatus } from "@/actions/task/updateTask";
+import BadgeStatusSelector from "@/components/includes/badge-select";
 import DataTable from "@/components/includes/data-table";
 import UserBadge from "@/components/includes/user-badge";
 import { Button } from "@/components/ui/button";
@@ -18,18 +20,6 @@ import {
   TriangleAlert,
   Watch,
 } from "lucide-react";
-import BadgeStatusTask from "../../includes/badge-status";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 export default function TableTaskViewFM({ actionType, openView = () => {} }) {
   const columns = [
@@ -71,8 +61,27 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
     {
       accessorKey: "state",
       header: "Status",
-      cell: ({ row }) => <BadgeStatusTask text={row.getValue("state")} />,
+      cell: ({ row }) => {
+        const status = row.getValue("state");
+        const data = row.original;
+        const compliance_task_id = data.compliance_task_id;
+        const updateStatus = UpdateTaskStatus();
+
+        return (
+          <BadgeStatusSelector
+            defaultStatus={status}
+            onStatusChange={async (newStatus) => {
+              await updateStatus.mutateAsync({
+                taskId: compliance_task_id,
+                status: newStatus,
+              });
+            }}
+            isUpdating={updateStatus.isPending}
+          />
+        );
+      },
     },
+
     {
       accessorKey: "assignee_name",
       header: "Assignee",
