@@ -190,7 +190,7 @@ const TaskAccordion = ({ data, defaultOpen }) => {
                   <p className="mb-1 text-xs text-gray-500">Attachments</p>
                   {data?.documents?.length > 0 ? (
                     <div className="flex flex-col gap-1 text-xs">
-                      {data.attachments.map((attachment, index) => (
+                      {data?.documents?.map((attachment, index) => (
                         <Link
                           key={index}
                           to={attachment.drive_link}
