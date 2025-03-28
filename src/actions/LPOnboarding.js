@@ -80,6 +80,12 @@ export function useLPOnboarding() {
         return lpResponse.data;
       } catch (error) {
         // In case of error, update any active loading toast to an error message
+        toast.dismiss("lp-prep");
+        toast.dismiss("lp-create");
+        toast.dismiss("task-create");
+        toast.dismiss("upload-doc");
+        toast.dismiss("link-doc");
+        toast.dismiss("task-complete");
         toast.error("An error occurred during onboarding.", {
           description: error.response?.data?.detail || error.message,
         });
@@ -91,6 +97,7 @@ export function useLPOnboarding() {
       toast.success("LP Onboarded Successfully");
     },
     onError: (error) => {
+
       console.error("Onboarding Error:", error);
       toast.error("Failed to Onboard LP", {
         description: error.response?.data?.detail || "Unknown error occurred",
