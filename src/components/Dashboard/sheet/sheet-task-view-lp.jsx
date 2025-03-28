@@ -27,7 +27,6 @@ import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-
 const taskDataOrder = ["deadline", "attachments"];
 
 const SHEET_TITLE = "Upload KYC Document";
@@ -102,7 +101,7 @@ export default function SheetTaskViewLP({
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right">
+      <SheetContent side="right" className={cn("w-full md:w-1/2")}>
         <SheetHeader className={"mt-4 pb-0 md:mt-8"}>
           <div className="max-w-lg rounded-lg border border-orange-200 bg-orange-100 p-4">
             <h2 className="mb-1 text-lg font-semibold">Reviewer Comments</h2>

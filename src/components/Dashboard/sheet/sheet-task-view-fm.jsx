@@ -9,6 +9,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { renderCell } from "@/lib/renderCell"; // Import shared utility
+import { cn } from "@/lib/utils";
 import {
   Calendar,
   CheckCircle,
@@ -64,7 +65,7 @@ export default function SheetTaskViewFM({
 }) {
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right">
+      <SheetContent side="right" className={cn("w-full md:w-1/2")}>
         <SheetHeader className="mt-4 pb-0 md:mt-8">
           {data?.category && <Badge variant="outline">{data.category}</Badge>}
           <SheetTitle>{data?.title}</SheetTitle>

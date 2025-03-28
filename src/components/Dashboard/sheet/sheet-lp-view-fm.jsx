@@ -9,6 +9,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { renderCell } from "@/lib/renderCell";
+import { cn } from "@/lib/utils";
 import { CircleUserRound, File, Timer, TriangleAlert, Calendar, CheckCircle } from "lucide-react";
 
 
@@ -62,7 +63,7 @@ export default function SheetLPViewFM({
 }) {
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right">
+      <SheetContent side="right" className={cn("w-full md:w-1/2")}>
         <SheetHeader className="mt-4 pb-0 md:mt-8">
           <SheetTitle>{data?.lp_name}</SheetTitle>
           <SheetDescription>{data?.email}</SheetDescription>
