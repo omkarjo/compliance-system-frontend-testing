@@ -25,10 +25,11 @@ export const lpSchema = z.object({
   pan: z.string().regex(/[A-Z]{5}[0-9]{4}[A-Z]{1}/, "Invalid PAN number"),
   address: z.string().min(1, "Address is required"),
   nominee: z.string().min(1, "Nominee is required"),
+  // Min 1Cr
   commitment_amount: z
     .string()
     .transform((val) => parseFloat(val))
-    .refine((val) => !isNaN(val) && val > 1, {
+    .refine((val) => !isNaN(val) && val > 10000000, {
       message: "Commitment amount must be greater than ₹1Cr",
     }),
   acknowledgement_of_ppm: z.enum(["yes", "no"]),

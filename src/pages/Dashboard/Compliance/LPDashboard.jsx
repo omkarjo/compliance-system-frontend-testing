@@ -1,35 +1,31 @@
-import { useLimitedPartnerOnboarding } from "@/actions/LPOnboarding";
+import { useLPOnboarding } from "@/actions/LPOnboarding";
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import SheetLPViewFM from "@/components/Dashboard/sheet/sheet-lp-view-fm";
 import TableLPViewFM from "@/components/Dashboard/tables/table-lp-view-fm";
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
-import { limitedPartnersApiPaths } from "@/constant/apiPaths";
-import queryClient from "@/query/queryClient";
 import { lpFromFields } from "@/schemas/form/lpSchema";
 import { lpSchema } from "@/schemas/zod/lpSchema";
-import { apiWithAuth } from "@/utils/api";
-import fileUpload from "@/utils/file-upload";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
-import { use, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 const defaultValues = {
-  lp_name: "Test Limited Partner",
-  gender: "Male",
-  mobile_no: "9876543210",
-  email: "greatnerve@gmail.com",
-  pan: "ABCDE1234F",
-  address: "Test Address",
-  nominee: "Test Nominee",
-  commitment_amount: "1000000",
+  lp_name: "",
+  gender: "",
+  mobile_no: "",
+  email: "",
+  pan: "",
+  address: "",
+  nominee: "",
+  commitment_amount: "",
   acknowledgement_of_ppm: undefined,
   cml: [],
   // depository: undefined,
-  dpid: "123456789012",
-  client_id: "123456789012",
+  dpid: "",
+  client_id: "",
   class_of_shares: undefined,
   isin: "",
   type: undefined,
@@ -51,7 +47,7 @@ export default function LPDashboard() {
     defaultValues: defaultValues,
   });
 
-  const onboardingMutation = useLimitedPartnerOnboarding();
+  const onboardingMutation = useLPOnboarding();
 
   const form = useForm({
     resolver: zodResolver(lpSchema),
@@ -96,29 +92,10 @@ export default function LPDashboard() {
       };
 
       try {
-        const result =  await onboardingMutation.mutate({
+        const result = await onboardingMutation.mutate({
           lpData: body,
           cmlFile: cml[0],
         });
-        console.log(result);
-
-        // if (!cml || !cml.length) {
-        //   toast.error("Please upload the CML document");
-        //   return;
-        // }
-
-        // const file = cml[0];
-        // const uploadResponse = await fileUpload(file, "Contribution Agreement");
-        // body.cml = uploadResponse.data.document_id;
-
-        // const response = await apiWithAuth.post(
-        //   limitedPartnersApiPaths.createLimitedPartner,
-        //   body,
-        // );
-        // // console.log(response);
-        // toast.success("Limited Partner Added Successfully");
-        // queryClient.invalidateQueries("lp-query");
-
         form.reset(defaultValues);
         handleDialogTaskClose();
       } catch (error) {
@@ -128,7 +105,7 @@ export default function LPDashboard() {
         });
       }
     },
-    [handleDialogTaskClose, form],
+    [form, onboardingMutation, handleDialogTaskClose],
   );
 
   useEffect(() => {
