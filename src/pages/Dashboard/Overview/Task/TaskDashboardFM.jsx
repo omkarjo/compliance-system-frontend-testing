@@ -24,10 +24,10 @@ const defaultValues = {
   repeat: false,
   predecessor_task: "",
   attachments: [],
+  document_type: undefined,
   assignee_id: "",
   reviewer_id: "",
   approver_id: "",
-  document_type: "",
 };
 
 export default function TaskDashboardFundManager() {
@@ -245,6 +245,9 @@ export default function TaskDashboardFundManager() {
   const handelTabChange = useCallback((value) => {
     localStorage.setItem("taskTabs", value);
   }, []);
+
+  console.log("formErrors", form.formState.errors);
+  console.log("formValues", form.getValues());
 
 
   return (

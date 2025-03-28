@@ -13,11 +13,11 @@ export default function fileUpload(file, category, task_id ){
     formData.append("file", file);
     formData.append("category", category);
     formData.append("task_id", task_id);
-
     return apiWithAuth.post(documentApiPaths.uploadDocument, formData, {
       headers: {
-        "Content-Type": "multipart/form-data",
+      "Content-Type": "multipart/form-data",
       },
+      timeout: 0,
     });
   } catch (error) {
     console.error("File upload failed:", error);

@@ -1,3 +1,4 @@
+import { useLimitedPartnerOnboarding } from "@/actions/LPOnboarding";
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import SheetLPViewFM from "@/components/Dashboard/sheet/sheet-lp-view-fm";
 import TableLPViewFM from "@/components/Dashboard/tables/table-lp-view-fm";
@@ -11,24 +12,24 @@ import { apiWithAuth } from "@/utils/api";
 import fileUpload from "@/utils/file-upload";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 const defaultValues = {
-  lp_name: "",
-  gender: undefined,
-  mobile_no: "",
-  email: "",
-  pan: "",
-  address: "",
-  nominee: "",
-  commitment_amount: "",
+  lp_name: "Test Limited Partner",
+  gender: "Male",
+  mobile_no: "9876543210",
+  email: "greatnerve@gmail.com",
+  pan: "ABCDE1234F",
+  address: "Test Address",
+  nominee: "Test Nominee",
+  commitment_amount: "1000000",
   acknowledgement_of_ppm: undefined,
   cml: [],
   // depository: undefined,
-  dpid: "",
-  client_id: "",
+  dpid: "123456789012",
+  client_id: "123456789012",
   class_of_shares: undefined,
   isin: "",
   type: undefined,
@@ -49,6 +50,8 @@ export default function LPDashboard() {
     variant: "",
     defaultValues: defaultValues,
   });
+
+  const onboardingMutation = useLimitedPartnerOnboarding();
 
   const form = useForm({
     resolver: zodResolver(lpSchema),
@@ -85,34 +88,36 @@ export default function LPDashboard() {
 
   const onSubmit = useCallback(
     async (data) => {
-      const { cml, documents, dob, doi, date_of_agreement, emaildrawdowns , ...rest } = data;
-
-      // console.log("Documents", documents);
+      const { cml, documents, emaildrawdowns, ...rest } = data;
 
       const body = {
         ...rest,
-        doi: doi ? doi.toISOString().split("T")[0] : null,
-        dob: dob ? dob.toISOString().split("T")[0] : null,
-        date_of_agreement: date_of_agreement
-          ? date_of_agreement.toISOString().split("T")[0]
-          : null,
-        emaildrawdowns: emaildrawdowns.join(",") 
+        emaildrawdowns: emaildrawdowns.join(","),
       };
 
       try {
-        if (!cml || !cml.length) {
-          toast.error("Please upload the CML document");
-          return;
-        }
+        const result =  await onboardingMutation.mutate({
+          lpData: body,
+          cmlFile: cml[0],
+        });
+        console.log(result);
 
-        const file = cml[0];
-        const uploadResponse = await fileUpload(file, "Contribution Agreement");
-        body.cml = uploadResponse.data.document_id;
+        // if (!cml || !cml.length) {
+        //   toast.error("Please upload the CML document");
+        //   return;
+        // }
 
-        const response = await apiWithAuth.post(limitedPartnersApiPaths.createLimitedPartner, body);
-        // console.log(response);
-        toast.success("Limited Partner Added Successfully");
-        queryClient.invalidateQueries("lp-query");
+        // const file = cml[0];
+        // const uploadResponse = await fileUpload(file, "Contribution Agreement");
+        // body.cml = uploadResponse.data.document_id;
+
+        // const response = await apiWithAuth.post(
+        //   limitedPartnersApiPaths.createLimitedPartner,
+        //   body,
+        // );
+        // // console.log(response);
+        // toast.success("Limited Partner Added Successfully");
+        // queryClient.invalidateQueries("lp-query");
 
         form.reset(defaultValues);
         handleDialogTaskClose();
@@ -126,7 +131,12 @@ export default function LPDashboard() {
     [handleDialogTaskClose, form],
   );
 
-
+  useEffect(() => {
+    const classOfShares = form.watch("class_of_shares");
+    if (classOfShares) {
+      form.setValue("isin", classOfShares);
+    }
+  }, [form.watch("class_of_shares")]);
   return (
     <section className="">
       <Tabs defaultValue="list" className="h-full w-full">

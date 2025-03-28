@@ -210,6 +210,7 @@ export const lpFromFields = [
     type: "text",
     placeholder: "",
     required: true,
+    disabled: true,
   },
   {
     name: "type",

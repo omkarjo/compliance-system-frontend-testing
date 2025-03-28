@@ -87,7 +87,7 @@ const FormGenerate = ({
         <Input
           className={formField?.className}
           placeholder={formField?.placeholder || ""}
-          disabled={isSubmitting}
+          disabled={isSubmitting || formField?.disabled}
           {...field}
         />
       ),
@@ -95,7 +95,7 @@ const FormGenerate = ({
       textarea: (field, formField) => (
         <Textarea
           placeholder={formField?.placeholder || ""}
-          disabled={isSubmitting}
+          disabled={isSubmitting || formField?.disabled}
           {...field}
         />
       ),
@@ -105,7 +105,7 @@ const FormGenerate = ({
           type="email"
           className={formField?.className}
           placeholder={formField?.placeholder || ""}
-          disabled={isSubmitting}
+          disabled={isSubmitting || formField?.disabled}
           {...field}
         />
       ),
@@ -117,7 +117,7 @@ const FormGenerate = ({
           min={formField?.min}
           max={formField?.max}
           className={cn("no-spinner")}
-          disabled={isSubmitting}
+          disabled={isSubmitting || formField?.disabled}
           onKeyDown={(e) => {
             if (e.key === "ArrowUp" || e.key === "ArrowDown") {
               e.preventDefault();

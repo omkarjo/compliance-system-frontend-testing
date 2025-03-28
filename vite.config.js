@@ -14,8 +14,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target:
-          "http://aa09e3ae27a144cd0aaf0fbce7f0ab1c-bcccf20eeb9b21bd.elb.ap-south-1.amazonaws.com",
+        target: "https://ajvc-compliance-system.com/",
         changeOrigin: true,
         secure: false, // Since backend doesn't have SSL
         rewrite: (path) => path.replace(/^\/api/, ""), // Ensure proper request forwarding
