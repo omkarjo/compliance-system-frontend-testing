@@ -304,7 +304,7 @@ export default function TaskDashboardFundManager() {
         variant={dialogTask.variant}
         hiddenFields={[
           ...(form.watch("repeat") ? [] : ["recurrence"]),
-          ...((form.watch("attachments")?.length > 0) ? [] : ["document_type"]),
+          // ...((form.watch("attachments")?.length > 0) ? [] : ["document_type"]),
         ]}
       />
       <SheetTaskViewFM

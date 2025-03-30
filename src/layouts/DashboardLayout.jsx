@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/components/Dashboard/app-sidebar";
 import DashbardBreadcum from "@/components/Dashboard/includes/breadcrumb";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -21,6 +22,7 @@ export default function DashboardLayout() {
     {
       title: "Compliance",
       url: PATH_PREFIX,
+      breadcrumbText: "Dashboard",
       items: [
         {
           title: "Limited Partners",
@@ -40,12 +42,14 @@ export default function DashboardLayout() {
   const menu = [
     {
       title: "Overview",
+      breadcrumbText: "Dashboard",
       url: PATH_PREFIX,
       items: [
         {
           title: "Dashboard",
           url: PATH_PREFIX,
           icon: GalleryVerticalEnd,
+          isIndex: true,
         },
         {
           title: "Tasks",
@@ -62,6 +66,7 @@ export default function DashboardLayout() {
               {
                 title: "Activity Log",
                 url: PATH_PREFIX + "/activity-log",
+                breadcrumbText: "Activity Log",
                 icon: GalleryVerticalEnd,
               },
             ]
@@ -75,7 +80,6 @@ export default function DashboardLayout() {
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
-
 
   return (
     <SidebarProvider>

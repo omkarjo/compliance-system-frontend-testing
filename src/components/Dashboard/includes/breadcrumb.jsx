@@ -18,8 +18,12 @@ export default function DashboardBreadcrumb({ menu }) {
     menuItem.items.forEach((item) => {
       if (item.url === currentPath) {
         breadcrumbItems = [
-          { title: menuItem.title, url: menuItem.url },
-          { title: item.title, url: item.url },
+          { title: menuItem.breadcrumbText, url: menuItem.url , isIndex: false},
+          {
+            title: item.breadcrumbText || item.title,
+            url: item.url,
+            isIndex: item?.isIndex,
+          },
         ];
       }
     });
@@ -28,16 +32,18 @@ export default function DashboardBreadcrumb({ menu }) {
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        {breadcrumbItems.map((item, index) => (
-          <React.Fragment key={index}>
-            <BreadcrumbItem className="block">
-              <BreadcrumbLink href={item.url}>{item.title}</BreadcrumbLink>
-            </BreadcrumbItem>
-            {index < breadcrumbItems.length - 1 && (
-              <BreadcrumbSeparator className="block" />
-            )}
-          </React.Fragment>
-        ))}
+        {breadcrumbItems
+          .filter((item) => !item.isIndex) 
+          .map((item, index, arr) => (
+            <React.Fragment key={index}>
+              <BreadcrumbItem className="block">
+                <BreadcrumbLink href={item.url}>{item.title}</BreadcrumbLink>
+              </BreadcrumbItem>
+              {index < arr.length - 1 && (
+                <BreadcrumbSeparator className="block" />
+              )}
+            </React.Fragment>
+          ))}
       </BreadcrumbList>
     </Breadcrumb>
   );
