@@ -19,6 +19,7 @@ export default function DialogForm({
   onSubmit,
   onFileChange,
   hiddenFields = [],
+  children,
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose} className="">
@@ -36,7 +37,9 @@ export default function DialogForm({
             submitText={submitText}
             onFileChange={onFileChange}
             hiddenFields={hiddenFields}
-          ></FormGenerate>
+          >
+            {children}
+          </FormGenerate>
         </ScrollArea>
       </DialogContent>
     </Dialog>

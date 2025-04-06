@@ -20,14 +20,19 @@ import {
   TriangleAlert,
   Watch,
 } from "lucide-react";
+import StatusBadgeSelectorConstrained from "../includes/status-badge-contrained";
 
 export default function TableTaskViewFM({ actionType, openView = () => {} }) {
   const columns = [
     {
       accessorKey: "category",
-      header: "Category",
+      header: () => (
+        <span className="ms-4 flex items-center">{"Category"}</span>
+      ),
       cell: ({ row }) => (
-        <div className="text-left uppercase">{row.getValue("category")}</div>
+        <div className="ms-4 text-left uppercase">
+          {row.getValue("category")}
+        </div>
       ),
     },
     {
@@ -68,7 +73,7 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
         const updateStatus = UpdateTaskStatus();
 
         return (
-          <BadgeStatusSelector
+          <StatusBadgeSelectorConstrained
             defaultStatus={status}
             onStatusChange={async (newStatus) => {
               await updateStatus.mutateAsync({
@@ -78,6 +83,17 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
             }}
             isUpdating={updateStatus.isPending}
           />
+
+          // <BadgeStatusSelector
+          //   defaultStatus={status}
+          //   onStatusChange={async (newStatus) => {
+          //     await updateStatus.mutateAsync({
+          //       taskId: compliance_task_id,
+          //       status: newStatus,
+          //     });
+          //   }}
+          //   isUpdating={updateStatus.isPending}
+          // />
         );
       },
     },
@@ -86,7 +102,7 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
       accessorKey: "assignee_name",
       header: "Assignee",
       cell: ({ row }) => (
-        <div className="flex items-center">
+        <div className="flex w-28 items-center">
           <UserBadge name={row.getValue("assignee_name")} />
         </div>
       ),

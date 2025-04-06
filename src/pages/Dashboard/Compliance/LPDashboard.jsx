@@ -1,9 +1,13 @@
 import { useLPOnboarding } from "@/actions/LPOnboarding";
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import SheetLPViewFM from "@/components/Dashboard/sheet/sheet-lp-view-fm";
+import CapitalCallDialogTable from "@/components/Dashboard/tables/table-capital-call-dilog";
 import TableLPViewFM from "@/components/Dashboard/tables/table-lp-view-fm";
+import DataTable from "@/components/includes/data-table";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs } from "@/components/ui/tabs";
+import { campaignCapitalCallSchema } from "@/schemas/form/CaptialCallSchema";
 import { lpFromFields } from "@/schemas/form/lpSchema";
 import { lpSchema } from "@/schemas/zod/lpSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,6 +51,11 @@ export default function LPDashboard() {
     defaultValues: defaultValues,
   });
 
+  const [capitalCallTask, setCapitalCallTask] = useState({
+    isOpen: false,
+    variant: "",
+  });
+
   const onboardingMutation = useLPOnboarding();
 
   const form = useForm({
@@ -81,6 +90,16 @@ export default function LPDashboard() {
     form.reset(defaultValues);
     setDialogTask((prev) => ({ ...prev, isOpen: false }));
   }, [form]);
+
+  const handleCapitalCallOpen = useCallback(() => {
+    form.reset(defaultValues);
+    setCapitalCallTask((prev) => ({ ...prev, isOpen: true }));
+  }, []);
+
+  const handleCapitalCallClose = useCallback(() => {
+    form.reset(defaultValues);
+    setCapitalCallTask((prev) => ({ ...prev, isOpen: false }));
+  }, []);
 
   const onSubmit = useCallback(
     async (data) => {
@@ -118,13 +137,20 @@ export default function LPDashboard() {
     <section className="">
       <Tabs defaultValue="list" className="h-full w-full">
         <div className="flex items-center justify-between gap-4 px-4 py-2">
-          <div className="flex items-center gap-2">
+          <div className="flex w-full items-center justify-between gap-2 px-2">
             <Button
               className="flex items-center gap-1 px-3 text-sm"
               onClick={() => handleDialogTaskOpen("create")}
             >
               <Plus className="size-4" />{" "}
               <span className="max-md:hidden">Onboard Limited Partner</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="px-3"
+              onClick={handleCapitalCallOpen}
+            >
+              Capital Call
             </Button>
           </div>
         </div>
@@ -145,8 +171,19 @@ export default function LPDashboard() {
         formFields={lpFromFields}
         isOpen={dialogTask.isOpen}
         onClose={handleDialogTaskClose}
-        variant={dialogTask.variant}
       />
+      <DialogForm
+        title={"Capital Call"}
+        description={"Send capital call to all onboarded Limited Partners"}
+        submitText={"Send"}
+        form={form}
+        onSubmit={form.handleSubmit((data) => onSubmit(data))}
+        formFields={campaignCapitalCallSchema}
+        isOpen={capitalCallTask.isOpen}
+        onClose={handleCapitalCallClose}
+      >
+        <CapitalCallDialogTable />
+      </DialogForm>
       <SheetLPViewFM
         isOpen={sheetTask.isOpen}
         data={sheetTask.data}

@@ -50,7 +50,14 @@ export default function ViewListDocument() {
   const columns = [
     {
       accessorKey: "category",
-      header: "Category",
+      header: () => (
+        <span className="flex items-center ms-4">
+          {"Category"}
+        </span>
+      ),
+      cell: ({ row }) => (
+        <div className="text-left uppercase ms-4 ">{row.getValue("category")}</div>
+      ),
     },
     {
       accessorKey: "name",
@@ -83,6 +90,7 @@ export default function ViewListDocument() {
         return (
           <Button
             variant="ghost"
+            className={"flex items-center justify-start gap-2 text-left"}
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Date Uploaded

@@ -98,7 +98,7 @@ export const renderCell = (key, label, type, icon, data) => {
         <tr key={key}>
           {renderLabel()}
           <td className="pb-4">
-            <span className="break-words">
+            <span className="whitespace-pre-line break-words text-sm ">
               {typeof value === "string"
                 ? value
                     .split(/(.{20})/)
@@ -144,7 +144,7 @@ export const renderCell = (key, label, type, icon, data) => {
       return (
         <tr key={key}>
           {renderLabel()}
-          <td className="max-w-1/2 pb-4 capitalize">{value}</td>
+          <td className="max-w-1/2 pb-4 break-words">{value}</td>
         </tr>
       );
   }

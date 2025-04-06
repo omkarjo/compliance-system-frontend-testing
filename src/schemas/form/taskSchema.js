@@ -9,7 +9,7 @@ export const taskFormFields = [
   {
     name: "attachments",
     label: "Supporting Documents",
-    discription: "Add relevant task related documents if needed.",
+    description: "Add relevant task related documents if needed.",
     type: "file",
     placeholder: "",
     required: false,

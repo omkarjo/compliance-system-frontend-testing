@@ -85,7 +85,7 @@ const FormGenerate = ({
     const fieldGenerators = {
       text: (field, formField) => (
         <Input
-          className={formField?.className}
+          className={cn("focus-visible:ring-0", formField?.className)}
           placeholder={formField?.placeholder || ""}
           disabled={isSubmitting || formField?.disabled}
           {...field}
@@ -94,6 +94,7 @@ const FormGenerate = ({
 
       textarea: (field, formField) => (
         <Textarea
+          className={cn("focus-visible:ring-0", formField?.className)}
           placeholder={formField?.placeholder || ""}
           disabled={isSubmitting || formField?.disabled}
           {...field}
@@ -103,7 +104,7 @@ const FormGenerate = ({
       email: (field, formField) => (
         <Input
           type="email"
-          className={formField?.className}
+          className={cn("focus-visible:ring-0", formField?.className)}
           placeholder={formField?.placeholder || ""}
           disabled={isSubmitting || formField?.disabled}
           {...field}
@@ -116,7 +117,7 @@ const FormGenerate = ({
           placeholder={formField?.placeholder || ""}
           min={formField?.min}
           max={formField?.max}
-          className={cn("no-spinner")}
+          className={cn("focus-visible:ring-0 no-spinners", formField?.className)}
           disabled={isSubmitting || formField?.disabled}
           onKeyDown={(e) => {
             if (e.key === "ArrowUp" || e.key === "ArrowDown") {
@@ -228,7 +229,7 @@ const FormGenerate = ({
             onCheckedChange={field.onChange}
             disabled={isSubmitting}
           />
-          <div className="space-y-1 leading-none">{formField.placeholder}</div>
+          <div className="space-y-1 leading-none font-sans text-sm font-semibold">{formField.placeholder}</div>
         </div>
       ),
 

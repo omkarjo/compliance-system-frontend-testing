@@ -7,23 +7,42 @@ import {
   CheckCircle,
   CircleUserRound,
   Eye,
+  UserCircle,
   Watch,
 } from "lucide-react";
 import { useMemo } from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export default function ViewListActivity() {
   const columns = [
     {
       accessorKey: "activity",
-      header: "Activity",
+      header: () => (
+        <span className="flex items-center ms-4">
+          {"Activity"}
+        </span>
+      ),
+      cell: ({ row }) => (
+        <div className="text-left uppercase ms-4">{row.getValue("activity")}</div>
+      ),
     },
     {
       accessorKey: "details",
       header: "Details",
       cell: ({ row }) => (
-        <div className="max-w-42 truncate text-left md:max-w-52 lg:max-w-64">
-          {row.getValue("details")}
-        </div>
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger className="w-42 truncate text-left md:w-52 lg:w-64">
+              {row.getValue("details")}
+            </TooltipTrigger>
+            <TooltipContent className="max-w-48 text-wrap">{row.getValue("details")}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       ),
     },
     {
@@ -50,6 +69,16 @@ export default function ViewListActivity() {
     {
       accessorKey: "user_name",
       header: "User",
+      cell: ({ row }) => {
+        const userName = row.getValue("user_name");
+        return (
+          <div className="w-20 truncate text-left md:w-22 lg:w-24 flex items-center">
+            <UserCircle className="inline-block mr-1" size={16} />
+            {userName}
+          </div>
+        );
+      },
+
     },
   ];
 

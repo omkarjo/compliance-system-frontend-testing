@@ -69,7 +69,7 @@ const CountryDropdownComponent = (
   );
 
   const triggerClasses = cn(
-    "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+    "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
     slim === true && "w-20",
   );
 
@@ -114,7 +114,7 @@ const CountryDropdownComponent = (
         <Command className="max-h-[200px] w-full sm:max-h-[270px]">
           <CommandList>
             <div className="bg-popover sticky top-0 z-10">
-              <CommandInput placeholder="Search country..." />
+              <CommandInput className="" placeholder="Search country..." />
             </div>
             <CommandEmpty>No country found.</CommandEmpty>
             <CommandGroup>

@@ -11,7 +11,7 @@ export default function InputPassword({ className, ...rest }) {
 
   return (
     <div className={cn("relative", className)}>
-      <Input type={showPassword ? "text" : "password"} {...rest} />
+      <Input className={"focus-visible:ring-0"} type={showPassword ? "text" : "password"} {...rest} />
       <button
         type="button"
         onClick={togglePassword}

@@ -3,6 +3,7 @@ import DataTable from "@/components/includes/data-table";
 import { currencyFormatter } from "@/lib/formatter";
 import { useGetLP } from "@/query/lpQuery";
 import { ArrowUpDown } from "lucide-react";
+import BadgeStatusTask from "@/components/includes/badge-status";
 
 export default function TableLPViewFM({ openView = () => {} }) {
   const columns = [
@@ -18,7 +19,7 @@ export default function TableLPViewFM({ openView = () => {} }) {
         </Button>
       ),
       cell: ({ row }) => (
-        <div className="max-w-42 truncate text-left md:max-w-52 lg:max-w-64">
+        <div className="ps-2 max-w-42 truncate text-left md:max-w-52 lg:max-w-64">
           {row.getValue("lp_name")}
         </div>
       ),
@@ -28,15 +29,22 @@ export default function TableLPViewFM({ openView = () => {} }) {
       header: "Email",
     },
     {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        return <BadgeStatusTask text={"Not Active"} type={"open"} />
+      }
+    },
+    {
       accessorKey: "commitment_amount",
       header: ({ column }) => (
         <div className="ms-auto flex justify-end">
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className={"flex items-center gap-2"}
           >
-            <span className="me-2 max-md:hidden">Commitment </span>
-            <span className="ms-0">Amount</span>
+            <span className="me-2">Commitment Amount</span>
             <ArrowUpDown size={16} />
           </Button>
         </div>

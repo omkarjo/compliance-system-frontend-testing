@@ -41,7 +41,7 @@ const InputComponent = React.forwardRef((props, ref) => {
   const { className, ...restProps } = props;
   return (
     <Input
-      className={cn("rounded-s-none rounded-e-lg", className)}
+      className={cn("rounded-s-none rounded-e-lg focus-visible:ring-0", className)}
       {...restProps}
       ref={ref}
     />
@@ -101,7 +101,7 @@ const CountrySelect = (props) => {
         sideOffset={5}
       >
         <Command>
-          <CommandInput placeholder="Search country..." />
+          <CommandInput className="" placeholder="Search country..." />
           <CommandList>
             <div
               ref={scrollAreaRef}
