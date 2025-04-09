@@ -1,4 +1,5 @@
 import { ADMIN_ROLES, ALL_ROLES } from "@/constant/roles";
+import ProtectRoutes from "@/pages/Auth/ProtectRoutes";
 import { lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
@@ -18,8 +19,9 @@ const ActivityLog = lazy(
 );
 const Docoments = lazy(() => import("@/pages/Dashboard/Overview/Docoments"));
 const DashBoard = lazy(() => import("@/pages/Dashboard/Overview/DashBoard"));
-
-const ProtectRoutes = lazy(() => import("@/pages/Auth/ProtectRoutes"));
+const LPBulkUpload = lazy(
+  () => import("@/pages/Dashboard/Compliance/LPBulkUpload"),
+);
 
 const AppRoutes = () => {
   return (
@@ -39,7 +41,10 @@ const AppRoutes = () => {
               <ProtectRoutes allowedRoles={ADMIN_ROLES} redirect="/dashboard" />
             }
           >
-            <Route path="limited-partners" element={<LPDashboard />} />
+            <Route path="limited-partners">
+              <Route index element={<LPDashboard />} />
+              <Route path="bulk-upload" element={<LPBulkUpload />} />
+            </Route>
             <Route path="portfolio-companies" element={<div>Portfolio</div>} />
           </Route>
         </Route>

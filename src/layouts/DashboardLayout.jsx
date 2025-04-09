@@ -1,5 +1,5 @@
 import { AppSidebar } from "@/components/Dashboard/app-sidebar";
-import DashbardBreadcum from "@/components/Dashboard/includes/breadcrumb";
+import DashboardBreadcrumb from "@/components/Dashboard/includes/breadcrumb";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -10,7 +10,15 @@ import {
 import { ADMIN_ROLES } from "@/constant/roles";
 import { useAppSelector } from "@/store/hooks";
 import useCheckRoles from "@/utils/check-roles";
-import { BookOpen, Bot, Building, GalleryVerticalEnd, History, SquareTerminal, User } from "lucide-react";
+import {
+  BookOpen,
+  Bot,
+  Building,
+  GalleryVerticalEnd,
+  History,
+  SquareTerminal,
+  User,
+} from "lucide-react";
 import { Navigate, Outlet } from "react-router-dom";
 
 const PATH_PREFIX = "/dashboard";
@@ -84,14 +92,15 @@ export default function DashboardLayout() {
   return (
     <SidebarProvider>
       <AppSidebar menu={menu} user={user} />
-      <SidebarInset>
+      <SidebarInset className="max-w-full overflow-x-auto">
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            <DashbardBreadcum menu={menu} prefix={PATH_PREFIX} />
+            <DashboardBreadcrumb menu={menu} prefix={PATH_PREFIX} />
           </div>
         </header>
+
         <Outlet />
       </SidebarInset>
     </SidebarProvider>

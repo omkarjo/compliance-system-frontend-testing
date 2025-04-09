@@ -34,6 +34,14 @@ export default function TableLPViewFM({ openView = () => {} }) {
     {
       accessorKey: "email",
       header: "Email",
+      cell: ({ row }) => {
+        const email = row.getValue("email");
+        return (
+          <div className="max-w-42 truncate ps-2 text-left md:max-w-52 lg:max-w-64">
+            {email}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "status",

@@ -3,17 +3,16 @@ import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import SheetLPViewFM from "@/components/Dashboard/sheet/sheet-lp-view-fm";
 import CapitalCallDialogTable from "@/components/Dashboard/tables/table-capital-call-dilog";
 import TableLPViewFM from "@/components/Dashboard/tables/table-lp-view-fm";
-import DataTable from "@/components/includes/data-table";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs } from "@/components/ui/tabs";
 import { campaignCapitalCallSchema } from "@/schemas/form/CaptialCallSchema";
 import { lpFromFields } from "@/schemas/form/lpSchema";
 import { lpSchema } from "@/schemas/zod/lpSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { Plus, Upload } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 const defaultValues = {
@@ -94,16 +93,16 @@ export default function LPDashboard() {
   const handleCapitalCallOpen = useCallback(() => {
     form.reset(defaultValues);
     setCapitalCallTask((prev) => ({ ...prev, isOpen: true }));
-  }, []);
+  }, [form]);
 
   const handleCapitalCallClose = useCallback(() => {
     form.reset(defaultValues);
     setCapitalCallTask((prev) => ({ ...prev, isOpen: false }));
-  }, []);
+  }, [form]);
 
   const onSubmit = useCallback(
     async (data) => {
-      const { cml, documents, emaildrawdowns, ...rest } = data;
+      const { cml, emaildrawdowns, ...rest } = data;
 
       const body = {
         ...rest,
@@ -111,7 +110,7 @@ export default function LPDashboard() {
       };
 
       try {
-        const result = await onboardingMutation.mutate({
+        await onboardingMutation.mutate({
           lpData: body,
           cmlFile: cml[0],
         });
@@ -132,19 +131,26 @@ export default function LPDashboard() {
     if (classOfShares) {
       form.setValue("isin", classOfShares);
     }
-  }, [form.watch("class_of_shares")]);
+  }, [form, form.watch("class_of_shares")]);
   return (
     <section className="">
       <Tabs defaultValue="list" className="h-full w-full">
         <div className="flex items-center justify-between gap-4 px-4 py-2">
           <div className="flex w-full items-center justify-between gap-2 px-2">
-            <Button
-              className="flex items-center gap-1 px-3 text-sm"
-              onClick={() => handleDialogTaskOpen("create")}
-            >
-              <Plus className="size-4" />{" "}
-              <span className="max-md:hidden">Onboard Limited Partner</span>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                className="flex items-center gap-1 px-3 text-sm"
+                onClick={() => handleDialogTaskOpen("create")}
+              >
+                <Plus className="size-4" />{" "}
+                <span className="max-md:hidden">Onboard Limited Partner</span>
+              </Button>
+              <Button variant="outline" className="px-3" asChild>
+                <Link to="/dashboard/limited-partners/bulk-upload">
+                  <Upload className="size-4" /> Upload
+                </Link>
+              </Button>
+            </div>
             <Button
               variant="outline"
               className="px-3"

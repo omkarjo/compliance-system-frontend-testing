@@ -12,8 +12,7 @@ export const currencyFormatter = (value, currency = "INR") => {
 export const getPhoneDetails = (value) => {
   try {
     const phoneNumber = parsePhoneNumber(value);
-    if (!phoneNumber)
-      return { formatted: "Invalid Number", country: null, flag: null };
+    if (!phoneNumber) return { formatted: null, country: null, flag: null };
 
     const countryCode = phoneNumber.country;
     const country = Object.values(countries).find(

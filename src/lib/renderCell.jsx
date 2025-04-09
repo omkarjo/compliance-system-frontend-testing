@@ -71,8 +71,12 @@ export const renderCell = (key, label, type, icon, data) => {
           {renderLabel()}
           <td className="pb-4">
             <span className="flex items-center gap-2">
-              {phoneFlag}
-              <span className="ms-2">{formatted}</span>
+              {/* {phoneFlag} */}
+              {formatted ? (
+                <span className="text-sm font-medium">{formatted}</span>
+              ) : (
+                <span className="text-red-500">{value}</span>
+              )}
             </span>
           </td>
         </tr>
@@ -85,8 +89,12 @@ export const renderCell = (key, label, type, icon, data) => {
           {renderLabel()}
           <td className="pb-4">
             <span className="flex items-center gap-2">
-              {countryFlag}
-              <span className="ms-2">{name}</span>
+              {/* {countryFlag} */}
+              {name ? (
+                <span className="text-sm font-medium">{name}</span>
+              ) : (
+                <span className="text-red-500">{value}</span>
+              )}
             </span>
           </td>
         </tr>
@@ -98,14 +106,14 @@ export const renderCell = (key, label, type, icon, data) => {
         <tr key={key}>
           {renderLabel()}
           <td className="pb-4">
-            <span className="whitespace-pre-line break-words text-sm">
+            <span className="text-sm break-words whitespace-pre-line">
               {/* {typeof value === "string"
                 ? value
                     .split(/(.{20})/)
                     .filter(Boolean)
                     .join("\n")
                 : value} */}
-                {value}
+              {value}
             </span>
           </td>
         </tr>

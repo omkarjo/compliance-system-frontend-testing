@@ -41,7 +41,7 @@ import { TagsInput } from "./tags-input";
 import TaskInputCommand from "./task-select";
 import UserSelect from "./user-select";
 
-const FileSvgDraw = memo(({ allowedTypes }) => (
+export const FileSvgDraw = memo(({ allowedTypes }) => (
   <div className="flex flex-col items-center justify-center p-4 text-gray-500 dark:text-gray-400">
     <div className="my-1 flex size-9 items-center justify-center rounded-md bg-gray-100">
       <Upload size={16} className="text-gray-600" />

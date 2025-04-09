@@ -30,4 +30,5 @@ export const limitedPartnersApiPaths = {
   searchLimitedPartners: "/api/lps/search/",
   getLimitedPartnerByIdPrefix: "/api/lps/",
   updateLimitedPartnerPrefix: "/api/lps/",
+  bulkUploadLimitedPartner: "/api/lps/bulk-upload/",
 };
