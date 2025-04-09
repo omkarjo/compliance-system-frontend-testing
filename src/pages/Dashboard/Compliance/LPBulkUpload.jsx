@@ -1,11 +1,10 @@
 import { FileInput, FileUploader } from "@/components/extension/file-uploader";
 import DataTable from "@/components/includes/data-table";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { limitedPartnersApiPaths } from "@/constant/apiPaths";
+import createPaginatedFetcher from "@/hooks/createPaginatedFetcher";
+import useGetDataWithPagination from "@/hooks/createPaginatedFetcher";
 import { cn } from "@/lib/utils";
 import { apiWithAuth } from "@/utils/api";
 import { Upload } from "lucide-react";
@@ -210,6 +209,7 @@ export default function LPBulkUpload() {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          timeout: 0,
         },
       );
 
@@ -243,6 +243,8 @@ export default function LPBulkUpload() {
       setIsDisabled(false);
     }
   }, [data]);
+
+  const fetchData = createPaginatedFetcher(data, "my-table-id");
 
   return (
     <section className="flex flex-col">
@@ -308,7 +310,7 @@ export default function LPBulkUpload() {
                 </Button>
               </div>
             </div>
-            <DataTable data={data ?? []} columns={columns} />
+            <DataTable columns={columns} fetchData={fetchData} />
           </div>
         ) : (
           <FileUploader
