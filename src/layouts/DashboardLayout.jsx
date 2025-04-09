@@ -10,7 +10,7 @@ import {
 import { ADMIN_ROLES } from "@/constant/roles";
 import { useAppSelector } from "@/store/hooks";
 import useCheckRoles from "@/utils/check-roles";
-import { GalleryVerticalEnd } from "lucide-react";
+import { BookOpen, Bot, Building, GalleryVerticalEnd, History, SquareTerminal, User } from "lucide-react";
 import { Navigate, Outlet } from "react-router-dom";
 
 const PATH_PREFIX = "/dashboard";
@@ -27,15 +27,15 @@ export default function DashboardLayout() {
         {
           title: "Limited Partners",
           url: PATH_PREFIX + "/limited-partners",
-          icon: GalleryVerticalEnd,
+          icon: User,
         },
         {
           title: "Portfolio Companies",
           url: PATH_PREFIX + "/portfolio-companies",
-          icon: GalleryVerticalEnd,
+          icon: Building,
         },
       ],
-      hiddenIcon: true,
+      // hiddenIcon: true,
     },
   ];
 
@@ -48,18 +48,18 @@ export default function DashboardLayout() {
         {
           title: "Dashboard",
           url: PATH_PREFIX,
-          icon: GalleryVerticalEnd,
+          icon: SquareTerminal,
           isIndex: true,
         },
         {
           title: "Tasks",
           url: PATH_PREFIX + "/task",
-          icon: GalleryVerticalEnd,
+          icon: Bot,
         },
         {
           title: "Documents",
           url: PATH_PREFIX + "/documents",
-          icon: GalleryVerticalEnd,
+          icon: BookOpen,
         },
         ...(activityViewPermission
           ? [
@@ -67,7 +67,7 @@ export default function DashboardLayout() {
                 title: "Activity Log",
                 url: PATH_PREFIX + "/activity-log",
                 breadcrumbText: "Activity Log",
-                icon: GalleryVerticalEnd,
+                icon: History,
               },
             ]
           : []),

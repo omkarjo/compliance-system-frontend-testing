@@ -254,7 +254,15 @@ export default function DataTable({
           row.getIsSelected() && "bg-gray-100",
           openView && "cursor-pointer",
         )}
-        onClick={() => openView && openView(row.original)}
+        onClick={(event) => {
+          const isInteractive = event.target.closest(
+            "button, a, input, textarea, select",
+          );
+          if (isInteractive) return;
+          if (openView) {
+            openView(row.original);
+          }
+        }}
       >
         {row.getVisibleCells().map((cell) => (
           <TableCell key={cell.id} className="">

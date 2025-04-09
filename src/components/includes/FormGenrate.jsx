@@ -37,22 +37,23 @@ import { memo, useMemo } from "react";
 import { useFormState } from "react-hook-form";
 import { CountryDropdown } from "../extension/country-dropdown";
 import { PhoneInput } from "../extension/phone-input";
-import { TagsInput, tagsInputFieldGenerator } from "./tags-input";
+import { TagsInput } from "./tags-input";
 import UserSelect from "./user-select";
 
 const FileSvgDraw = memo(({ allowedTypes }) => (
-  <>
-    <Upload size={36} className="mb-2" />
-    <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-      <span className="font-semibold">Click to upload</span>
-      &nbsp; or drag and drop
+  <div className="p-4 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+    <div className="flex size-9 items-center justify-center rounded-md bg-gray-100 my-1">
+      <Upload size={16} className="text-gray-600" />
+    </div>
+    <p className="mb-1 text-sm text-gray-500 dark:text-gray-400 my-0.5">
+      Drag and drop your files here
     </p>
     {allowedTypes?.length > 0 && (
       <p className="text-xs text-gray-500 dark:text-gray-400">
         Allowed file types: {allowedTypes.join(", ")}
       </p>
     )}
-  </>
+  </div>
 ));
 
 FileSvgDraw.displayName = "FileSvgDraw";
@@ -117,7 +118,10 @@ const FormGenerate = ({
           placeholder={formField?.placeholder || ""}
           min={formField?.min}
           max={formField?.max}
-          className={cn("focus-visible:ring-0 no-spinners", formField?.className)}
+          className={cn(
+            "no-spinners focus-visible:ring-0",
+            formField?.className,
+          )}
           disabled={isSubmitting || formField?.disabled}
           onKeyDown={(e) => {
             if (e.key === "ArrowUp" || e.key === "ArrowDown") {
@@ -200,7 +204,7 @@ const FormGenerate = ({
           reSelect={!isSubmitting}
           className={cn("bg-background relative rounded-lg p-2")}
         >
-          <FileInput className="outline-1 outline-gray-400 outline-dashed">
+          <FileInput className=" outline-gray-400 outline-dashed outline-2">
             <div className="flex w-full flex-col items-center justify-center pt-3 pb-4">
               <FileSvgDraw
                 allowedTypes={Object.values(
@@ -229,7 +233,9 @@ const FormGenerate = ({
             onCheckedChange={field.onChange}
             disabled={isSubmitting}
           />
-          <div className="space-y-1 leading-none font-sans text-sm font-semibold">{formField.placeholder}</div>
+          <div className="space-y-1 font-sans text-sm leading-none font-semibold">
+            {formField.placeholder}
+          </div>
         </div>
       ),
 

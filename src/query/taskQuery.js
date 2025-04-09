@@ -2,8 +2,23 @@ import { taskApiPaths } from "@/constant/apiPaths";
 import { apiWithAuth } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 
+const sortKeyMap = {
+  assignee: "assignee",
+  state: "status",
+  deadline: "deadline",
+};
+
 const fetchData = async ({ pageIndex, pageSize, sortBy, filters }) => {
   try {
+    const sortValue = sortBy.split("_");
+    const sortKey = sortValue[0];
+    const sortOrder = sortValue[sortValue.length - 1];
+    const mappedSortBy = sortKeyMap[sortKey]
+      ? `${sortKeyMap[sortKey]}_${sortOrder}`
+      : null;
+
+    sortBy = mappedSortBy ? mappedSortBy : null;
+    console.log("sortBy", sortBy);
     const searchParams = {
       limit: pageSize,
       skip: pageIndex * pageSize,

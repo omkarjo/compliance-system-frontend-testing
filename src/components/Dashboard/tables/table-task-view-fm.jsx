@@ -1,6 +1,7 @@
 import { UpdateTaskStatus } from "@/actions/task/updateTask";
-import BadgeStatusSelector from "@/components/includes/badge-select";
+import BadgeStatusTask from "@/components/includes/badge-status";
 import DataTable from "@/components/includes/data-table";
+import SortButton from "@/components/includes/SortButton";
 import UserBadge from "@/components/includes/user-badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +13,6 @@ import {
 import { cn } from "@/lib/utils";
 import { useGetTask } from "@/query/taskQuery";
 import {
-  ArrowUpDown,
   Calendar,
   CheckCircle,
   Eye,
@@ -20,7 +20,6 @@ import {
   TriangleAlert,
   Watch,
 } from "lucide-react";
-import StatusBadgeSelectorConstrained from "../includes/status-badge-contrained";
 
 export default function TableTaskViewFM({ actionType, openView = () => {} }) {
   const columns = [
@@ -47,13 +46,9 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
     {
       accessorKey: "deadline",
       header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Due Date
-          <ArrowUpDown size={16} />
-        </Button>
+        <SortButton column={column}>
+          <span className="flex items-center gap-2">Due Date</span>
+        </SortButton>
       ),
       cell: ({ row }) => {
         const dueDate = row.getValue("deadline");
@@ -65,24 +60,26 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
     },
     {
       accessorKey: "state",
-      header: "Status",
+      header: ({ column }) => <SortButton column={column}>Status</SortButton>,
       cell: ({ row }) => {
         const status = row.getValue("state");
-        const data = row.original;
-        const compliance_task_id = data.compliance_task_id;
-        const updateStatus = UpdateTaskStatus();
+        // const data = row.original;
+        // const compliance_task_id = data.compliance_task_id;
+        // const updateStatus = UpdateTaskStatus();
 
         return (
-          <StatusBadgeSelectorConstrained
-            defaultStatus={status}
-            onStatusChange={async (newStatus) => {
-              await updateStatus.mutateAsync({
-                taskId: compliance_task_id,
-                status: newStatus,
-              });
-            }}
-            isUpdating={updateStatus.isPending}
-          />
+          <BadgeStatusTask text={status} type={status} className="ms-4" />
+
+          // <StatusBadgeSelectorConstrained
+          //   defaultStatus={status}
+          //   onStatusChange={async (newStatus) => {
+          //     await updateStatus.mutateAsync({
+          //       taskId: compliance_task_id,
+          //       status: newStatus,
+          //     });
+          //   }}
+          //   isUpdating={updateStatus.isPending}
+          // />
 
           // <BadgeStatusSelector
           //   defaultStatus={status}
@@ -100,7 +97,7 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
 
     {
       accessorKey: "assignee_name",
-      header: "Assignee",
+      header: ({ column }) => <SortButton column={column}>Assignee</SortButton>,
       cell: ({ row }) => (
         <div className="flex w-28 items-center">
           <UserBadge name={row.getValue("assignee_name")} />
@@ -113,35 +110,37 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
       cell: ({ row }) => {
         const data = row.original;
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="h-8 w-8 p-0"
+          <div className="ms-auto flex w-24 items-center justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="h-8 w-8 p-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
                 onClick={(e) => e.stopPropagation()}
               >
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {actionType?.map((action, index) => (
-                <DropdownMenuItem
-                  key={index}
-                  className={cn(action?.className)}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    action.onClick(data);
-                  }}
-                >
-                  {action.title}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                {actionType?.map((action, index) => (
+                  <DropdownMenuItem
+                    key={index}
+                    className={cn(action?.className)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      action.onClick(data);
+                    }}
+                  >
+                    {action.title}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         );
       },
     },

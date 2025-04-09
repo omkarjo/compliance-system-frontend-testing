@@ -26,34 +26,8 @@ import { motion } from "motion/react";
 import { nanoid } from "nanoid";
 import * as React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import AnimateChangeInHeight from "./AnimateChangeInHeight";
 import UserSelect from "./user-select";
-
-const AnimateChangeInHeight = ({ children, className }) => {
-  const containerRef = useRef(null);
-  const [height, setHeight] = useState("auto");
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      setHeight(entries[0].contentRect.height);
-    });
-
-    resizeObserver.observe(containerRef.current);
-    return () => resizeObserver.disconnect();
-  }, []);
-
-  return (
-    <motion.div
-      className={cn(className, "overflow-hidden")}
-      style={{ height }}
-      animate={{ height }}
-      transition={{ duration: 0.1, damping: 0.2, ease: "easeIn" }}
-    >
-      <div ref={containerRef}>{children}</div>
-    </motion.div>
-  );
-};
 
 const FilterComponent = ({
   filterOptions,
@@ -90,6 +64,11 @@ const FilterComponent = ({
     },
     [filterOptions],
   );
+
+  const clearAllFilters = useCallback(() => {
+    setFilters([]);
+    setFiltersProps([]);
+  }, [setFiltersProps]);
 
   useEffect(() => {
     if (setSearchOptions && selectedFilter) {
@@ -144,7 +123,13 @@ const FilterComponent = ({
       setCommandInput("");
       setOpen(false);
     },
-    [selectedFilter, filters, selectedRelation, setFiltersProps],
+    [
+      selectedFilter,
+      filters,
+      selectedRelation,
+      setFiltersProps,
+      clearAllFilters,
+    ],
   );
 
   const handleUserSelect = useCallback(
@@ -179,7 +164,7 @@ const FilterComponent = ({
       setOpen(false);
       setSelectedFilter(null);
     },
-    [selectedFilter, setFiltersProps],
+    [selectedFilter, setFiltersProps, clearAllFilters],
   );
 
   const handleDateRangeSelect = useCallback(
@@ -218,7 +203,7 @@ const FilterComponent = ({
       setSelectedFilter(null);
       setDateRange(null);
     },
-    [selectedFilter, setFiltersProps],
+    [selectedFilter, setFiltersProps, clearAllFilters],
   );
 
   const handleRelationChange = useCallback((filterId, relation) => {
@@ -258,11 +243,6 @@ const FilterComponent = ({
     },
     [filters, setFiltersProps],
   );
-
-  const clearAllFilters = useCallback(() => {
-    setFilters([]);
-    setFiltersProps([]);
-  }, [setFiltersProps]);
 
   const generateFilterFields = useCallback(
     (filter) => {

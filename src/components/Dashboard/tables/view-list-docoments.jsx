@@ -1,22 +1,6 @@
-import { Button } from "@/components/ui/button";
 import DataTable from "@/components/includes/data-table";
-import { useGetAllDocuments } from "@/query/docomentsQuery";
-import {
-  AlertTriangle,
-  ArrowUpDown,
-  Bell,
-  CheckCircle,
-  Clock,
-  FileBarChart,
-  FileQuestion,
-  FileSignature,
-  FileText,
-  Users,
-  DownloadIcon,
-  ViewIcon,
-  MoreHorizontal
-} from "lucide-react";
-import { cloneElement } from "react";
+import SortButton from "@/components/includes/SortButton";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +8,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { useGetAllDocuments } from "@/query/docomentsQuery";
+import {
+  AlertTriangle,
+  ArrowUpDown,
+  Bell,
+  CheckCircle,
+  Clock,
+  DownloadIcon,
+  FileBarChart,
+  FileQuestion,
+  FileSignature,
+  FileText,
+  MoreHorizontal,
+  Users,
+  ViewIcon,
+} from "lucide-react";
+import { cloneElement } from "react";
 import { toast } from "sonner";
 
 export default function ViewListDocument() {
@@ -33,17 +34,17 @@ export default function ViewListDocument() {
       className: "",
       icon: <ViewIcon />,
       onClick: (data) => {
-        if(!data.drive_link) {
+        if (!data.drive_link) {
           toast.error("No Link Found");
           return;
         }
         window.open(data.drive_link, "_blank");
-      }
+      },
     },
     {
       title: "Download",
       className: "",
-      icon: <DownloadIcon />
+      icon: <DownloadIcon />,
     },
   ];
 
@@ -51,12 +52,12 @@ export default function ViewListDocument() {
     {
       accessorKey: "category",
       header: () => (
-        <span className="flex items-center ms-4">
-          {"Category"}
-        </span>
+        <span className="ms-4 flex items-center">{"Category"}</span>
       ),
       cell: ({ row }) => (
-        <div className="text-left uppercase ms-4 ">{row.getValue("category")}</div>
+        <div className="ms-4 text-left uppercase">
+          {row.getValue("category")}
+        </div>
       ),
     },
     {
@@ -87,16 +88,7 @@ export default function ViewListDocument() {
     {
       accessorKey: "date_uploaded",
       header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            className={"flex items-center justify-start gap-2 text-left"}
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Date Uploaded
-            <ArrowUpDown size={16} />
-          </Button>
-        );
+        return <SortButton column={column}>Date Uploaded</SortButton>;
       },
       cell: ({ row }) => {
         const date_uploaded = row.getValue("date_uploaded");
@@ -120,44 +112,42 @@ export default function ViewListDocument() {
       cell: ({ row }) => {
         const data = row.original;
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="h-8 w-8 p-0"
+          <div className="ms-auto flex w-24 items-center justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="h-8 w-8 p-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
                 onClick={(e) => e.stopPropagation()}
               >
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {actionType?.map((action, index) => (
-                <DropdownMenuItem
-                  key={index}
-                  className={cn(
-                    "text-sm",
-                    action?.className)}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    action.onClick(data);
-                  }}
-                >
-                  <div className="flex items-center">
-                    {
-                      cloneElement(action.icon, {
-                        className: "w-5 h-5"
-                      })
-                    }
-                    <span className="ms-2">{action.title}</span>
-                  </div>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                {actionType?.map((action, index) => (
+                  <DropdownMenuItem
+                    key={index}
+                    className={cn("text-sm", action?.className)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      action.onClick(data);
+                    }}
+                  >
+                    <div className="flex items-center">
+                      {cloneElement(action.icon, {
+                        className: "w-5 h-5",
+                      })}
+                      <span className="ms-2">{action.title}</span>
+                    </div>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         );
       },
     },

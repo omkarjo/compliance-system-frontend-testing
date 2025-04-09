@@ -10,8 +10,20 @@ import {
 } from "@/components/ui/sheet";
 import { renderCell } from "@/lib/renderCell";
 import { cn } from "@/lib/utils";
-import { CircleUserRound, File, Timer, TriangleAlert, Calendar, CheckCircle } from "lucide-react";
+import {
+  Calendar,
+  CheckCircle,
+  CircleUserRound,
+  File,
+  Timer,
+  TriangleAlert,
+} from "lucide-react";
 
+const statusKeyType = {
+  Onboarded: "Completed",
+  "Waiting For KYC": "Pending",
+  "Under Review": "Review",
+};
 
 const lpDataSchema = [
   {
@@ -61,13 +73,15 @@ export default function SheetLPViewFM({
   isOpen = true,
   onClose = () => {},
 }) {
+  const status = data?.status || "N/A";
+  const type = statusKeyType[status] || "Pending";
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right" className={cn("w-full md:w-1/2")}>
+      <SheetContent side="right" className={cn("w-full sm:max-w-md")}>
         <SheetHeader className="mt-4 pb-0 md:mt-8">
           <SheetTitle>{data?.lp_name}</SheetTitle>
           <SheetDescription>{data?.email}</SheetDescription>
-          <BadgeStatusTask type="success" text="Pending" className="mt-2" />
+          <BadgeStatusTask text={status} type={type} />{" "}
         </SheetHeader>
         <hr className="mx-auto w-11/12" />
         <ScrollArea className="overflow-y-auto pb-4">

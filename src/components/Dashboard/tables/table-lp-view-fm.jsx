@@ -1,9 +1,16 @@
-import { Button } from "@/components/ui/button";
+import BadgeStatusTask from "@/components/includes/badge-status";
 import DataTable from "@/components/includes/data-table";
+import SortButton from "@/components/includes/SortButton";
+import { Button } from "@/components/ui/button";
 import { currencyFormatter } from "@/lib/formatter";
 import { useGetLP } from "@/query/lpQuery";
 import { ArrowUpDown } from "lucide-react";
-import BadgeStatusTask from "@/components/includes/badge-status";
+
+const statusKeyType = {
+  Onboarded: "Completed",
+  "Waiting For KYC": "Pending",
+  "Under Review": "Review",
+};
 
 export default function TableLPViewFM({ openView = () => {} }) {
   const columns = [
@@ -19,7 +26,7 @@ export default function TableLPViewFM({ openView = () => {} }) {
         </Button>
       ),
       cell: ({ row }) => (
-        <div className="ps-2 max-w-42 truncate text-left md:max-w-52 lg:max-w-64">
+        <div className="max-w-42 truncate ps-2 text-left md:max-w-52 lg:max-w-64">
           {row.getValue("lp_name")}
         </div>
       ),
@@ -32,30 +39,38 @@ export default function TableLPViewFM({ openView = () => {} }) {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        return <BadgeStatusTask text={"Not Active"} type={"open"} />
-      }
+        const status = row.getValue("status");
+        const type = statusKeyType[status] || "Pending";
+        return <BadgeStatusTask text={status} type={type} />;
+      },
     },
+
     {
       accessorKey: "commitment_amount",
       header: ({ column }) => (
-        <div className="ms-auto flex justify-end">
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className={"flex items-center gap-2"}
-          >
-            <span className="me-2">Commitment Amount</span>
-            <ArrowUpDown size={16} />
-          </Button>
-        </div>
+        <SortButton column={column} className={"ms-auto justify-end"}>
+          Commitment Amount
+        </SortButton>
       ),
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("commitment_amount"));
         const formatted = currencyFormatter(amount, "INR");
 
-        return (
-          <div className="me-4 text-right font-medium md:me-6">{formatted}</div>
-        );
+        return <div className="me-4 text-right md:me-6">{formatted}</div>;
+      },
+    },
+
+    {
+      accessorKey: "remaining_drawdown",
+      header: ({ column }) => (
+        <SortButton column={column} className={"ms-auto justify-end"}>
+          Remaining Drawdown
+        </SortButton>
+      ),
+      cell: ({ row }) => {
+        const amount = parseFloat(row.getValue("remaining_drawdown"));
+        const formatted = amount ? currencyFormatter(amount, "INR") : "-";
+        return <div className="me-4 text-right md:me-6">{formatted}</div>;
       },
     },
   ];

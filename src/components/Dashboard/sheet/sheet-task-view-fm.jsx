@@ -65,21 +65,18 @@ export default function SheetTaskViewFM({
 }) {
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right" className={cn("w-full md:w-1/2")}>
-        <SheetHeader className="mt-4 pb-0 md:mt-8">
+      <SheetContent side="right" className={cn("w-full sm:max-w-md")}>
+        <SheetHeader className="mt-4 space-y-0.5 pb-0 md:mt-8">
           {data?.category && <Badge variant="outline">{data.category}</Badge>}
-          <SheetTitle>{data?.title}</SheetTitle>
-          <SheetDescription>
-            {data?.description || "No description provided"}
-          </SheetDescription>
-          <BadgeStatusTask type="success" text={data?.state} className="mt-2" />
+          <SheetTitle>{data?.description}</SheetTitle>
+          <BadgeStatusTask text={data?.state} className="mt-2" />
           {data?.assignee_id && (
             <div className="mt-2 flex items-center gap-2">
-              <CircleUserRound className="h-6 w-6" />
-              <span className="text-sm font-semibold">
-                {data.assignee_name}
-              </span>
-              <Badge variant="secondary">Current Owner</Badge>
+              <CircleUserRound className="h-6 w-6 text-gray-700/85" />
+              <span className="text-sm">{data.assignee_name}</span>
+              <Badge variant="secondary" className={"text-gray-500"}>
+                Current Owner
+              </Badge>
             </div>
           )}
         </SheetHeader>

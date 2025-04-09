@@ -3,7 +3,9 @@ import {
   CheckCircle,
   Circle,
   Hourglass,
-  XCircle
+  View,
+  Watch,
+  XCircle,
 } from "lucide-react";
 
 export const getStatusStyle = (state) => {
@@ -21,6 +23,12 @@ export const getStatusStyle = (state) => {
       textColor = "text-blue-700";
       borderColor = "border-blue-200";
       bgSecondaryColor = "bg-blue-400";
+      break;
+    case "review":
+      bgColor = "bg-yellow-50";
+      textColor = "text-yellow-700";
+      borderColor = "border-yellow-200";
+      bgSecondaryColor = "bg-yellow-400";
       break;
     case "completed":
       bgColor = "bg-green-50";
@@ -48,16 +56,17 @@ export const getStatusStyle = (state) => {
       break;
   }
 
-  return { bgColor, textColor, borderColor , bgSecondaryColor};
+  return { bgColor, textColor, borderColor, bgSecondaryColor };
 };
-
 
 export const getStatusIcon = (state) => {
   switch (state) {
     case "Open":
       return <Circle size={16} className="text-gray-600" />;
     case "Pending":
-      return <Hourglass size={16} className="text-blue-600" />;
+      return <Watch size={16} className="text-blue-600" />;
+    case "Review":
+      return <View size={16} className="text-yellow-600" />;
     case "Completed":
       return <CheckCircle size={16} className="text-green-600" />;
     case "Overdue":

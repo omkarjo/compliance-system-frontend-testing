@@ -43,7 +43,7 @@ export const lpSchema = z.object({
       message: "Required",
     })
     .max(1, {
-      message: "Maximum 5 files are allowed",
+      message: "Maximum 1 files are allowed",
     }),
   doi: z.date(),
   date_of_agreement: z.date(),

@@ -16,7 +16,7 @@ export const renderCell = (key, label, type, icon, data) => {
 
   const renderLabel = () => (
     <td className="mb-4 flex items-center gap-2 text-gray-500">
-      {icon && icon}
+      {/* {icon && icon} */}
       {label}:
     </td>
   );
@@ -98,13 +98,14 @@ export const renderCell = (key, label, type, icon, data) => {
         <tr key={key}>
           {renderLabel()}
           <td className="pb-4">
-            <span className="whitespace-pre-line break-words text-sm ">
-              {typeof value === "string"
+            <span className="whitespace-pre-line break-words text-sm">
+              {/* {typeof value === "string"
                 ? value
                     .split(/(.{20})/)
                     .filter(Boolean)
                     .join("\n")
-                : value}
+                : value} */}
+                {value}
             </span>
           </td>
         </tr>

@@ -18,7 +18,7 @@ export default function DashboardBreadcrumb({ menu }) {
     menuItem.items.forEach((item) => {
       if (item.url === currentPath) {
         breadcrumbItems = [
-          { title: menuItem.breadcrumbText, url: menuItem.url, isIndex: false },
+          // { title: menuItem.breadcrumbText, url: menuItem.url, isIndex: false },
           {
             title: item.breadcrumbText || item.title,
             url: item.url,
@@ -32,16 +32,13 @@ export default function DashboardBreadcrumb({ menu }) {
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        {breadcrumbItems
-          .filter((item) => !item.isIndex)
-          .map((item, index, arr) => (
+        {breadcrumbItems.length > 0 &&
+          breadcrumbItems.map((item, index) => (
             <React.Fragment key={index}>
+              <BreadcrumbSeparator className="block" />
               <BreadcrumbItem className="block">
                 <BreadcrumbLink href={item.url}>{item.title}</BreadcrumbLink>
               </BreadcrumbItem>
-              {index < arr.length - 1 && (
-                <BreadcrumbSeparator className="block" />
-              )}
             </React.Fragment>
           ))}
       </BreadcrumbList>
