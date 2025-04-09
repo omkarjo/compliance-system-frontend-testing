@@ -10,6 +10,7 @@ export const taskApiPaths = {
   getTask: "/api/tasks/",
   getTaskByIdPrefix: "/api/tasks/",
   updateTaskPrefix: "/api/tasks/",
+  searchTask: "/api/tasks/search",
 };
 
 export const documentApiPaths = {
@@ -23,11 +24,10 @@ export const auditLogApiPaths = {
   getAuditLog: "/api/audit/logs",
 };
 
-
 export const limitedPartnersApiPaths = {
-    getLimitedPartners: "/api/lps/",
-    createLimitedPartner: "/api/lps/",
-    searchLimitedPartners: "/api/lps/search/",
-    getLimitedPartnerByIdPrefix: "/api/lps/",
-    updateLimitedPartnerPrefix: "/api/lps/",
+  getLimitedPartners: "/api/lps/",
+  createLimitedPartner: "/api/lps/",
+  searchLimitedPartners: "/api/lps/search/",
+  getLimitedPartnerByIdPrefix: "/api/lps/",
+  updateLimitedPartnerPrefix: "/api/lps/",
 };

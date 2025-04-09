@@ -66,3 +66,69 @@ export const useGetTask = ({
     placeholderData: (keepPreviousData) => keepPreviousData,
   });
 };
+
+const searchTask = async ({
+  searchTerm,
+  pageIndex,
+  pageSize,
+  filters = [],
+  sortBy = [],
+}) => {
+  try {
+    const first_sort = sortBy.at(0);
+    const sort = first_sort
+      ? `${first_sort.id}_${first_sort.desc ? "desc" : "asc"}`
+      : "";
+
+    const searchParams = {
+      limit: pageSize,
+      skip: pageIndex * pageSize,
+      ...(sort && { sort }),
+      ...(searchTerm && { description: searchTerm }),
+      ...filters.reduce((acc, filter) => {
+        acc[filter.filterid] = filter.optionid;
+        return acc;
+      }, {}),
+    };
+
+    const response = await apiWithAuth.get(taskApiPaths.searchTask, {
+      params: searchParams,
+    });
+    const { tasks, total } = response.data;
+    return { data: tasks || [], totalCount: total };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+
+    let message = "Failed to fetch activity logs";
+    if (
+      error.response?.data?.detail &&
+      typeof error.response.data.detail === "string"
+    ) {
+      message = error.response.data.detail;
+    }
+
+    throw new Error(message);
+  }
+};
+
+export const useSearchTask = ({
+  searchTerm,
+  pageIndex = 0,
+  pageSize = 100,
+  filters = [],
+  sortBy = [],
+}) => {
+  return useQuery({
+    queryKey: [
+      "task-search-query",
+      searchTerm,
+      pageIndex,
+      pageSize,
+      filters,
+      sortBy,
+    ],
+    queryFn: () =>
+      searchTask({ searchTerm, pageIndex, pageSize, filters, sortBy }),
+    placeholderData: (keepPreviousData) => keepPreviousData,
+  });
+};

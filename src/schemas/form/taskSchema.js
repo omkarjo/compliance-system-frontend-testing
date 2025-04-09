@@ -82,15 +82,9 @@ export const taskFormFields = [
   {
     name: "predecessor_task",
     label: "Predecessor Task",
-    type: "select",
+    type: "task_select",
     placeholder: "",
     required: false,
-    options: [
-      { label: "Task 1", value: "Task 1" },
-      { label: "Task 2", value: "Task 2" },
-      { label: "Task 3", value: "Task 3" },
-      { label: "Task 4", value: "Task 4" },
-    ],
   },
   {
     name: "assignee_id",
