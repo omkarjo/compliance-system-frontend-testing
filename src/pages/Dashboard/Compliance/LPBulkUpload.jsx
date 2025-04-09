@@ -247,13 +247,15 @@ export default function LPBulkUpload() {
     }
 
     // Remove the row if it upload_status is "Success" and allow only requiredHeaders in the data
-    const filteredData = data.filter((row) => {
-      const isValidRow = requiredHeaders.every((header) => {
-        const value = row[header];
-        return value !== undefined && value !== null && value !== "";
+    const filteredData = data
+      .filter((row) => row.upload_status !== "Success")
+      .map((row) => {
+        const filteredRow = {};
+        requiredHeaders.forEach((header) => {
+          filteredRow[header] = row[header];
+        });
+        return filteredRow;
       });
-      return isValidRow && row.upload_status !== "Success";
-    });
 
     if (filteredData.length === 0) {
       toast.error("No valid data to upload. Please check the file.");
