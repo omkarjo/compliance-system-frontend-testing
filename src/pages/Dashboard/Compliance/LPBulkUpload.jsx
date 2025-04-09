@@ -1,15 +1,21 @@
 import { FileInput, FileUploader } from "@/components/extension/file-uploader";
 import DataTable from "@/components/includes/data-table";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { limitedPartnersApiPaths } from "@/constant/apiPaths";
 import createPaginatedFetcher from "@/hooks/createPaginatedFetcher";
-import useGetDataWithPagination from "@/hooks/createPaginatedFetcher";
 import { cn } from "@/lib/utils";
 import { apiWithAuth } from "@/utils/api";
-import { Upload } from "lucide-react";
+import { CheckCircle, Upload, XCircle } from "lucide-react";
 import Papa from "papaparse";
-import { useCallback, useMemo, useState } from "react";
+import { use, useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -65,7 +71,7 @@ export default function LPBulkUpload() {
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
 
-  const columns = requiredHeaders.map((header) => ({
+  const columnsTable = requiredHeaders.map((header) => ({
     accessorKey: header,
     header: header.replace(/_/g, " ").toUpperCase(),
     cell: ({ cell }) => {
@@ -86,6 +92,73 @@ export default function LPBulkUpload() {
     },
   }));
 
+  const filterOptions = [
+    { type: "divider" },
+    {
+      type: "component",
+      id: "state",
+      name: "Status",
+      icon: <CheckCircle />,
+      relation: ["equals"],
+      options: [
+        {
+          id: "Not Uploaded",
+          label: "Not Uploaded",
+          icon: <XCircle className="text-yellow-400" />,
+        },
+        {
+          id: "Success",
+          label: "Success",
+          icon: <CheckCircle className="text-green-400" />,
+        },
+        {
+          id: "Failed",
+          label: "Failed",
+          icon: <XCircle className="text-red-400" />,
+        },
+      ],
+    },
+  ];
+
+  const columns = [
+    {
+      accessorKey: "upload_status",
+      header: "Upload Status",
+      cell: ({ cell }) => {
+        const value = cell.getValue();
+        const originalRow = cell.row.original;
+
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex cursor-default items-center gap-2">
+                <Badge
+                  variant={
+                    originalRow?.error_message ? "destructive" : "secondary"
+                  }
+                  className={cn(
+                    value === "Success" && "bg-green-500 text-white",
+                    value === "Failed" && "bg-red-500 text-white",
+                    value === "Pending" && "bg-yellow-500 text-white",
+                    value === "Not Uploaded" && "bg-gray-500 text-white",
+                  )}
+                >
+                  {value ?? "Not Uploaded"}
+                </Badge>
+              </div>
+            </TooltipTrigger>
+            {originalRow?.error_message && (
+              <TooltipContent className="text-sm">
+                {originalRow?.error_message}
+              </TooltipContent>
+            )}
+          </Tooltip>
+        );
+      },
+    },
+    ...columnsTable,
+  ];
+
   const handelData = useCallback((data) => {
     console.log("Parsed data:", data);
     setData(data);
@@ -104,7 +177,6 @@ export default function LPBulkUpload() {
             file,
           });
           setFiles([parsedFile.file]);
-          console.log("Parsed file:", parsedFile);
           Papa.parse(parsedFile.file, {
             header: true,
             skipEmptyLines: true,
@@ -124,9 +196,6 @@ export default function LPBulkUpload() {
                 setFiles([]);
                 return;
               }
-
-              console.log("CSV headers:", headers);
-              console.log("Parsed CSV data:", results);
               handelData(results.data);
             },
             error: (error) => {
@@ -176,23 +245,32 @@ export default function LPBulkUpload() {
       setIsDisabled(false);
       return;
     }
-    const validData = data.filter((row) => {
-      return requiredHeaders.every((header) => {
+
+    // Remove the row if it upload_status is "Success" and allow only requiredHeaders in the data
+    const filteredData = data.filter((row) => {
+      const isValidRow = requiredHeaders.every((header) => {
         const value = row[header];
         return value !== undefined && value !== null && value !== "";
       });
+      return isValidRow && row.upload_status !== "Success";
     });
-    if (validData.length === 0) {
+
+    if (filteredData.length === 0) {
       toast.error("No valid data to upload. Please check the file.");
       setIsDisabled(false);
       return;
     }
-    console.log("Valid data to upload:", validData);
 
-    const csv = Papa.unparse(validData, {
+    // if (validData.length === 0) {
+    //   toast.error("No valid data to upload. Please check the file.");
+    //   setIsDisabled(false);
+    //   return;
+    // }
+    // console.log("Valid data to upload:", validData);
+
+    const csv = Papa.unparse(filteredData, {
       fields: requiredHeaders,
     });
-    console.log("CSV data to upload:", csv);
     const blob = new Blob([csv], { type: "text/csv" });
     const csv_file = new File([blob], "lp_data.csv", {
       type: "text/csv",
@@ -202,7 +280,7 @@ export default function LPBulkUpload() {
     formData.append("file", csv_file);
 
     try {
-      await apiWithAuth.post(
+      const response = await apiWithAuth.post(
         limitedPartnersApiPaths.bulkUploadLimitedPartner,
         formData,
         {
@@ -213,23 +291,30 @@ export default function LPBulkUpload() {
         },
       );
 
-      const invalidRows = data.filter((row) => {
-        return requiredHeaders.some((header) => {
-          const value = row[header];
-          return value === undefined || value === null || value === "";
-        });
-      });
-      if (invalidRows.length > 0) {
-        setData(invalidRows);
-        toast.success("Upload Data", {
-          description:
-            "Valid data uploaded successfully. Please correct the invalid data and try again.",
-        });
-      } else {
-        setData([]);
-        toast.success("Upload Data", {
-          description: "Upload completed successfully.",
-        });
+      const { errors, failed, successful } = response.data;
+
+      setData((prev) =>
+        prev.map((row, index) => {
+          const errorRow = errors.find((error) => error.row - 2 === index);
+
+          if (errorRow) {
+            return {
+              ...row,
+              upload_status: "Failed",
+              error_message: errorRow.error,
+            };
+          }
+          return { ...row, upload_status: "Success", error_message: null };
+        }),
+      );
+
+      if (successful > 0) {
+        toast.success(`${successful} limited partners uploaded successfully.`);
+      }
+      if (failed > 0) {
+        toast.error(
+          `${failed} limited partners failed to upload. Please check the errors.`,
+        );
       }
     } catch (error) {
       console.error("Upload error:", error);
@@ -243,8 +328,6 @@ export default function LPBulkUpload() {
       setIsDisabled(false);
     }
   }, [data]);
-
-  const fetchData = createPaginatedFetcher(data, "my-table-id");
 
   return (
     <section className="flex flex-col">
@@ -310,7 +393,33 @@ export default function LPBulkUpload() {
                 </Button>
               </div>
             </div>
-            <DataTable columns={columns} fetchData={fetchData} />
+            <DataTable
+              columns={columns}
+              filterOptions={filterOptions}
+              fetchData={({ pageIndex, pageSize, filters }) => {
+                let dataWorkingOn = data;
+                const filteredOptions = filters?.at(0);
+
+                if (filteredOptions) {
+                  const { filterid, optionid } = filteredOptions;
+                  if (filterid === "state") {
+                    dataWorkingOn = data.filter(
+                      (row) => row.upload_status === optionid,
+                    );
+                  }
+                }
+
+                const start = pageIndex * pageSize;
+                const end = start + pageSize;
+                const paginatedData = dataWorkingOn.slice(start, end);
+                const totalCount = dataWorkingOn.length;
+                return {
+                  data: { data: paginatedData, totalCount },
+                  loading: false,
+                  error: null,
+                };
+              }}
+            />
           </div>
         ) : (
           <FileUploader
