@@ -13,7 +13,7 @@ import { limitedPartnersApiPaths } from "@/constant/apiPaths";
 import createPaginatedFetcher from "@/hooks/createPaginatedFetcher";
 import { cn } from "@/lib/utils";
 import { apiWithAuth } from "@/utils/api";
-import { CheckCircle, Upload, XCircle } from "lucide-react";
+import { CheckCircle, Database, Upload, XCircle } from "lucide-react";
 import Papa from "papaparse";
 import { use, useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -70,6 +70,11 @@ export default function LPBulkUpload() {
   const [files, setFiles] = useState([]);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
+  const [uploadStatus, setUploadStatus] = useState({
+    not_uploaded: 0,
+    success: 0,
+    failed: 0,
+  });
 
   const columnsTable = requiredHeaders.map((header) => ({
     accessorKey: header,
@@ -162,6 +167,12 @@ export default function LPBulkUpload() {
   const handelData = useCallback((data) => {
     console.log("Parsed data:", data);
     setData(data);
+    setUploadStatus({
+      not_uploaded: data.length,
+      success: 0,
+      failed: 0,
+    });
+    setError(null);
   }, []);
 
   const handleFileChange = useCallback(
@@ -293,7 +304,7 @@ export default function LPBulkUpload() {
         },
       );
 
-      const { errors, failed, successful } = response.data;
+      const { errors, failed, successful, total } = response.data;
 
       setData((prev) =>
         prev.map((row, index) => {
@@ -318,6 +329,12 @@ export default function LPBulkUpload() {
           `${failed} limited partners failed to upload. Please check the errors.`,
         );
       }
+
+      setUploadStatus({
+        not_uploaded: total - successful - failed,
+        success: successful,
+        failed: failed,
+      });
     } catch (error) {
       console.error("Upload error:", error);
       if (error.response) {
@@ -342,39 +359,81 @@ export default function LPBulkUpload() {
         {data && data.length > 0 ? (
           <div className="flex w-full flex-col items-center justify-between gap-2 px-2">
             <div className="flex w-full items-center justify-between gap-2 px-2">
-              <Card className={"gap-1"}>
-                {/* <CardHeader>
+              <div className="flex items-center flex-wrap justify-between gap-2 px-2">
+                <Card className={"gap-1"}>
+                  {/* <CardHeader>
                   <CardTitle>Overview</CardTitle>
                 </CardHeader> */}
-                <CardContent
-                  className={"grid gap-4 md:grid-cols-2 lg:grid-cols-3"}
-                >
-                  <div className="flex flex-col gap-2">
-                    <span className="text-sm font-semibold text-gray-500">
-                      Total Records
-                    </span>
-                    <span className="text-lg font-semibold text-gray-700">
-                      {handleValidation?.total}
-                    </span>
-                  </div>
-                  {handleValidation?.missingFields && (
+                  <CardContent className={"grid grid-cols-2 gap-4 px-4"}>
                     <div className="flex flex-col gap-2">
-                      <span className="text-sm font-semibold">
-                        Missing Fields
+                      <span className="text-sm font-semibold text-gray-500">
+                        Total Records
                       </span>
-                      <ul className="list-inside list-disc text-sm">
-                        {Object.entries(handleValidation.missingFields).map(
-                          ([header, count]) => (
-                            <li key={header}>
-                              {header.replace(/_/g, " ")}: {count}
-                            </li>
-                          ),
-                        )}
-                      </ul>
+                      <span className="text-lg font-semibold text-gray-700">
+                        {handleValidation?.total} 
+                      </span>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+                    {handleValidation?.missingFields && (
+                      <div className="flex flex-col gap-2">
+                        <span className="text-sm font-semibold">
+                          Missing Fields
+                        </span>
+                        <ul className="list-inside list-disc text-sm">
+                          {Object.entries(handleValidation.missingFields).map(
+                            ([header, count]) => (
+                              <li key={header}>
+                                {header.replace(/_/g, " ")}: {count}
+                              </li>
+                            ),
+                          )}
+                        </ul>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+                <Card className={"gap-1"}>
+                  <CardContent
+                    className={"grid gap-4 md:grid-cols-2 lg:grid-cols-3"}
+                  >
+                    <div className="flex flex-col gap-2">
+                      <span className="text-sm font-semibold text-gray-500">
+                        <Database
+                          className="inline-block text-yellow-500"
+                          size={16}
+                        />
+                        Not Uploaded
+                      </span>
+                      <span className="text-lg font-semibold text-gray-700">
+                        {uploadStatus.not_uploaded}
+                      </span>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <span className="text-sm font-semibold text-gray-500">
+                        <CheckCircle
+                          className="inline-block text-green-500"
+                          size={16}
+                        />{" "}
+                        Success
+                      </span>
+                      <span className="text-lg font-semibold text-gray-700">
+                        {uploadStatus.success}
+                      </span>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <span className="text-sm font-semibold text-gray-500">
+                        <XCircle
+                          className="inline-block text-red-500"
+                          size={16}
+                        />{" "}
+                        Failed
+                      </span>
+                      <span className="text-lg font-semibold text-gray-700">
+                        {uploadStatus.failed}
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
               <div className="flex items-center justify-between gap-2 px-2">
                 <Button
                   variant=""
