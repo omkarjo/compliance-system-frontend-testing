@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useGetTask } from "@/query/taskQuery";
+import useCheckRoles from "@/utils/check-roles";
 import {
   Calendar,
   CheckCircle,
@@ -21,6 +22,8 @@ import {
 import StateChangeSelector from "../includes/state-change-selector";
 
 export default function TableTaskViewFM({ actionType, openView = () => {} }) {
+  const havePermission = useCheckRoles(["Fund Manager", "Compliance Officer"]);
+
   const columns = [
     {
       accessorKey: "category",
@@ -62,22 +65,7 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
       header: ({ column }) => <SortButton column={column}>Status</SortButton>,
       cell: ({ row }) => {
         const data = row.original;
-        return (
-          // <BadgeStatusTask text={status} type={status} className="ms-4" />
-
-          // <StatusBadgeSelectorConstrained
-          //   defaultStatus={status}
-          //   onStatusChange={async (newStatus) => {
-          //     await updateStatus.mutateAsync({
-          //       taskId: compliance_task_id,
-          //       status: newStatus,
-          //     });
-          //   }}
-          //   isUpdating={updateStatus.isPending}
-          // />
-
-          <StateChangeSelector data={data} />
-        );
+        return <StateChangeSelector data={data} />;
       },
     },
 
@@ -163,7 +151,13 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
         },
       ],
     },
-    { type: "user_select", id: "assignee_id", name: "Assignee" },
+    ...(havePermission
+      ? [
+          { type: "user_select", id: "assignee_id", name: "Assignee" },
+          { type: "user_select", id: "reviewer_id", name: "Reviewer" },
+          { type: "user_select", id: "approver_id", name: "Final Reviewer" },
+        ]
+      : []),
     {
       type: "date_range",
       id: "deadline",

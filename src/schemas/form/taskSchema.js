@@ -17,6 +17,12 @@ export const taskFormFields = [
       useFsAccessApi: false,
       accept: {
         "application/pdf": [".pdf"],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+          ".xlsx",
+        ],
+        "text/plain": [".txt"],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+          [".docx"],
       },
       maxFiles: 5,
       maxSize: 1024 * 1024 * 4,

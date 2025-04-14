@@ -1,4 +1,3 @@
-
 const validateEmail = (email) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
@@ -148,6 +147,12 @@ export const lpFromFields = [
       useFsAccessApi: false,
       accept: {
         "application/pdf": [".pdf"],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+          ".xlsx",
+        ],
+        "text/plain": [".txt"],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+          [".docx"],
       },
       maxFiles: 1,
       maxSize: 1024 * 1024 * 4,
@@ -251,8 +256,8 @@ export const lpFromFields = [
     label: "Email For Drawdowns",
     description: "You can add multiple emails separated by a comma",
     placeholder: "Please enter email",
-    required : true,
-    separators: [',', ';', 'Enter'],
+    required: true,
+    separators: [",", ";", "Enter"],
     maxTags: 5,
     validateTag: validateEmail,
   },

@@ -45,7 +45,7 @@ const TaskCommandList = ({
   search,
   setSearch,
 }) => (
-  <Command className="border-0">
+  <Command className="border-0 ">
     <CommandInput
       placeholder="Search task..."
       value={search}
@@ -146,7 +146,7 @@ export default function TaskSelect({
 
   if (isFilter) {
     return (
-      <div className={cn("w-full", className)}>
+      <div className={cn("w-full ", className)}>
         <div className="rounded-md border">
           <TaskCommandList
             tasks={tasks}

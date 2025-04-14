@@ -1,21 +1,11 @@
-import { useCreateTask } from "@/actions/task/createTask";
 import { useUpdateTask } from "@/actions/task/updateTask";
-import ViewCalendarTaskAdmin from "@/components/Dashboard/calander/view-calander-task-admin";
-import DeleteAlertDialog from "@/components/Dashboard/includes/delete-alert-dilog";
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import SheetTaskViewFM from "@/components/Dashboard/sheet/sheet-task-view-fm";
 import TableTaskViewFM from "@/components/Dashboard/tables/table-task-view-fm";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { taskApiPaths } from "@/constant/apiPaths";
-import queryClient from "@/query/queryClient";
 import { taskFormFields } from "@/schemas/form/taskSchema";
 import { taskSchema } from "@/schemas/zod/taskSchema";
-import { apiWithAuth } from "@/utils/api";
-import useCheckRoles from "@/utils/check-roles";
 import { usePermissionTaskChange } from "@/utils/havePermission";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Trash, Trash2 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -33,18 +23,9 @@ const defaultValues = {
   approver_id: "",
 };
 
-export default function TaskDashboardFundManager() {
-  const haveAdminPermission = useCheckRoles("Fund Manager");
-
-  const createTask = useCreateTask();
+export default function TaskDashboardUser() {
   const editTask = useUpdateTask();
   const DialogTaskVariant = {
-    create: {
-      title: "Create Task",
-      description:
-        "Create a new task by filling out the form below. All task need to be assigned to someone.",
-      submit: "Create",
-    },
     edit: {
       title: "Edit Task",
       description: "You can edit the task by changing the details below.",
@@ -59,42 +40,12 @@ export default function TaskDashboardFundManager() {
     defaultValues: {},
   });
 
-  const [deleteAlertDialog, setDeleteAlertDialog] = useState({
-    isOpen: false,
-    compliance_task_id: "",
-    title: "",
-    description: "",
-    onDelete: null,
-  });
-
   const [sheetTask, setSheetTask] = useState({
     isOpen: false,
   });
 
   const handleDialogTaskClose = useCallback((isOpen) => {
     setDialogTask((prev) => ({ ...prev, isOpen }));
-  }, []);
-
-  const handleDeleteAlertDialogClose = useCallback((isOpen) => {
-    setDeleteAlertDialog((prev) => ({
-      ...prev,
-      isOpen,
-      onDelete: null,
-    }));
-  }, []);
-
-  const handleDeleteTask = useCallback(async (compliance_task_id) => {
-    try {
-      await apiWithAuth.delete(
-        `${taskApiPaths.deleteTaskPrefix}${compliance_task_id}`,
-      );
-      toast.success("Task deleted successfully");
-      queryClient.invalidateQueries("task-query");
-    } catch (error) {
-      toast.error("Failed to delete task", {
-        description: error?.response?.data?.message || "An error occurred",
-      });
-    }
   }, []);
 
   const form = useForm({
@@ -104,16 +55,7 @@ export default function TaskDashboardFundManager() {
 
   const handleDialogTaskOpen = useCallback(
     (variant, data, compliance_task_id) => {
-      if (variant === "create") {
-        form.reset(defaultValues);
-
-        setDialogTask({
-          isOpen: true,
-          variant: "create",
-          defaultValues: {},
-          compliance_task_id: "",
-        });
-      } else {
+      if (variant === "edit") {
         // For edit mode, use a single reset call with all values
         let formValues = {
           description: data.description,
@@ -194,42 +136,7 @@ export default function TaskDashboardFundManager() {
         handleDialogTaskOpen("edit", data, data.compliance_task_id);
       },
     },
-    {
-      title: "Delete",
-      className: "text-red-500",
-      onClick: (data) => {
-        handleDeleteTaskOpen(data);
-      },
-    },
   ];
-
-  const handleDeleteTaskOpen = useCallback(
-    (data) => {
-      if (!haveAdminPermission) {
-        setDeleteAlertDialog({
-          isOpen: true,
-          title: `Cannot delete task “${data.description}”`,
-          description: `You cannot delete this task as task “${data.description}” depends on this task. Please remove the dependency before trying to delete this task.`,
-          onDelete: null,
-          compliance_task_id: data.compliance_task_id,
-        });
-        return;
-      }
-
-      setDeleteAlertDialog({
-        isOpen: true,
-        title: `Are you absolutely sure you want to delete the “${data.description}” task?`,
-        description:
-          "This action cannot be undone. This will permanently delete the task.",
-        onDelete: () => {
-          handleDeleteTask(data.compliance_task_id);
-          handleDeleteAlertDialogClose(false);
-        },
-        compliance_task_id: data.compliance_task_id,
-      });
-    },
-    [handleDeleteAlertDialogClose, haveAdminPermission, handleDeleteTask],
-  );
 
   const subActions = [
     {
@@ -238,41 +145,6 @@ export default function TaskDashboardFundManager() {
         handleDialogTaskOpen("edit", data, data.compliance_task_id);
       },
       className: "",
-    },
-    {
-      label: "Delete Task",
-      icon: Trash2,
-      onClick: (data) => {
-        handleDeleteTaskOpen(data);
-      },
-      variant: "destructive",
-    },
-  ];
-
-  const tabs = [
-    {
-      title: "List",
-      value: "list",
-      children: (
-        <TableTaskViewFM
-          actionType={actionType}
-          openView={(data) => {
-            setSheetTask({ isOpen: true, data });
-          }}
-          openEdit={(data) => {
-            handleDialogTaskOpen("edit", data, data.compliance_task_id);
-          }}
-        />
-      ),
-    },
-    {
-      title: "Calendar",
-      value: "calendar",
-      children: (
-        <ViewCalendarTaskAdmin
-          buttons={haveAdminPermission ? subActions : []}
-        />
-      ),
     },
   ];
 
@@ -343,77 +215,37 @@ export default function TaskDashboardFundManager() {
       });
       console.log("attachments", attachments);
 
-      if (dialogTask.variant === "create") {
-        createTask.mutate({
-          data: rest,
-          attachments,
-          document_type,
-        });
-      } else {
-        editTask.mutate({
-          compliance_task_id: dialogTask.compliance_task_id,
-          data: rest,
-          attachments,
-          document_type,
-        });
-      }
+      editTask.mutate({
+        compliance_task_id: dialogTask.compliance_task_id,
+        data: rest,
+        attachments,
+        document_type,
+      });
 
       handleDialogTaskClose(false);
       form.reset({});
     },
-    [form, handleDialogTaskClose, createTask, dialogTask, editTask],
+    [form, handleDialogTaskClose, dialogTask, editTask],
   );
-
-  const defaultTabs = localStorage.getItem("taskTabs") || "list";
-
-  const handelTabChange = useCallback((value) => {
-    localStorage.setItem("taskTabs", value);
-  }, []);
 
   // console.log("formErrors", form.formState.errors);
   // console.log("formValues", form.getValues());
 
   return (
-    <section className="">
-      <Tabs
-        defaultValue={defaultTabs}
-        className="h-full w-full"
-        onValueChange={handelTabChange}
-      >
-        <div className="flex items-center justify-between gap-4 px-4 py-2">
-          <div className="flex items-center gap-2">
-            <Button
-              className="flex items-center gap-1 px-3 text-sm"
-              onClick={() => handleDialogTaskOpen("create")}
-            >
-              <Plus className="size-4" />{" "}
-              <span className="max-md:hidden">Create Task</span>
-            </Button>
-          </div>
-          <div className="px-4 py-2">
-            <TabsList className={"flex gap-2"}>
-              {tabs.map((tab) => (
-                <TabsTrigger
-                  key={tab.value}
-                  value={tab.value}
-                  disabled={tab?.disabled}
-                >
-                  <span className="px-0.5 py-0.5 text-xs md:text-sm">
-                    {tab.title}
-                  </span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
-        </div>
-        <main className="mx-4 flex-1">
-          {tabs.map((tab) => (
-            <TabsContent key={tab.value} value={tab.value}>
-              {tab.children}
-            </TabsContent>
-          ))}
-        </main>
-      </Tabs>
+    <section className="mx-auto mt-4 w-full px-4 py-2">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Task Dashboard</h1>
+      </div>
+      {/* <hr className="my-4" /> */}
+      <TableTaskViewFM
+        actionType={actionType}
+        openView={(data) => {
+          setSheetTask({ isOpen: true, data });
+        }}
+        openEdit={(data) => {
+          handleDialogTaskOpen("edit", data, data.compliance_task_id);
+        }}
+      />
       <DialogForm
         tabindex={0}
         title={DialogTaskVariant[dialogTask.variant]?.title}
@@ -449,15 +281,8 @@ export default function TaskDashboardFundManager() {
       <SheetTaskViewFM
         data={sheetTask.data}
         isOpen={sheetTask.isOpen}
-        buttons={haveAdminPermission ? subActions : []}
+        buttons={subActions}
         onClose={() => setSheetTask({ isOpen: false, data: null })}
-      />
-      <DeleteAlertDialog
-        title={deleteAlertDialog.title}
-        description={deleteAlertDialog.description}
-        isOpen={deleteAlertDialog.isOpen}
-        onClose={handleDeleteAlertDialogClose}
-        onDelete={deleteAlertDialog.onDelete}
       />
     </section>
   );

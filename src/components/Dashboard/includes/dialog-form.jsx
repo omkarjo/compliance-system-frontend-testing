@@ -19,6 +19,7 @@ export default function DialogForm({
   onSubmit,
   onFileChange,
   hiddenFields = [],
+  disabledFields = [],
   children,
 }) {
   return (
@@ -37,6 +38,7 @@ export default function DialogForm({
             submitText={submitText}
             onFileChange={onFileChange}
             hiddenFields={hiddenFields}
+            disabledFields={disabledFields}
           >
             {children}
           </FormGenerate>

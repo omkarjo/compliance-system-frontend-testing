@@ -62,7 +62,7 @@ export default function SheetTaskViewFM({
   data = {},
   isOpen = true,
   onClose = () => {},
-  openEdit = () => {},
+  buttons = [],
 }) {
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -91,9 +91,30 @@ export default function SheetTaskViewFM({
             )}
           </tbody>
         </table>
-        <Button onClick={() => openEdit(data)} className="mx-auto mt-4 w-11/12">
-          Edit Task
-        </Button>
+        {buttons.length > 0 && (
+          <div className="mx-auto mt-4 flex w-11/12 flex-col items-center justify-center gap-2">
+            {buttons.map((button, index) => (
+              <Button
+                key={index}
+                variant={button.variant || ""}
+                size="lg"
+                onClick={() => {
+                  button.onClick(data);
+                  onClose(false);
+                }}
+                className={cn(
+                  "w-full",
+                  button.className,
+                  "flex items-center gap-1",
+                )}
+                disabled={button.disabled}
+              >
+                {button.icon && <span className="mr-1">{<button.icon />}</span>}
+                {button.label}
+              </Button>
+            ))}
+          </div>
+        )}
       </SheetContent>
     </Sheet>
   );

@@ -1,5 +1,7 @@
 import { taskApiPaths } from "@/constant/apiPaths";
+import { useAppSelector } from "@/store/hooks";
 import { apiWithAuth } from "@/utils/api";
+import useCheckRoles from "@/utils/check-roles";
 import { useQuery } from "@tanstack/react-query";
 
 const sortKeyMap = {
@@ -8,31 +10,68 @@ const sortKeyMap = {
   deadline: "deadline",
 };
 
-const fetchData = async ({ pageIndex, pageSize, sortBy, filters }) => {
+const fetchData = async ({
+  pageIndex,
+  pageSize,
+  sortBy = [],
+  filters = [],
+  multipleQuery = null,
+}) => {
   try {
-    const sortValue = sortBy.split("_");
-    const sortKey = sortValue[0];
-    const sortOrder = sortValue[sortValue.length - 1];
-    const mappedSortBy = sortKeyMap[sortKey]
-      ? `${sortKeyMap[sortKey]}_${sortOrder}`
-      : null;
+    let sortByParmas = null;
+    if (sortBy && sortBy.length) {
+      const sortValue = sortBy.split("_");
+      const sortKey = sortValue[0];
+      const sortOrder = sortValue[sortValue.length - 1];
+      const mappedSortBy = sortKeyMap[sortKey]
+        ? `${sortKeyMap[sortKey]}_${sortOrder}`
+        : null;
 
-    sortBy = mappedSortBy ? mappedSortBy : null;
+      sortByParmas = mappedSortBy ? mappedSortBy : null;
+    }
+
     const searchParams = {
       limit: pageSize,
       skip: pageIndex * pageSize,
-      ...(sortBy && { sort: sortBy }),
+      ...(sortByParmas && { sort: sortByParmas }),
       ...filters.reduce((acc, filter) => {
         acc[filter.filterid] = filter.optionid;
         return acc;
       }, {}),
     };
 
-    const response = await apiWithAuth.get(taskApiPaths.getTask, {
-      params: searchParams,
-    });
-    const { tasks, total } = response.data;
-    return { data: tasks || [], totalCount: total };
+    if (!multipleQuery) {
+      const response = await apiWithAuth.get(taskApiPaths.getTask, {
+        params: searchParams,
+      });
+
+      const { tasks, total } = response.data;
+      return { data: tasks || [], totalCount: total };
+    } else {
+      let data = [];
+      let total = 0;
+      for (const query of multipleQuery) {
+        const response = await apiWithAuth.get(taskApiPaths.getTask, {
+          params: { ...searchParams, ...query },
+        });
+        const { tasks, total: totalCount } = response.data;
+        data.push(...tasks);
+        total += totalCount;
+      }
+
+      // Remove duplicates based on task_id
+
+      const uniqueData = new Map(
+        data.map((item) => [item.compliance_task_id, item]),
+      );
+      data = Array.from(uniqueData.values());
+
+      // Sort the data based on the sortByParmas
+
+      // Return the paginated data and total count
+
+      return { data: data || [], totalCount: total };
+    }
   } catch (error) {
     console.error("Error fetching data:", error);
 
@@ -54,14 +93,33 @@ export const useGetTask = ({
   sortBy = [],
   filters = [],
 }) => {
+  const havePermission = useCheckRoles(["Fund Manager", "Compliance Officer"]);
+
+  const { user } = useAppSelector((state) => state.user);
+  const user_id = user.user_id;
   const first_sort = sortBy.at(0);
   const sort = first_sort
     ? `${first_sort.id}_${first_sort.desc ? "desc" : "asc"}`
     : "";
 
+  const multipleQuery = havePermission
+    ? null
+    : [
+        { assignee_id: user_id },
+        { reviewer_id: user_id },
+        { approver_id: user_id },
+      ];
+
   return useQuery({
-    queryKey: ["task-query", pageIndex, pageSize, sort, filters],
-    queryFn: () => fetchData({ pageIndex, pageSize, sortBy: sort, filters }),
+    queryKey: ["task-query", pageIndex, pageSize, sort, filters, multipleQuery],
+    queryFn: () =>
+      fetchData({
+        pageIndex,
+        pageSize,
+        sortBy: sort,
+        filters,
+        multipleQuery,
+      }),
     placeholderData: (keepPreviousData) => keepPreviousData,
   });
 };
@@ -74,6 +132,16 @@ const searchTask = async ({
   sortBy = [],
 }) => {
   try {
+    if (!searchTerm || searchTerm.length < 2) {
+      console.log("searchTerm", searchTerm);
+      const response = await fetchData({
+        pageIndex,
+        pageSize,
+      });
+
+      return response;
+    }
+
     const first_sort = sortBy.at(0);
     const sort = first_sort
       ? `${first_sort.id}_${first_sort.desc ? "desc" : "asc"}`
@@ -98,7 +166,7 @@ const searchTask = async ({
   } catch (error) {
     console.error("Error fetching data:", error);
 
-    let message = "Failed to fetch activity logs";
+    let message = "Failed to fetch Task";
     if (
       error.response?.data?.detail &&
       typeof error.response.data.detail === "string"

@@ -7,7 +7,7 @@ let allLPsCache = null;
 
 const getAllLimitedPartners = async ({ pageIndex, pageSize }) => {
   try {
-    if (!allLPsCache) {
+    if (!allLPsCache || allLPsCache.length === 0 || false /* forceRefresh */) {
       const response = await apiWithAuth.get(
         limitedPartnersApiPaths.getLimitedPartners,
         {

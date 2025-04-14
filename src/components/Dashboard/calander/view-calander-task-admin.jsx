@@ -49,7 +49,7 @@ const colStartClasses = [
 ];
 const MAX_TASKS_PER_DAY = 3;
 
-export default function ViewCalendarTaskFM() {
+export default function ViewCalendarTaskFM({ buttons }) {
   const today = startOfToday();
   const [selectedDay, setSelectedDay] = React.useState(today);
   const [currentMonth, setCurrentMonth] = React.useState(
@@ -348,6 +348,7 @@ export default function ViewCalendarTaskFM() {
                               }
                               key={task.compliance_task_id}
                               data={task}
+                              buttons={buttons}
                             />
                           ))}
                         </div>

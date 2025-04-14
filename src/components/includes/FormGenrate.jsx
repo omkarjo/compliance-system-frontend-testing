@@ -35,6 +35,7 @@ import { format } from "date-fns";
 import { Calendar as CalendarIcon, Paperclip, Upload } from "lucide-react";
 import { memo, useMemo } from "react";
 import { useFormState } from "react-hook-form";
+import { Link } from "react-router-dom";
 import { CountryDropdown } from "../extension/country-dropdown";
 import { PhoneInput } from "../extension/phone-input";
 import { TagsInput } from "./tags-input";
@@ -80,6 +81,7 @@ const FormGenerate = ({
   children,
   className,
   hiddenFields = [],
+  disabledFields = [],
 }) => {
   const { isSubmitting } = useFormState({ control: form?.control });
 
@@ -89,7 +91,11 @@ const FormGenerate = ({
         <Input
           className={cn("focus-visible:ring-0", formField?.className)}
           placeholder={formField?.placeholder || ""}
-          disabled={isSubmitting || formField?.disabled}
+          disabled={
+            isSubmitting ||
+            formField?.disabled ||
+            disabledFields?.includes(field.name)
+          }
           {...field}
         />
       ),
@@ -98,7 +104,11 @@ const FormGenerate = ({
         <Textarea
           className={cn("focus-visible:ring-0", formField?.className)}
           placeholder={formField?.placeholder || ""}
-          disabled={isSubmitting || formField?.disabled}
+          disabled={
+            isSubmitting ||
+            formField?.disabled ||
+            disabledFields?.includes(field.name)
+          }
           {...field}
         />
       ),
@@ -108,7 +118,11 @@ const FormGenerate = ({
           type="email"
           className={cn("focus-visible:ring-0", formField?.className)}
           placeholder={formField?.placeholder || ""}
-          disabled={isSubmitting || formField?.disabled}
+          disabled={
+            isSubmitting ||
+            formField?.disabled ||
+            disabledFields?.includes(field.name)
+          }
           {...field}
         />
       ),
@@ -123,7 +137,11 @@ const FormGenerate = ({
             "no-spinners focus-visible:ring-0",
             formField?.className,
           )}
-          disabled={isSubmitting || formField?.disabled}
+          disabled={
+            isSubmitting ||
+            formField?.disabled ||
+            disabledFields?.includes(field.name)
+          }
           onKeyDown={(e) => {
             if (e.key === "ArrowUp" || e.key === "ArrowDown") {
               e.preventDefault();
@@ -137,7 +155,11 @@ const FormGenerate = ({
         <Select
           onValueChange={field.onChange}
           defaultValue={field.value}
-          disabled={isSubmitting}
+          disabled={
+            isSubmitting ||
+            formField?.disabled ||
+            disabledFields?.includes(field.name)
+          }
         >
           <SelectTrigger className="w-full" disabled={isSubmitting}>
             <SelectValue placeholder={formField?.placeholder || ""} />
@@ -200,7 +222,10 @@ const FormGenerate = ({
           }}
           dropzoneOptions={{
             ...formField?.dropZoneConfig,
-            disabled: isSubmitting,
+            disabled:
+              isSubmitting ||
+              formField?.disabled ||
+              disabledFields?.includes(field.name),
           }}
           reSelect={!isSubmitting}
           className={cn("bg-background relative rounded-lg p-2")}
@@ -216,12 +241,30 @@ const FormGenerate = ({
           </FileInput>
           {field.value?.length > 0 && (
             <FileUploaderContent>
-              {field.value.map((file, i) => (
-                <FileUploaderItem key={i} index={i} disabled={isSubmitting}>
-                  <Paperclip className="h-4 w-4 stroke-current" />
-                  <span>{file.name}</span>
-                </FileUploaderItem>
-              ))}
+              {field.value.map((file, i) => {
+                if (file instanceof File) {
+                  return (
+                    <FileUploaderItem key={i} index={i} disabled={isSubmitting}>
+                      <Paperclip className="h-4 w-4 stroke-current" />
+                      <span>{file.name}</span>
+                    </FileUploaderItem>
+                  );
+                } else if (typeof file === "object") {
+                  return (
+                    <Link
+                      to={file.url}
+                      key={i}
+                      target="_blank"
+                      className="hover:bg-accent hover:text-accent-foreground flex items-center gap-2 rounded-md px-2 py-1 text-sm"
+                    >
+                      <Paperclip className="h-4 w-4 stroke-current" />
+                      <span>{file.name}</span>
+                    </Link>
+                  );
+                } else {
+                  return null;
+                }
+              })}
             </FileUploaderContent>
           )}
         </FileUploader>
@@ -232,7 +275,11 @@ const FormGenerate = ({
           <Checkbox
             checked={field.value || false}
             onCheckedChange={field.onChange}
-            disabled={isSubmitting}
+            disabled={
+              isSubmitting ||
+              formField?.disabled ||
+              disabledFields?.includes(field.name)
+            }
           />
           <div className="space-y-1 font-sans text-sm leading-none font-semibold">
             {formField.placeholder}
@@ -245,7 +292,11 @@ const FormGenerate = ({
           {...field}
           defaultCountry="IN"
           autoComplete="tel"
-          disabled={isSubmitting}
+          disabled={
+            isSubmitting ||
+            field?.disabled ||
+            disabledFields?.includes(field.name)
+          }
         />
       ),
 
@@ -256,7 +307,11 @@ const FormGenerate = ({
           onChange={(country) => {
             field.onChange(country.alpha3);
           }}
-          disabled={isSubmitting}
+          disabled={
+            isSubmitting ||
+            field?.disabled ||
+            disabledFields?.includes(field.name)
+          }
         />
       ),
 
@@ -264,7 +319,11 @@ const FormGenerate = ({
         <UserSelect
           onValueChange={field.onChange}
           defaultValue={field.value}
-          disabled={isSubmitting}
+          disabled={
+            isSubmitting ||
+            field?.disabled ||
+            disabledFields?.includes(field.name)
+          }
         />
       ),
 
@@ -272,7 +331,12 @@ const FormGenerate = ({
         <TaskInputCommand
           onValueChange={field.onChange}
           defaultValue={field.value}
-          disabled={isSubmitting}
+          className={""}
+          disabled={
+            isSubmitting ||
+            field?.disabled ||
+            disabledFields?.includes(field.name)
+          }
         />
       ),
 
@@ -285,7 +349,11 @@ const FormGenerate = ({
           maxTags={formField?.maxTags}
           minTags={formField?.minTags}
           validateTag={formField?.validateTag}
-          disabled={isSubmitting}
+          disabled={
+            isSubmitting ||
+            field?.disabled ||
+            disabledFields?.includes(field.name)
+          }
           className={formField?.inputClassName}
         />
       ),
@@ -295,7 +363,7 @@ const FormGenerate = ({
       const generator = fieldGenerators[formField.type];
       return generator ? generator(field, formField) : null;
     };
-  }, [isSubmitting, onFileChange]);
+  }, [isSubmitting, onFileChange, disabledFields]);
 
   return (
     <Form {...form}>
@@ -332,6 +400,7 @@ const FormGenerate = ({
               render={({ field }) => (
                 <FormItem
                   className={cn(
+                    "",
                     formField?.className,
                     hiddenFields.includes(formField.name) && "hidden",
                   )}

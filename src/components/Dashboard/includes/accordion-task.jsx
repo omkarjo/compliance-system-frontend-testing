@@ -1,4 +1,5 @@
 import UserBadge from "@/components/includes/user-badge";
+import { Button } from "@/components/ui/button";
 import { getStatusIcon, getStatusStyle } from "@/lib/getStatusStyleIcon";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -15,7 +16,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import StateChangeSelector from "./state-change-selector";
 
-const TaskAccordion = ({ data, defaultOpen }) => {
+const TaskAccordion = ({ data, defaultOpen, buttons = [] }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen || false);
   const accordionRef = useRef(null);
 
@@ -166,7 +167,7 @@ const TaskAccordion = ({ data, defaultOpen }) => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-0.5">State</p>
+                  <p className="mb-0.5 text-xs text-gray-500">State</p>
                   <StateChangeSelector data={data} />
                 </div>
               </div>
@@ -225,6 +226,25 @@ const TaskAccordion = ({ data, defaultOpen }) => {
                   </div>
                 </div>
               </div>
+            </div>
+
+            <hr className="my-2" />
+            <div className="flex items-center justify-end gap-2">
+              {buttons.map((button, index) => (
+                <Button
+                  key={index}
+                  variant={button.variant || "outline"}
+                  size="sm"
+                  onClick={() => button.onClick(data)}
+                  className={cn(button.className, "flex items-center gap-1")}
+                  disabled={button.disabled}
+                >
+                  {button.icon && (
+                    <span className="mr-1">{<button.icon />}</span>
+                  )}
+                  {button.label}
+                </Button>
+              ))}
             </div>
           </motion.div>
         )}
