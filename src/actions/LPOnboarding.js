@@ -50,8 +50,8 @@ export function useLPOnboarding() {
           deadline: new Date().toISOString(),
           category: "SEBI",
           assignee_id: user.user_id,
-          reviewer_id: "14a89dcc-110d-4b14-b51f-50dd28fa4c95",
-          approver_id: "85217b6d-41c3-4f68-b5fa-0c5cd352c7c7",
+          reviewer_id: user.user_id,
+          approver_id: user.user_id,
         };
         const taskResponse = await apiWithAuth.post("/api/tasks/", taskData);
         toast.success("Compliance task created.", { id: "task-create" });
