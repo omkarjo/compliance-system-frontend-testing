@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import StateChangeSelector from "./state-change-selector";
 
 const TaskAccordion = ({ data, defaultOpen }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen || false);
@@ -165,11 +166,8 @@ const TaskAccordion = ({ data, defaultOpen }) => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">State</p>
-                  <p className={`${textColor} flex items-center`}>
-                    {statusIcon}
-                    <span className="ml-1">{data.state}</span>
-                  </p>
+                  <p className="text-xs text-gray-500 mb-0.5">State</p>
+                  <StateChangeSelector data={data} />
                 </div>
               </div>
 

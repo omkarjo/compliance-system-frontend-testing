@@ -1,4 +1,4 @@
-import { authApiPaths } from "@/constant/apiPaths";
+  import { authApiPaths } from "@/constant/apiPaths";
 import api from "@/utils/api";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 

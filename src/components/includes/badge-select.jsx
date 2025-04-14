@@ -6,43 +6,31 @@ import {
 } from "@/components/ui/popover";
 import { getStatusIcon, getStatusStyle } from "@/lib/getStatusStyleIcon";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
 
 const STATUS_OPTIONS = [
   { label: "Open", value: "Open" },
   { label: "Pending", value: "Pending" },
   { label: "Completed", value: "Completed" },
-  { label: "Overdue", value: "Overdue" },
-  { label: "Blocked", value: "Blocked" },
+  { label: "Review Required", value: "Review Required" },
 ];
 
 export default function BadgeStatusSelector({
   defaultStatus = "Open",
-  onStatusChange,
+  onChange,
   options = STATUS_OPTIONS,
-  isUpdating = false, // Mutation state
 }) {
-  const [selectedStatus, setSelectedStatus] = useState(defaultStatus);
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (!isUpdating) {
-      setSelectedStatus(defaultStatus);
-    }
-  }, [defaultStatus, isUpdating]);
-
   const handleStatusChange = (status, event) => {
     event.stopPropagation();
-    setSelectedStatus(status);
-    setOpen(false);
-    onStatusChange?.(status);
+    if (onChange) {
+      onChange(status);
+    }
   };
 
-  const { bgColor, textColor, borderColor } = getStatusStyle(selectedStatus);
-  const icon = getStatusIcon(selectedStatus);
+  const { bgColor, textColor, borderColor } = getStatusStyle(defaultStatus);
+  const icon = getStatusIcon(defaultStatus);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -51,24 +39,18 @@ export default function BadgeStatusSelector({
             textColor,
             borderColor,
             "flex cursor-pointer items-center space-x-2 rounded-md px-1 py-2 hover:opacity-90",
-            isUpdating && "opacity-50 cursor-not-allowed"
           )}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (!isUpdating) setOpen(true);
-          }}
-          disabled={isUpdating}
         >
           {icon}
           <span className="ml-0">
-            {options.find((opt) => opt.value === selectedStatus)?.label}
+            {options.find((opt) => opt.value === defaultStatus)?.label}
           </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-56 p-2">
         <div className="grid gap-2">
           {options
-            .filter((opt) => opt.value !== selectedStatus)
+            .filter((opt) => opt.value !== defaultStatus)
             .map((status) => {
               const { bgColor, textColor } = getStatusStyle(status.value);
               const statusIcon = getStatusIcon(status.value);
@@ -80,10 +62,9 @@ export default function BadgeStatusSelector({
                   className={cn(
                     bgColor,
                     textColor,
-                    "flex w-full items-center justify-start space-x-2"
+                    "flex w-full items-center justify-start space-x-2",
                   )}
                   onClick={(event) => handleStatusChange(status.value, event)}
-                  disabled={isUpdating}
                 >
                   {statusIcon}
                   <span className="ml-2">{status.label}</span>

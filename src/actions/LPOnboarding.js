@@ -14,12 +14,14 @@ export function useLPOnboarding() {
       try {
         // Step 1: Preparing LP data
         toast.loading("Preparing LP data...", { id: "lp-prep" });
-        
+
         const preparedLPData = {
           ...lpData,
           dob: lpData.dob?.toISOString().split("T")[0],
           doi: lpData.doi?.toISOString().split("T")[0],
-          date_of_agreement: lpData.date_of_agreement?.toISOString().split("T")[0],
+          date_of_agreement: lpData.date_of_agreement
+            ?.toISOString()
+            .split("T")[0],
           cml: "",
         };
 
@@ -36,7 +38,7 @@ export function useLPOnboarding() {
         toast.loading("Creating LP entry...", { id: "lp-create" });
         const lpResponse = await apiWithAuth.post(
           limitedPartnersApiPaths.createLimitedPartner,
-          preparedLPData
+          preparedLPData,
         );
         toast.success("LP entry created.", { id: "lp-create" });
         const lpId = lpResponse.data.lp_id;
@@ -60,21 +62,28 @@ export function useLPOnboarding() {
         const cmlUploadResponse = await fileUpload(
           cmlFile,
           "Contribution Agreement",
-          taskId
+          taskId,
         );
         toast.success("Document uploaded successfully.", { id: "upload-doc" });
 
         // Step 5: Linking the document
-        toast.loading("Linking uploaded document to LP entry...", { id: "link-doc" });
+        toast.loading("Linking uploaded document to LP entry...", {
+          id: "link-doc",
+        });
         await apiWithAuth.put(
           `${limitedPartnersApiPaths.createLimitedPartner}${lpId}`,
-          { cml: cmlUploadResponse.data.document_id }
+          { cml: cmlUploadResponse.data.document_id },
         );
         toast.success("Document linked successfully.", { id: "link-doc" });
 
         // Step 6: Completing the compliance task
-        toast.loading("Marking compliance task as completed...", { id: "task-complete" });
-        await apiWithAuth.patch(`/api/tasks/${taskId}`, { state: "Completed" });
+        toast.loading("Marking compliance task as completed...", {
+          id: "task-complete",
+        });
+        await apiWithAuth.patch(`/api/tasks/${taskId}`, {
+          ...taskResponse.data,
+          status: "Completed",
+        });
         toast.success("Compliance task completed.", { id: "task-complete" });
 
         return lpResponse.data;
@@ -97,7 +106,6 @@ export function useLPOnboarding() {
       toast.success("LP Onboarded Successfully");
     },
     onError: (error) => {
-
       console.error("Onboarding Error:", error);
       toast.error("Failed to Onboard LP", {
         description: error.response?.data?.detail || "Unknown error occurred",

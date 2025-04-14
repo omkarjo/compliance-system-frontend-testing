@@ -1,4 +1,5 @@
-import ViewCalanderTaskAdmin from "@/components/Dashboard/calander/view-calander-task-admin";
+import ViewCalendarTaskAdmin from "@/components/Dashboard/calander/view-calander-task-admin";
+import DeleteAlertDialog from "@/components/Dashboard/includes/delete-alert-dilog";
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import SheetTaskViewFM from "@/components/Dashboard/sheet/sheet-task-view-fm";
 import TableTaskViewFM from "@/components/Dashboard/tables/table-task-view-fm";
@@ -10,8 +11,8 @@ import { taskFormFields } from "@/schemas/form/taskSchema";
 import { taskSchema } from "@/schemas/zod/taskSchema";
 import { apiWithAuth } from "@/utils/api";
 import fileUpload from "@/utils/file-upload";
+import { usePermissionTaskChange } from "@/utils/havePermission";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -52,6 +53,14 @@ export default function TaskDashboardFundManager() {
     defaultValues: {},
   });
 
+  const [deleteAlertDialog, setDeleteAlertDialog] = useState({
+    isOpen: false,
+    compliance_task_id: "",
+    title: "",
+    description: "",
+    onDelete: null,
+  });
+
   const [sheetTask, setSheetTask] = useState({
     isOpen: false,
   });
@@ -59,6 +68,30 @@ export default function TaskDashboardFundManager() {
   const handleDialogTaskClose = useCallback((isOpen) => {
     setDialogTask((prev) => ({ ...prev, isOpen }));
   }, []);
+
+  const handleDeleteAlertDialogClose = useCallback((isOpen) => {
+    setDeleteAlertDialog((prev) => ({
+      ...prev,
+      isOpen,
+      onDelete: null,
+    }));
+  }, []);
+
+  const handleDeleteTask = useCallback(async () => {
+    try {
+      console.log("deleteAlertDialog", deleteAlertDialog);
+      const response = await apiWithAuth.delete(
+        `${taskApiPaths.deleteTaskPrefix}${deleteAlertDialog.compliance_task_id}`,
+      );
+      toast.success("Task deleted successfully");
+      handleDeleteAlertDialogClose(false);
+      queryClient.invalidateQueries("task-query");
+    } catch (error) {
+      toast.error("Failed to delete task", {
+        description: error?.response?.data?.message || "An error occurred",
+      });
+    }
+  }, [handleDeleteAlertDialogClose, deleteAlertDialog]);
 
   const form = useForm({
     resolver: zodResolver(taskSchema),
@@ -78,7 +111,7 @@ export default function TaskDashboardFundManager() {
         });
       } else {
         // For edit mode, use a single reset call with all values
-        const formValues = {
+        let formValues = {
           description: data.description,
           category: data.category,
           completion_criteria: data.completion_criteria,
@@ -86,11 +119,22 @@ export default function TaskDashboardFundManager() {
           recurrence: data.recurrence || "",
           predecessor_task: data.predecessor_task,
           assignee_id: data.assignee_id,
-          reviewer_id: data.reviewer_id,
-          approver_id: data.approver_id,
           deadline: new Date(data.deadline),
         };
 
+        console.log("data", data);
+
+        if (data.reviewer_id !== data.approver_id) {
+          formValues.different_final_reviewer = true;
+          formValues.reviewer_id = data.reviewer_id;
+          formValues.approver_id = data.approver_id;
+        } else {
+          formValues.different_final_reviewer = false;
+          formValues.reviewer_id = data.reviewer_id;
+          formValues.approver_id = data.approver_id;
+        }
+
+        console.log("formValues", formValues);
         form.reset(formValues);
 
         setDialogTask({
@@ -105,6 +149,8 @@ export default function TaskDashboardFundManager() {
     [form],
   );
 
+  const havePermission = usePermissionTaskChange();
+
   const actionType = [
     {
       title: "View",
@@ -117,17 +163,37 @@ export default function TaskDashboardFundManager() {
       title: "Edit",
       className: "",
       onClick: (data) => {
+        if (!havePermission(data)) {
+          toast.error("You don't have permission to edit this task", {
+            description: "You are not the assignee or approver of this task",
+          });
+          return;
+        }
         handleDialogTaskOpen("edit", data, data.compliance_task_id);
       },
     },
-    { title: "Delete", className: "text-red-500", onClick: () => {} },
+    {
+      title: "Delete",
+      className: "text-red-500",
+      onClick: (data) => {
+        console.log("data", data);
+        setDeleteAlertDialog({
+          isOpen: true,
+          title: `Are you absolutely sure you want to delete the “${data.description}” task?`,
+          description:
+            "This action cannot be undone. This will permanently delete the task.",
+          onDelete: handleDeleteTask,
+          compliance_task_id: data.compliance_task_id,
+        });
+      },
+    },
   ];
 
   const tabs = [
     {
       title: "List",
       value: "list",
-      childern: (
+      children: (
         <TableTaskViewFM
           actionType={actionType}
           openView={(data) => {
@@ -142,7 +208,7 @@ export default function TaskDashboardFundManager() {
     {
       title: "Calendar",
       value: "calendar",
-      childern: <ViewCalanderTaskAdmin />,
+      children: <ViewCalendarTaskAdmin />,
     },
   ];
 
@@ -178,14 +244,40 @@ export default function TaskDashboardFundManager() {
 
   const onSubmit = useCallback(
     async (data) => {
-      let { attachments, repeat, document_type, ...rest } = data;
+      let {
+        attachments,
+        repeat,
+        document_type,
+        different_final_reviewer,
+        ...rest
+      } = data;
       let compliance_task_id = dialogTask.compliance_task_id || null;
       if (!repeat) {
         rest.recurrence = undefined;
+      } else {
+        if (!rest.recurrence) {
+          form.setError("recurrence", {
+            type: "manual",
+            message: "Recurrence is required",
+          });
+          return;
+        }
       }
 
       try {
         if (dialogTask.variant === "create") {
+          if (!different_final_reviewer) {
+            rest.approver_id = rest.reviewer_id;
+          } else {
+            if (!rest.approver_id) {
+              form.setError("approver_id", {
+                type: "manual",
+                message: "Final reviewer is required",
+              });
+              return;
+            }
+          }
+
           const response = await createTask(rest);
           // console.log("response", response);
           compliance_task_id = response.data.compliance_task_id;
@@ -207,12 +299,8 @@ export default function TaskDashboardFundManager() {
             const promises = attachments.map((file) =>
               fileUpload(file, document_type, compliance_task_id),
             );
-            const uploadResponse = await Promise.all(promises);
-            const document_ids = uploadResponse.map(
-              (res) => res.data.document_id,
-            );
+            await Promise.all(promises);
 
-            // console.log("document_ids", document_ids);
             toast.success("Files uploaded successfully");
           } catch (error) {
             toast.error("Failed to upload file", {
@@ -246,8 +334,8 @@ export default function TaskDashboardFundManager() {
     localStorage.setItem("taskTabs", value);
   }, []);
 
-  console.log("formErrors", form.formState.errors);
-  console.log("formValues", form.getValues());
+  // console.log("formErrors", form.formState.errors);
+  // console.log("formValues", form.getValues());
 
   return (
     <section className="">
@@ -285,13 +373,13 @@ export default function TaskDashboardFundManager() {
         <main className="mx-4 flex-1">
           {tabs.map((tab) => (
             <TabsContent key={tab.value} value={tab.value}>
-              {tab.childern}
+              {tab.children}
             </TabsContent>
           ))}
         </main>
       </Tabs>
       <DialogForm
-        tabinde
+        tabindex={0}
         title={DialogTaskVariant[dialogTask.variant]?.title}
         description={DialogTaskVariant[dialogTask.variant]?.description}
         submitText={DialogTaskVariant[dialogTask.variant]?.submit}
@@ -303,6 +391,7 @@ export default function TaskDashboardFundManager() {
         variant={dialogTask.variant}
         hiddenFields={[
           ...(form.watch("repeat") ? [] : ["recurrence"]),
+          ...(form.watch("different_final_reviewer") ? [] : ["approver_id"]),
           // ...((form.watch("attachments")?.length > 0) ? [] : ["document_type"]),
         ]}
       />
@@ -314,6 +403,13 @@ export default function TaskDashboardFundManager() {
         }
         openView={(data) => setSheetTask({ isOpen: true, data })}
         onClose={() => setSheetTask({ isOpen: false, data: null })}
+      />
+      <DeleteAlertDialog
+        title={deleteAlertDialog.title}
+        description={deleteAlertDialog.description}
+        isOpen={deleteAlertDialog.isOpen}
+        onClose={handleDeleteAlertDialogClose}
+        onDelete={deleteAlertDialog.onDelete}
       />
     </section>
   );

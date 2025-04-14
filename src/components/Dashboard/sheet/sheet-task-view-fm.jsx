@@ -18,6 +18,7 @@ import {
   Timer,
   TriangleAlert,
 } from "lucide-react";
+import StateChangeSelector from "../includes/state-change-selector";
 
 const taskDataSchema = [
   { key: "deadline", label: "Due by", type: "date", icon: <Timer size={20} /> },
@@ -69,7 +70,8 @@ export default function SheetTaskViewFM({
         <SheetHeader className="mt-4 space-y-0.5 pb-0 md:mt-8">
           {data?.category && <Badge variant="outline">{data.category}</Badge>}
           <SheetTitle>{data?.description}</SheetTitle>
-          <BadgeStatusTask text={data?.state} className="mt-2" />
+          <SheetDescription>{""}</SheetDescription>
+          <StateChangeSelector data={data} />
           {data?.assignee_id && (
             <div className="mt-2 flex items-center gap-2">
               <CircleUserRound className="h-6 w-6 text-gray-700/85" />

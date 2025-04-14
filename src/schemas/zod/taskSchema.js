@@ -9,21 +9,17 @@ export const taskSchema = z
         required_error: "Category is required",
       }),
     ),
-    document_type: z.preprocess(
-      (val) => (val === "" ? undefined : val),
-      z.enum(
-        [
-          "Contribution Agreement",
-          "KYC",
-          "Notification",
-          "Report",
-          "Others",
-        ],
-        {
-          required_error: "Document Category is required",
-        },
-      ),
-    ).optional(),
+    document_type: z
+      .preprocess(
+        (val) => (val === "" ? undefined : val),
+        z.enum(
+          ["Contribution Agreement", "KYC", "Notification", "Report", "Others"],
+          {
+            required_error: "Document Category is required",
+          },
+        ),
+      )
+      .optional(),
     deadline: z.date(),
 
     repeat: z.boolean().default(false),
@@ -52,7 +48,8 @@ export const taskSchema = z
 
     assignee_id: z.string().nonempty("Assignee ID is required"),
     reviewer_id: z.string().nonempty("Reviewer ID is required"),
-    approver_id: z.string().nonempty("Approver ID is required"),
+    different_final_reviewer: z.boolean().default(false),
+    approver_id: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.repeat === true && !data.recurrence) {
@@ -62,7 +59,6 @@ export const taskSchema = z
         path: ["recurrence"],
       });
     }
-
 
     if (data.attachments && data.attachments.length > 0) {
       if (!data.document_type) {
@@ -77,7 +73,6 @@ export const taskSchema = z
     if (!data.attachments || data.attachments.length === 0) {
       data.attachments = undefined;
     }
-
 
     if (!data.repeat) {
       data.recurrence = undefined;

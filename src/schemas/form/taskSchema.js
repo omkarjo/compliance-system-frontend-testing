@@ -34,7 +34,9 @@ export const taskFormFields = [
       { label: "KYC", value: "KYC" },
       { label: "Notification", value: "Notification" },
       { label: "Report", value: "Report" },
-      { label: "Others", value: "Others" },
+      { label: "Certificate", value: "Certificate" },
+      { label: "Information", value: "Information" },
+      { label: "Other", value: "Other" },
     ],
   },
   {
@@ -98,6 +100,12 @@ export const taskFormFields = [
     type: "user_select",
     placeholder: "",
     required: true,
+  },
+  {
+    name: "different_final_reviewer",
+    placeholder: "Different Final Reviewer",
+    type: "checkbox",
+    required: false,
   },
   {
     name: "approver_id",

@@ -18,6 +18,7 @@ import Papa from "papaparse";
 import { use, useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
+import queryClient from "@/query/queryClient";
 
 const requiredHeaders = [
   "lp_name",
@@ -335,6 +336,9 @@ export default function LPBulkUpload() {
         success: successful,
         failed: failed,
       });
+
+      queryClient.invalidateQueries("lp-query");
+    
     } catch (error) {
       console.error("Upload error:", error);
       if (error.response) {

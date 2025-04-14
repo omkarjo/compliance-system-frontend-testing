@@ -11,6 +11,7 @@ export const taskApiPaths = {
   getTaskByIdPrefix: "/api/tasks/",
   updateTaskPrefix: "/api/tasks/",
   searchTask: "/api/tasks/search",
+  deleteTaskPrefix: "/api/tasks/",
 };
 
 export const documentApiPaths = {

@@ -1,5 +1,3 @@
-import { UpdateTaskStatus } from "@/actions/task/updateTask";
-import BadgeStatusTask from "@/components/includes/badge-status";
 import DataTable from "@/components/includes/data-table";
 import SortButton from "@/components/includes/SortButton";
 import UserBadge from "@/components/includes/user-badge";
@@ -20,6 +18,7 @@ import {
   TriangleAlert,
   Watch,
 } from "lucide-react";
+import StateChangeSelector from "../includes/state-change-selector";
 
 export default function TableTaskViewFM({ actionType, openView = () => {} }) {
   const columns = [
@@ -62,13 +61,9 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
       accessorKey: "state",
       header: ({ column }) => <SortButton column={column}>Status</SortButton>,
       cell: ({ row }) => {
-        const status = row.getValue("state");
-        // const data = row.original;
-        // const compliance_task_id = data.compliance_task_id;
-        // const updateStatus = UpdateTaskStatus();
-
+        const data = row.original;
         return (
-          <BadgeStatusTask text={status} type={status} className="ms-4" />
+          // <BadgeStatusTask text={status} type={status} className="ms-4" />
 
           // <StatusBadgeSelectorConstrained
           //   defaultStatus={status}
@@ -81,16 +76,7 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
           //   isUpdating={updateStatus.isPending}
           // />
 
-          // <BadgeStatusSelector
-          //   defaultStatus={status}
-          //   onStatusChange={async (newStatus) => {
-          //     await updateStatus.mutateAsync({
-          //       taskId: compliance_task_id,
-          //       status: newStatus,
-          //     });
-          //   }}
-          //   isUpdating={updateStatus.isPending}
-          // />
+          <StateChangeSelector data={data} />
         );
       },
     },

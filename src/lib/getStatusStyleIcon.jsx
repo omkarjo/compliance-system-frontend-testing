@@ -25,6 +25,7 @@ export const getStatusStyle = (state) => {
       bgSecondaryColor = "bg-blue-400";
       break;
     case "review":
+    case "review required":
       bgColor = "bg-yellow-50";
       textColor = "text-yellow-700";
       borderColor = "border-yellow-200";
@@ -66,6 +67,7 @@ export const getStatusIcon = (state) => {
     case "Pending":
       return <Watch size={16} className="text-blue-600" />;
     case "Review":
+    case "Review Required":
       return <View size={16} className="text-yellow-600" />;
     case "Completed":
       return <CheckCircle size={16} className="text-green-600" />;

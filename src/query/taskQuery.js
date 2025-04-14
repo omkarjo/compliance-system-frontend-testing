@@ -18,7 +18,6 @@ const fetchData = async ({ pageIndex, pageSize, sortBy, filters }) => {
       : null;
 
     sortBy = mappedSortBy ? mappedSortBy : null;
-    console.log("sortBy", sortBy);
     const searchParams = {
       limit: pageSize,
       skip: pageIndex * pageSize,
