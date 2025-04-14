@@ -1,4 +1,4 @@
-import { limitedPartnersApiPaths } from "@/constant/apiPaths";
+import { limitedPartnersApiPaths, taskApiPaths } from "@/constant/apiPaths";
 import { useAppSelector } from "@/store/hooks";
 import { apiWithAuth } from "@/utils/api";
 import fileUpload from "@/utils/file-upload";
@@ -54,7 +54,10 @@ export function useLPOnboarding() {
           reviewer_id: user.user_id,
           approver_id: user.user_id,
         };
-        const taskResponse = await apiWithAuth.post("/api/tasks/", taskData);
+        const taskResponse = await apiWithAuth.post(
+          taskApiPaths.createTask,
+          taskData,
+        );
         toast.success("Compliance task created.", { id: "lp-toast" });
         const taskId = taskResponse.data.compliance_task_id;
 
@@ -81,8 +84,7 @@ export function useLPOnboarding() {
         toast.loading("Marking compliance task as completed...", {
           id: "lp-toast",
         });
-        await apiWithAuth.patch(`/api/tasks/${taskId}`, {
-          ...taskResponse.data,
+        await apiWithAuth.patch(`${taskApiPaths.updateTaskPrefix}${taskId}`, {
           status: "Completed",
         });
         toast.success("Compliance task completed.", { id: "lp-toast" });
