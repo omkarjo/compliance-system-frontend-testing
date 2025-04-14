@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 const updateTaskState = async ({ taskId, state }) => {
-  return await apiWithAuth.patch(`${taskApiPaths.updateTaskPrefix}/${taskId}`, {
+  return await apiWithAuth.patch(`${taskApiPaths.updateTaskPrefix}${taskId}`, {
     state,
   });
 };
