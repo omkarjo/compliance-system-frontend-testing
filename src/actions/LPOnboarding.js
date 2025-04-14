@@ -85,7 +85,7 @@ export function useLPOnboarding() {
           id: "lp-toast",
         });
         await apiWithAuth.patch(`${taskApiPaths.updateTaskPrefix}${taskId}`, {
-          status: "Completed",
+          state: "Completed",
         });
         toast.success("Compliance task completed.", { id: "lp-toast" });
 
