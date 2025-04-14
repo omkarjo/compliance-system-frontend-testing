@@ -95,6 +95,12 @@ export const taskFormFields = [
     required: true,
   },
   {
+    name: "different_reviewer",
+    placeholder: "Different Reviewer",
+    type: "checkbox",
+    required: false,
+  },
+  {
     name: "reviewer_id",
     label: "Reviewer",
     type: "user_select",

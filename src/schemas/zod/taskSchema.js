@@ -47,34 +47,8 @@ export const taskSchema = z
       .optional(),
 
     assignee_id: z.string().nonempty("Assignee ID is required"),
+    different_reviewer: z.boolean().default(false),
     reviewer_id: z.string().nonempty("Reviewer ID is required"),
     different_final_reviewer: z.boolean().default(false),
     approver_id: z.string().optional(),
   })
-  .superRefine((data, ctx) => {
-    if (data.repeat === true && !data.recurrence) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Required when repeat is enabled",
-        path: ["recurrence"],
-      });
-    }
-
-    if (data.attachments && data.attachments.length > 0) {
-      if (!data.document_type) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Required document type for attachments",
-          path: ["document_type"],
-        });
-      }
-    }
-
-    if (!data.attachments || data.attachments.length === 0) {
-      data.attachments = undefined;
-    }
-
-    if (!data.repeat) {
-      data.recurrence = undefined;
-    }
-  });

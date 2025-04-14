@@ -10,6 +10,7 @@ import queryClient from "@/query/queryClient";
 import { taskFormFields } from "@/schemas/form/taskSchema";
 import { taskSchema } from "@/schemas/zod/taskSchema";
 import { apiWithAuth } from "@/utils/api";
+import useCheckRoles from "@/utils/check-roles";
 import fileUpload from "@/utils/file-upload";
 import { usePermissionTaskChange } from "@/utils/havePermission";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,6 +33,8 @@ const defaultValues = {
 };
 
 export default function TaskDashboardFundManager() {
+  const haveAdminPermission = useCheckRoles("Fund Manager");
+
   const DialogTaskVariant = {
     create: {
       title: "Create Task",
@@ -80,7 +83,7 @@ export default function TaskDashboardFundManager() {
   const handleDeleteTask = useCallback(async () => {
     try {
       console.log("deleteAlertDialog", deleteAlertDialog);
-      const response = await apiWithAuth.delete(
+      await apiWithAuth.delete(
         `${taskApiPaths.deleteTaskPrefix}${deleteAlertDialog.compliance_task_id}`,
       );
       toast.success("Task deleted successfully");
@@ -124,14 +127,17 @@ export default function TaskDashboardFundManager() {
 
         console.log("data", data);
 
-        if (data.reviewer_id !== data.approver_id) {
-          formValues.different_final_reviewer = true;
+        if (data.assignee_id !== data.reviewer_id) {
+          formValues.different_reviewer = true;
           formValues.reviewer_id = data.reviewer_id;
+          formValues.different_final_reviewer =
+            data.approver_id !== data.reviewer_id;
           formValues.approver_id = data.approver_id;
         } else {
+          formValues.different_reviewer = false;
+          formValues.reviewer_id = data.assignee_id;
           formValues.different_final_reviewer = false;
-          formValues.reviewer_id = data.reviewer_id;
-          formValues.approver_id = data.approver_id;
+          formValues.approver_id = data.assignee_id;
         }
 
         console.log("formValues", formValues);
@@ -177,6 +183,18 @@ export default function TaskDashboardFundManager() {
       className: "text-red-500",
       onClick: (data) => {
         console.log("data", data);
+
+        if (!haveAdminPermission(data)) {
+          setDeleteAlertDialog({
+            isOpen: true,
+            title: `Cannot delete task “${data.description}”`,
+            description: `You cannot delete this task as task “${data.description}” depends on this task. Please remove the dependency before trying to delete this task.`,
+            onDelete: null,
+            compliance_task_id: data.compliance_task_id,
+          });
+          return;
+        }
+
         setDeleteAlertDialog({
           isOpen: true,
           title: `Are you absolutely sure you want to delete the “${data.description}” task?`,
@@ -248,10 +266,12 @@ export default function TaskDashboardFundManager() {
         attachments,
         repeat,
         document_type,
+        different_reviewer,
         different_final_reviewer,
         ...rest
       } = data;
       let compliance_task_id = dialogTask.compliance_task_id || null;
+
       if (!repeat) {
         rest.recurrence = undefined;
       } else {
@@ -264,20 +284,45 @@ export default function TaskDashboardFundManager() {
         }
       }
 
+      // Handling the same reviewer and approver
+      if (different_reviewer) {
+        if (!rest.reviewer_id) {
+          form.setError("reviewer_id", {
+            type: "manual",
+            message: "Reviewer is required",
+          });
+          return;
+        }
+
+        if (different_final_reviewer) {
+          if (!rest.approver_id) {
+            form.setError("approver_id", {
+              type: "manual",
+              message: "Final Reviewer is required",
+            });
+            return;
+          }
+        } else {
+          rest.approver_id = rest.reviewer_id;
+        }
+      } else {
+        rest.reviewer_id = rest.assignee_id;
+        rest.approver_id = rest.assignee_id;
+      }
+
+      // Handling the attachments
+      if (attachments?.length) {
+        if (!document_type) {
+          form.setError("document_type", {
+            type: "manual",
+            message: "Document Type is required",
+          });
+          return;
+        }
+      }
+
       try {
         if (dialogTask.variant === "create") {
-          if (!different_final_reviewer) {
-            rest.approver_id = rest.reviewer_id;
-          } else {
-            if (!rest.approver_id) {
-              form.setError("approver_id", {
-                type: "manual",
-                message: "Final reviewer is required",
-              });
-              return;
-            }
-          }
-
           const response = await createTask(rest);
           // console.log("response", response);
           compliance_task_id = response.data.compliance_task_id;
@@ -391,8 +436,14 @@ export default function TaskDashboardFundManager() {
         variant={dialogTask.variant}
         hiddenFields={[
           ...(form.watch("repeat") ? [] : ["recurrence"]),
-          ...(form.watch("different_final_reviewer") ? [] : ["approver_id"]),
-          // ...((form.watch("attachments")?.length > 0) ? [] : ["document_type"]),
+          ...(form.watch("different_reviewer")
+            ? []
+            : ["reviewer_id", "approver_id", "different_final_reviewer"]),
+          ...(form.watch("different_reviewer") &&
+          form.watch("different_final_reviewer")
+            ? []
+            : ["approver_id"]),
+          ...(form.watch("attachments")?.length ? [] : ["document_type"]),
         ]}
       />
       <SheetTaskViewFM
