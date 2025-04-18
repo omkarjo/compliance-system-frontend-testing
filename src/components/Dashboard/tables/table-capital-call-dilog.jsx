@@ -43,5 +43,5 @@ export default function CapitalCallDialogTable() {
     },
   ];
 
-  return <DataTable columns={columns} data={dummyData} />;
+  return <DataTable columns={columns} data={dummyData}  showPageSizeSelector={false}/>;
 }

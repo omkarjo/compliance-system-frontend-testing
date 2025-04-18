@@ -110,6 +110,9 @@ export const useGetTask = ({
         { approver_id: user_id },
       ];
 
+      console.log("filters", filters);
+      console.log("sort", sort);
+
   return useQuery({
     queryKey: ["task-query", pageIndex, pageSize, sort, filters, multipleQuery],
     queryFn: () =>

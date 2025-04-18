@@ -1,3 +1,4 @@
+import DashboardLatestTask from "@/components/Dashboard/includes/DashboardLatestTask";
 import CardStats from "@/components/includes/card-stats";
 import TaskOverviewChart from "@/components/includes/task-overview-chart";
 import { useGetOverviewStats } from "@/query/useOverviewQuery";
@@ -53,7 +54,7 @@ export default function DashBoard() {
     <section>
       <main className="mx-4 flex-1 p-2">
         <span className="text-2xl font-semibold">Task Overview</span>
-        <div className="mt-4 flex gap-4 flex-wrap">
+        <div className="mt-4 flex flex-wrap gap-4">
           {overviewStatsValues.map((value, index) => (
             <CardStats
               key={index}
@@ -69,13 +70,18 @@ export default function DashBoard() {
             />
           ))}
         </div>
-        <div className="mt-4 flex gap-4">
-          <TaskOverviewChart
-            title="Compliance"
-            description="Task completion status"
-            data={taskData}
-            total={overviewStats.total_tasks}
-          />
+        <div className="flex flex-wrap gap-4 mt-4">
+          <div className="">
+            <TaskOverviewChart
+              title="Compliance"
+              description="Task completion status"
+              data={taskData}
+              total={overviewStats.total_tasks}
+            />
+          </div>
+          <div className="flex-1">
+          <DashboardLatestTask />
+          </div>
         </div>
       </main>
     </section>

@@ -51,3 +51,10 @@ export function getCountryDetails(alpha3Code) {
     ),
   };
 }
+
+
+export const formatDate = (date, options) => {
+  const dateObj = new Date(date);
+  if (isNaN(dateObj.getTime())) return null; // Invalid date
+  return dateObj.toLocaleDateString("en-IN", options);
+}

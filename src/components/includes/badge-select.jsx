@@ -6,12 +6,13 @@ import {
 } from "@/components/ui/popover";
 import { getStatusIcon, getStatusStyle } from "@/lib/getStatusStyleIcon";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 const STATUS_OPTIONS = [
-  { label: "Open", value: "Open" },
-  { label: "Pending", value: "Pending" },
+  // { label: "Open", value: "Open" },
+  // { label: "Pending", value: "Pending" },
   { label: "Completed", value: "Completed" },
-  { label: "Review Required", value: "Review Required" },
+  // { label: "Review Required", value: "Review Required" },
 ];
 
 export default function BadgeStatusSelector({
@@ -19,18 +20,36 @@ export default function BadgeStatusSelector({
   onChange,
   options = STATUS_OPTIONS,
 }) {
+  const [open, setOpen] = useState(false);
+
   const handleStatusChange = (status, event) => {
     event.stopPropagation();
     if (onChange) {
       onChange(status);
     }
+    setOpen(false); // Close the popover
   };
 
-  const { bgColor, textColor, borderColor } = getStatusStyle(defaultStatus);
-  const icon = getStatusIcon(defaultStatus);
+  const hasOptions = Array.isArray(options) && options.length > 0;
+  const finalOptions = hasOptions ? options : [];
+
+  const currentStatus = finalOptions.find(
+    (opt) => opt.value === defaultStatus,
+  ) || {
+    label: defaultStatus,
+    value: defaultStatus,
+  };
+
+  const { bgColor, textColor, borderColor } = getStatusStyle(
+    currentStatus.value,
+  );
+  const icon = getStatusIcon(currentStatus.value);
+
+  const hasAlternativeOptions =
+    finalOptions.filter((opt) => opt.value !== currentStatus.value).length > 0;
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -42,36 +61,43 @@ export default function BadgeStatusSelector({
           )}
         >
           {icon}
-          <span className="ml-0">
-            {options.find((opt) => opt.value === defaultStatus)?.label}
-          </span>
+          <span className="ml-0">{currentStatus.label}</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-56 p-2">
-        <div className="grid gap-2">
-          {options
-            .filter((opt) => opt.value !== defaultStatus)
-            .map((status) => {
-              const { bgColor, textColor } = getStatusStyle(status.value);
-              const statusIcon = getStatusIcon(status.value);
 
-              return (
-                <Button
-                  key={status.value}
-                  variant="ghost"
-                  className={cn(
-                    bgColor,
-                    textColor,
-                    "flex w-full items-center justify-start space-x-2",
-                  )}
-                  onClick={(event) => handleStatusChange(status.value, event)}
-                >
-                  {statusIcon}
-                  <span className="ml-2">{status.label}</span>
-                </Button>
-              );
-            })}
-        </div>
+      <PopoverContent
+        className={cn("w-56 p-2", !hasAlternativeOptions && "w-36")}
+      >
+        {hasAlternativeOptions ? (
+          <div className="grid gap-2">
+            {finalOptions
+              .filter((opt) => opt.value !== currentStatus.value)
+              .map((status) => {
+                const { bgColor, textColor } = getStatusStyle(status.value);
+                const statusIcon = getStatusIcon(status.value);
+
+                return (
+                  <Button
+                    key={status.value}
+                    variant="ghost"
+                    className={cn(
+                      bgColor,
+                      textColor,
+                      "flex w-full items-center justify-start space-x-2",
+                    )}
+                    onClick={(event) => handleStatusChange(status.value, event)}
+                  >
+                    {statusIcon}
+                    <span className="ml-2">{status.label}</span>
+                  </Button>
+                );
+              })}
+          </div>
+        ) : (
+          <div className="text-muted-foreground p-2 text-center text-xs" onClick={(e) => e.stopPropagation()}>
+            <p>No Options</p>
+          </div>
+        )}
       </PopoverContent>
     </Popover>
   );

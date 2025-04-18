@@ -2,6 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -51,6 +58,9 @@ export default function DataTable({
 
   // External state
   externalState = null,
+
+  // Page size selector
+  showPageSizeSelector = true,
 }) {
   const isProviderMode = Boolean(fetchData);
 
@@ -70,6 +80,8 @@ export default function DataTable({
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [isPageChanging, setIsPageChanging] = React.useState(false);
+  const [isPageSizeChanging, setIsPageSizeChanging] = React.useState(false);
 
   // Resolve state from external or local
   const {
@@ -97,6 +109,34 @@ export default function DataTable({
   React.useEffect(() => {
     resolvedSetSearch(debouncedSearchValue || null);
   }, [debouncedSearchValue, resolvedSetSearch]);
+
+  // Handle page size change with animation
+  const handlePageSizeChange = (newSize) => {
+    setIsPageSizeChanging(true);
+    const size = parseInt(newSize, 10);
+
+    setTimeout(() => {
+      resolvedSetPagination({
+        pageIndex: 0, // Reset to first page when changing page size
+        pageSize: size,
+      });
+      setIsPageSizeChanging(false);
+    }, 300);
+  };
+
+  // Handle page change with animation
+  const handlePageChange = (action) => {
+    setIsPageChanging(true);
+
+    setTimeout(() => {
+      if (action === "next") {
+        table.nextPage();
+      } else {
+        table.previousPage();
+      }
+      setIsPageChanging(false);
+    }, 200);
+  };
 
   // Construct fetch parameters
   const fetchParams = React.useMemo(
@@ -158,6 +198,7 @@ export default function DataTable({
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
+          className="transition-all duration-200 ease-in-out"
         />
       ),
       cell: ({ row }) => (
@@ -166,6 +207,7 @@ export default function DataTable({
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
           onClick={(event) => event.stopPropagation()}
+          className="transition-all duration-200 ease-in-out"
         />
       ),
       enableSorting: false,
@@ -234,7 +276,12 @@ export default function DataTable({
 
   const renderTableContent = () => {
     if (resolvedLoading) {
-      return renderEmptyState("Loading...");
+      return renderEmptyState(
+        <div className="flex items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600"></div>
+          <span className="ml-2">Loading...</span>
+        </div>,
+      );
     }
 
     if (resolvedError) {
@@ -247,18 +294,22 @@ export default function DataTable({
 
     return table.getRowModel().rows.map((row) => (
       <TableRow
+        data-id={row.id}
         key={row.id}
         data-state={row.getIsSelected() && "selected"}
         className={cn(
-          "hover:bg-gray-100",
+          "transition-colors duration-200 hover:bg-gray-100",
           row.getIsSelected() && "bg-gray-100",
           openView && "cursor-pointer",
         )}
         onClick={(event) => {
-          const isInteractive = event.target.closest(
+          const isInteractiveElement = !!event.target.closest(
             "button, a, input, textarea, select",
           );
-          if (isInteractive) return;
+
+          if (isInteractiveElement) {
+            return;
+          }
           if (openView) {
             openView(row.original);
           }
@@ -283,7 +334,7 @@ export default function DataTable({
               placeholder={searchBoxPlaceholder}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              className="max-w-xl"
+              className="max-w-xl transition-all duration-300 focus:ring-2 focus:ring-blue-300"
             />
           )}
         </div>
@@ -295,7 +346,12 @@ export default function DataTable({
       </div>
 
       {/* Table */}
-      <div className="rounded-md border">
+      <div
+        className={cn(
+          "rounded-md border transition-opacity duration-300",
+          isPageChanging || isPageSizeChanging ? "opacity-50" : "opacity-100",
+        )}
+      >
         <Table className="">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -318,27 +374,88 @@ export default function DataTable({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-between space-x-2 py-4">
         <div className="text-muted-foreground flex-1 text-sm">
           Page {resolvedPagination.pageIndex + 1} of {table.getPageCount()}
         </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
+
+        <div className="flex items-center space-x-4">
+          {showPageSizeSelector && (
+            <div
+              className={cn(
+                "flex items-center space-x-2 transition-all duration-300",
+                isPageSizeChanging
+                  ? "scale-105 opacity-75"
+                  : "scale-100 opacity-100",
+              )}
+            >
+              <span className="text-muted-foreground text-sm">
+                Rows per page:
+              </span>
+              <Select
+                value={resolvedPagination.pageSize.toString()}
+                onValueChange={handlePageSizeChange}
+                disabled={isPageChanging || isPageSizeChanging}
+              >
+                <SelectTrigger className="h-8 w-16 transition-all duration-200 hover:bg-gray-50">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="animate-in fade-in-80 slide-in-from-bottom-5">
+                  <SelectItem
+                    value="10"
+                    className="transition-colors duration-200 hover:bg-gray-100"
+                  >
+                    10
+                  </SelectItem>
+                  <SelectItem
+                    value="20"
+                    className="transition-colors duration-200 hover:bg-gray-100"
+                  >
+                    20
+                  </SelectItem>
+                  <SelectItem
+                    value="50"
+                    className="transition-colors duration-200 hover:bg-gray-100"
+                  >
+                    50
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          <div className="space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange("previous")}
+              disabled={
+                !table.getCanPreviousPage() ||
+                isPageChanging ||
+                isPageSizeChanging
+              }
+              className={cn(
+                "transition-all duration-200",
+                isPageChanging ? "translate-x-1" : "translate-x-0",
+              )}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange("next")}
+              disabled={
+                !table.getCanNextPage() || isPageChanging || isPageSizeChanging
+              }
+              className={cn(
+                "transition-all duration-200",
+                isPageChanging ? "translate-x-1" : "translate-x-0",
+              )}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
     </div>

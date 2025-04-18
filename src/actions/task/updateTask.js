@@ -78,7 +78,7 @@ export function useUpdateTask() {
     onError: (error) => {
       toast.error("Task Update Failed", {
         id: "task-loading",
-        description: error.message,
+        description: error.response?.data?.detail || "Something went wrong",
       });
     },
 

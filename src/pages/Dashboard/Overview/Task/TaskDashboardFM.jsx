@@ -31,6 +31,7 @@ const defaultValues = {
   assignee_id: "",
   reviewer_id: "",
   approver_id: "",
+  deadline: new Date(),
 };
 
 export default function TaskDashboardFundManager() {

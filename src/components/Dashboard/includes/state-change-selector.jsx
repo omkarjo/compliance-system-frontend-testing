@@ -3,7 +3,7 @@ import BadgeStatusSelector from "@/components/includes/badge-select";
 import BadgeStatusTask from "@/components/includes/badge-status";
 import { usePermissionTaskChange } from "@/utils/havePermission";
 
-const StateChangeSelector = ({ data = {} }) => {
+const StateChangeSelector = ({ data = {} , options = []}) => {
   const updateTaskState = useUpdateTaskState();
 
   const havePermission = usePermissionTaskChange();
@@ -15,6 +15,7 @@ const StateChangeSelector = ({ data = {} }) => {
     <div className="w-42">
       <BadgeStatusSelector
         defaultStatus={data.state}
+        options={options}
         onChange={(state) => {
           updateTaskState.mutate({
             taskId: data.compliance_task_id,

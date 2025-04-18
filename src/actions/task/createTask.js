@@ -10,31 +10,31 @@ const createTask = async (data) => {
 };
 
 const createTasks = async ({ data, attachments, document_type }) => {
-  toast.loading("Creating Task", {
+  toast.loading("Creating Task(s)...", {
     id: "task-loading",
   });
 
   const compliance_task_ids = [];
-
   const recurrence = data.recurrence;
+  const startDate = new Date(data.deadline);
+
   if (!recurrence) {
     const response = await createTask(data);
     compliance_task_ids.push(response.data.compliance_task_id);
   } else {
-    let recurrenceTask = [];
-    const startDate = new Date(data.deadline);
-
-    // date and number of repetitions in a year, data.recurrence is the "Weekly", "Monthly", "Quarterly", "Yearly"
     const numberOfRepetitions = {
       Weekly: 52,
       Monthly: 12,
       Quarterly: 4,
       Yearly: 1,
     };
-    const numberOfRepetitionsInYearCount = numberOfRepetitions[recurrence] * 1; // 1 year
+
+    const numberOfRepetitionsInYearCount = numberOfRepetitions[recurrence] * 1;
+    let dependent_task_id = data.dependent_task_id;
 
     for (let i = 0; i < numberOfRepetitionsInYearCount; i++) {
       let newDate = new Date(startDate);
+
       switch (recurrence) {
         case "Weekly":
           newDate = addWeeks(newDate, i);
@@ -51,48 +51,45 @@ const createTasks = async ({ data, attachments, document_type }) => {
         default:
           break;
       }
-      recurrenceTask.push({
-        ...data,
-        description: `${data.description} #${data.recurrence} ${i + 1}`,
-        deadline: newDate,
-      });
-    }
-    const response = await Promise.all(
-      recurrenceTask.map((task) => createTask(task)),
-    );
 
-    response.forEach((res) => {
-      compliance_task_ids.push(res.data.compliance_task_id);
-    });
+      const taskPayload = {
+        ...data,
+        description: `${data.description} ${i + 1}`,
+        deadline: newDate,
+        dependent_task_id: dependent_task_id,
+      };
+
+      const response = await createTask(taskPayload);
+      const taskId = response.data.compliance_task_id;
+      compliance_task_ids.push(taskId);
+      dependent_task_id = taskId;
+      console.log("Task Created:", taskId);
+      console.log("Task Payload:", taskPayload);
+      console.log("Response:", response.data);
+    }
   }
 
-  toast.success("Task Created", {
+  toast.success("Task(s) Created Successfully", {
     id: "task-loading",
-    description: "Task Created Successfully",
   });
 
-  if (attachments && attachments.length > 0) {
-    toast.loading("Uploading Attachments", {
-      id: "task-loading",
-      description: "Uploading Attachments to Task",
+  // Upload attachments only for the first created task
+  if (attachments && attachments.length > 0 && compliance_task_ids.length > 0) {
+    const firstTaskId = compliance_task_ids[0];
+
+    toast.loading("Uploading Attachments...", {
+      id: "attachment-loading",
+      description: "Uploading attachments to the first task only",
     });
 
-    const promises = compliance_task_ids.map((compliance_task_id) => {
-      const attachmentsPromise = attachments.map((attachment) => {
-        const fileUploadPromise = fileUpload(
-          attachment,
-          document_type,
-          compliance_task_id,
-        );
-        return fileUploadPromise;
-      });
-      return attachmentsPromise;
-    });
+    const uploadPromises = attachments.map((attachment) =>
+      fileUpload(attachment, document_type, firstTaskId),
+    );
 
-    await Promise.all(promises);
-    toast.success("Attachments Uploaded", {
-      id: "task-loading",
-      description: "Attachments Uploaded Successfully",
+    await Promise.all(uploadPromises);
+
+    toast.success("Attachments Uploaded Successfully", {
+      id: "attachment-loading",
     });
   }
 };
@@ -101,7 +98,7 @@ export function useCreateTask() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: ["update-task-state"],
+    mutationKey: ["create-task"],
     mutationFn: createTasks,
 
     onSuccess: () => {
@@ -113,13 +110,12 @@ export function useCreateTask() {
     onError: (error) => {
       toast.error("Task Creation Failed", {
         id: "task-loading",
-        description: error.message,
+        description: error.response?.data?.detail || "Something went wrong",
       });
     },
 
     onSettled: () => {
       queryClient.invalidateQueries(["task-query"]);
-      // toast.dismiss("task-loading");
     },
   });
 }

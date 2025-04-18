@@ -33,7 +33,10 @@ export function useUpdateTaskState() {
       if (context?.previousData) {
         queryClient.setQueryData(["task-query"], context.previousData);
       }
-      toast.error(error.message);
+      console.error("Error updating task state", error);
+      toast.error(error.response?.data?.detail || "Something went wrong", {
+        id: "task-error",
+      });
     },
     onSettled: () => {
       queryClient.invalidateQueries(["task-query"]);

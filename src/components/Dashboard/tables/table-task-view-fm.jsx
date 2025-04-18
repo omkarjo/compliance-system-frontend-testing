@@ -21,6 +21,15 @@ import {
 } from "lucide-react";
 import StateChangeSelector from "../includes/state-change-selector";
 
+const STATUS_OPTIONS_ADMIN = [
+  // { label: "Open", value: "Open" },
+  // { label: "Pending", value: "Pending" },
+  { label: "Completed", value: "Completed" },
+  // { label: "Review Required", value: "Review Required" },
+];
+
+const STATUS_OPTIONS_USER = [{ label: "Completed", value: "Completed" }];
+
 export default function TableTaskViewFM({ actionType, openView = () => {} }) {
   const havePermission = useCheckRoles(["Fund Manager", "Compliance Officer"]);
 
@@ -65,7 +74,14 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
       header: ({ column }) => <SortButton column={column}>Status</SortButton>,
       cell: ({ row }) => {
         const data = row.original;
-        return <StateChangeSelector data={data} />;
+        return (
+          <StateChangeSelector
+            data={data}
+            options={
+              havePermission ? STATUS_OPTIONS_ADMIN : STATUS_OPTIONS_USER
+            }
+          />
+        );
       },
     },
 
