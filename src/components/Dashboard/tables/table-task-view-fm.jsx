@@ -22,10 +22,10 @@ import {
 import StateChangeSelector from "../includes/state-change-selector";
 
 const STATUS_OPTIONS_ADMIN = [
-  // { label: "Open", value: "Open" },
-  // { label: "Pending", value: "Pending" },
+  { label: "Open", value: "Open" },
+  { label: "Pending", value: "Pending" },
   { label: "Completed", value: "Completed" },
-  // { label: "Review Required", value: "Review Required" },
+  { label: "Review Required", value: "Review Required" },
 ];
 
 const STATUS_OPTIONS_USER = [{ label: "Completed", value: "Completed" }];
