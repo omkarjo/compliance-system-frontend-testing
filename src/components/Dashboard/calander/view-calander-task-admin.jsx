@@ -11,6 +11,8 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { getStatusStyle } from "@/lib/getStatusStyleIcon";
 import { cn } from "@/lib/utils";
 import { useGetTask } from "@/query/taskQuery";
+import { getTaskByID } from "@/utils/getTaskByID";
+import { usePermissionTaskChange } from "@/utils/havePermission";
 import {
   add,
   eachDayOfInterval,
@@ -35,6 +37,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import * as React from "react";
+import { useSearchParams } from "react-router-dom";
 import TaskAccordion from "../includes/accordion-task";
 import TaskHoverCard from "../includes/card-hower-task";
 
@@ -50,6 +53,11 @@ const colStartClasses = [
 const MAX_TASKS_PER_DAY = 3;
 
 export default function ViewCalendarTaskFM({ buttons }) {
+  const havePermissionTaskChange = usePermissionTaskChange();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const taskId = searchParams.get("taskId");
+
   const today = startOfToday();
   const [selectedDay, setSelectedDay] = React.useState(today);
   const [currentMonth, setCurrentMonth] = React.useState(
@@ -210,6 +218,26 @@ export default function ViewCalendarTaskFM({ buttons }) {
       ))}
     </div>
   );
+
+  React.useEffect(() => {
+    if (taskId) {
+      getTaskByID(taskId).then((res) => {
+        const havePermissionToView = havePermissionTaskChange(res);
+        if (!havePermissionToView) {
+          tost.error("You don't have permission to view this task.");
+          return;
+        }
+        setSelectedDay(new Date(res.deadline));
+        setSelectedTask(res);
+        setViewMode("day");
+
+        // Clear the search params after setting the task
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.delete("taskId");
+        setSearchParams(newSearchParams.toString(), { replace: true });
+      });
+    }
+  }, [taskId, searchParams, setSearchParams, havePermissionTaskChange]);
 
   return (
     <div className="my-4 flex flex-1 flex-col">

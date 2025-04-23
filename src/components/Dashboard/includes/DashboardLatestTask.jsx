@@ -81,7 +81,7 @@ export default function DashboardLatestTask() {
           ) : (
             task.map((item) => (
               <Link
-                to={`/dashboard/task/${item.compliance_task_id}`}
+                to={`/dashboard/task?taskId=${item.compliance_task_id}`}
                 key={item.compliance_task_id}
                 className="flex w-full flex-col justify-between rounded-md border p-4"
               >

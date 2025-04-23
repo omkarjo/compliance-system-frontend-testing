@@ -11,6 +11,8 @@ import {
 import { cn } from "@/lib/utils";
 import { useGetTask } from "@/query/taskQuery";
 import useCheckRoles from "@/utils/check-roles";
+import { getTaskByID } from "@/utils/getTaskByID";
+import { usePermissionTaskChange } from "@/utils/havePermission";
 import {
   Calendar,
   CheckCircle,
@@ -19,6 +21,9 @@ import {
   TriangleAlert,
   Watch,
 } from "lucide-react";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 import StateChangeSelector from "../includes/state-change-selector";
 
 const STATUS_OPTIONS_ADMIN = [
@@ -32,6 +37,28 @@ const STATUS_OPTIONS_USER = [{ label: "Completed", value: "Completed" }];
 
 export default function TableTaskViewFM({ actionType, openView = () => {} }) {
   const havePermission = useCheckRoles(["Fund Manager", "Compliance Officer"]);
+  const havePermissionTaskChange = usePermissionTaskChange();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const taskId = searchParams.get("taskId");
+
+  useEffect(() => {
+    if (taskId) {
+      getTaskByID(taskId).then((res) => {
+        const havePermissionToView = havePermissionTaskChange(res);
+        if (!havePermissionToView) {
+          toast.error("You don't have permission to view this task.");
+          return;
+        }
+        openView(res);
+
+        // Clear the search params after setting the task
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.delete("taskId");
+        setSearchParams(newSearchParams.toString(), { replace: true });
+      });
+    }
+  }, [taskId, setSearchParams]);
 
   const columns = [
     {

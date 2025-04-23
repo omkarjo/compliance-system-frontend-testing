@@ -2,6 +2,7 @@ import { taskApiPaths } from "@/constant/apiPaths";
 import { useAppSelector } from "@/store/hooks";
 import { apiWithAuth } from "@/utils/api";
 import useCheckRoles from "@/utils/check-roles";
+import { usePermissionTaskChange } from "@/utils/havePermission";
 import { useQuery } from "@tanstack/react-query";
 
 const sortKeyMap = {
@@ -110,8 +111,8 @@ export const useGetTask = ({
         { approver_id: user_id },
       ];
 
-      console.log("filters", filters);
-      console.log("sort", sort);
+  console.log("filters", filters);
+  console.log("sort", sort);
 
   return useQuery({
     queryKey: ["task-query", pageIndex, pageSize, sort, filters, multipleQuery],
@@ -201,4 +202,28 @@ export const useSearchTask = ({
       searchTask({ searchTerm, pageIndex, pageSize, filters, sortBy }),
     placeholderData: (keepPreviousData) => keepPreviousData,
   });
+};
+
+const taskDetails = async ({ taskId, havePermission }) => {
+  try {
+    const response = await apiWithAuth.get(`${taskApiPaths.getTask}/${taskId}`);
+    const responseData = response.data;
+
+    const havePermissionTaskChange = havePermission(responseData);
+    if (!havePermissionTaskChange) {
+      throw new Error("You do not have permission to view this task.");
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    let message = "Failed to fetch task details";
+    if (
+      error.response?.data?.detail &&
+      typeof error.response.data.detail === "string"
+    ) {
+      message = error.response.data.detail;
+    }
+    throw new Error(message);
+  }
 };
