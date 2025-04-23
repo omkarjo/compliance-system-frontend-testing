@@ -5,6 +5,7 @@ import {
   Sheet,
   SheetContent,
   SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
@@ -91,9 +92,9 @@ export default function SheetTaskViewFM({
             )}
           </tbody>
         </table>
-        {buttons.length > 0 && (
-          <div className="mx-auto mt-4 flex w-11/12 flex-col items-center justify-center gap-2">
-            {buttons.map((button, index) => (
+        <SheetFooter className="mx-auto my-0 mt-4 flex w-11/12 flex-col items-center justify-center gap-2 p-0">
+          {buttons.length > 0 &&
+            buttons.map((button, index) => (
               <Button
                 key={index}
                 variant={button.variant || ""}
@@ -113,8 +114,7 @@ export default function SheetTaskViewFM({
                 {button.label}
               </Button>
             ))}
-          </div>
-        )}
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   );

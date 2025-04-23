@@ -44,6 +44,7 @@ TagItem.displayName = "TagItem";
 
 export const TagsInput = React.forwardRef(
   ({
+    name = "tags",
     value = [],
     onChange,
     placeholder = "Add item...",
@@ -152,6 +153,7 @@ export const TagsInput = React.forwardRef(
         
         <div className="flex gap-2">
           <Input
+            name={name}
             ref={inputRef}
             type="text"
             value={inputValue}

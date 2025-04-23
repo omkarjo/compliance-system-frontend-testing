@@ -54,7 +54,7 @@ const createTasks = async ({ data, attachments, document_type }) => {
 
       const taskPayload = {
         ...data,
-        description: `${data.description} ${i + 1}`,
+        description: `${data.description}`,
         deadline: newDate,
         dependent_task_id: dependent_task_id,
       };

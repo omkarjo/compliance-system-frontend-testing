@@ -153,6 +153,7 @@ const FormGenerate = ({
 
       select: (field, formField) => (
         <Select
+          name={field.name}
           onValueChange={field.onChange}
           defaultValue={field.value}
           disabled={
@@ -175,7 +176,7 @@ const FormGenerate = ({
       ),
 
       date: (field, formField) => (
-        <Popover>
+        <Popover name={field.name}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
@@ -212,6 +213,7 @@ const FormGenerate = ({
 
       file: (field, formField) => (
         <FileUploader
+          name={field.name}
           value={field.value}
           onValueChange={(files) => {
             if (typeof onFileChange === "function") {
@@ -273,6 +275,8 @@ const FormGenerate = ({
       checkbox: (field, formField) => (
         <div className="flex items-center gap-1">
           <Checkbox
+            id={field.name}
+            name={field.name}
             checked={field.value || false}
             onCheckedChange={field.onChange}
             disabled={
@@ -281,9 +285,12 @@ const FormGenerate = ({
               disabledFields?.includes(field.name)
             }
           />
-          <div className="space-y-1 font-sans text-sm leading-none font-semibold">
+          <label
+            for={field.name}
+            className="space-y-1 font-sans text-sm leading-none font-semibold"
+          >
             {formField.placeholder}
-          </div>
+          </label>
         </div>
       ),
 
@@ -302,6 +309,7 @@ const FormGenerate = ({
 
       country_select: (field) => (
         <CountryDropdown
+          name={field.name}
           placeholder="Country"
           defaultValue={field.value}
           onChange={(country) => {
@@ -315,10 +323,12 @@ const FormGenerate = ({
         />
       ),
 
-      user_select: (field) => (
+      user_select: (field, formField) => (
         <UserSelect
+          name={field.name}
           onValueChange={field.onChange}
           defaultValue={field.value}
+          buttonText={formField?.placeholder || "Select User"}
           disabled={
             isSubmitting ||
             field?.disabled ||
@@ -329,6 +339,7 @@ const FormGenerate = ({
 
       task_select: (field) => (
         <TaskInputCommand
+          name={field.name}
           onValueChange={field.onChange}
           defaultValue={field.value}
           className={""}
@@ -427,7 +438,7 @@ const FormGenerate = ({
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full transition-transform duration-150 active:scale-95"
+          className="w-full cursor-pointer transition-transform duration-150 active:scale-95"
         >
           {isSubmitting ? "Submitting..." : submitText}
         </Button>

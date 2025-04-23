@@ -294,8 +294,8 @@ export default function DataTable({
 
     return table.getRowModel().rows.map((row) => (
       <TableRow
-        data-id={row.id}
         key={row.id}
+        data-id={row.original.id || row.id}
         data-state={row.getIsSelected() && "selected"}
         className={cn(
           "transition-colors duration-200 hover:bg-gray-100",

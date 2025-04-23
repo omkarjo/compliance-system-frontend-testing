@@ -384,7 +384,7 @@ export default function TaskDashboardFundManager() {
         <div className="flex items-center justify-between gap-4 px-4 py-2">
           <div className="flex items-center gap-2">
             <Button
-              className="flex items-center gap-1 px-3 text-sm"
+              className="flex items-center gap-1 px-3 text-sm cursor-pointer"
               onClick={() => handleDialogTaskOpen("create")}
             >
               <Plus className="size-4" />{" "}

@@ -65,6 +65,7 @@ const UserCommandList = ({
 );
 
 export default function UserSelect({
+  name,
   defaultValue,
   onValueChange = () => {},
   className,

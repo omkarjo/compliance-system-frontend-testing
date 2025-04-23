@@ -63,7 +63,7 @@ export const taskFormFields = [
     name: "deadline",
     label: "Deadline",
     type: "date",
-    placeholder: "",
+    placeholder: "Select a date",
     required: true,
     pastDisable: true,
     futureDisable: false,
@@ -80,6 +80,7 @@ export const taskFormFields = [
     type: "select",
     required: true,
     className: "",
+    placeholder: "Please select a frequency",
     options: [
       { label: "Weekly", value: "Weekly" },
       { label: "Monthly", value: "Monthly" },
@@ -99,6 +100,7 @@ export const taskFormFields = [
     label: "Assign To",
     type: "user_select",
     required: true,
+    placeholder: "Please select a Assignee",
   },
   {
     name: "different_reviewer",
@@ -110,7 +112,7 @@ export const taskFormFields = [
     name: "reviewer_id",
     label: "Reviewer",
     type: "user_select",
-    placeholder: "",
+    placeholder: "Please select a Reviewer",
     required: true,
   },
   {
@@ -123,7 +125,7 @@ export const taskFormFields = [
     name: "approver_id",
     label: "Final Reviewer",
     type: "user_select",
-    placeholder: "",
+    placeholder: "Please select a Final Reviewer",
     required: true,
   },
 ];
