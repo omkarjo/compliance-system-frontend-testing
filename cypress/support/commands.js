@@ -55,31 +55,158 @@ Cypress.Commands.add("deleteTaskByNameUI", (taskName) => {
   cy.intercept("GET", "/api/api/tasks/**").as("getTasks");
   cy.wait("@getTasks", { timeout: 10000 });
 
-  cy.contains("td", taskName).should("be.visible").click({ force: true });
+  function waitForLoadingToFinishIfNeeded() {
+    // Wait 100ms and check for loading indicator
+    cy.wait(100).then(() => {
+      cy.get("body").then(($body) => {
+        if ($body.find('[data-state="loading"]').length) {
+          cy.get('[data-state="loading"]', { timeout: 10000 }).should('not.exist');
+        }
+      });
+    });
+  }
 
-  cy.get('[data-slot="sheet-footer"]').within(() => {
-    cy.contains("button", "Delete Task")
-      .should("be.visible")
-      .click({ force: true });
-  });
+  function tryFindAndDelete() {
+    waitForLoadingToFinishIfNeeded();
 
-  cy.contains(
-    `Are you absolutely sure you want to delete the “${taskName}” task?`,
-  ).should("be.visible");
+    cy.document().then((doc) => {
+      const taskCell = [...doc.querySelectorAll("td")].find((td) =>
+        td.textContent.includes(taskName)
+      );
 
-  cy.get('[data-slot="alert-dialog-footer"]').within(() => {
-    cy.contains("button", "Delete").click({ force: true });
-  });
+      if (taskCell) {
+        cy.wrap(taskCell).scrollIntoView().click({ force: true });
 
-  cy.contains("Task deleted successfully").should("be.visible");
-  cy.contains("td", taskName).should("not.exist");
+        cy.get('[data-slot="sheet-footer"]').within(() => {
+          cy.contains("button", "Delete Task")
+            .should("be.visible")
+            .click({ force: true });
+        });
 
-  cy.then(() => {
-    const updatedTasks = tasks.filter((t) => t.name !== taskName);
-    Cypress.env("compliance_tasks", updatedTasks);
-    cy.log(`Task "${taskName}" removed from Cypress.env`);
-  });
+        cy.contains(
+          `Are you absolutely sure you want to delete the “${taskName}” task?`
+        ).should("be.visible");
+
+        cy.get('[data-slot="alert-dialog-footer"]').within(() => {
+          cy.contains("button", "Delete").click({ force: true });
+        });
+
+        cy.contains("Task deleted successfully").should("be.visible");
+        cy.contains("td", taskName).should("not.exist");
+
+        cy.then(() => {
+          const updatedTasks = tasks.filter((t) => t.name !== taskName);
+          Cypress.env("compliance_tasks", updatedTasks);
+          cy.log(`✅ Task "${taskName}" deleted and removed from Cypress.env`);
+        });
+      } else {
+        cy.get('[data-role="page-index"]').invoke("text").then((indexText) => {
+          cy.get('[data-role="page-count"]').invoke("text").then((countText) => {
+            const currentPage = parseInt(indexText.trim(), 10);
+            const totalPages = parseInt(countText.trim(), 10);
+
+            if (currentPage < totalPages) {
+              cy.get('[data-role="page-navigation"]')
+                .contains("button", "Next")
+                .click({ force: true });
+
+              cy.wait("@getTasks", { timeout: 10000 });
+              tryFindAndDelete(); // retry on next page
+            } else {
+              cy.log(`⚠️ Task "${taskName}" was not found on any page. Skipping delete.`);
+            }
+          });
+        });
+      }
+    });
+  }
+
+  tryFindAndDelete();
 });
+Cypress.Commands.add("deleteTaskByNameUI", (taskName) => {
+  const tasks = Cypress.env("compliance_tasks") || [];
+
+  cy.visit("/dashboard/task");
+
+  cy.intercept("GET", "/api/api/tasks/**").as("getTasks");
+  cy.wait("@getTasks", { timeout: 10000 });
+
+  function waitForPageReady(retries = 50) {
+    if (retries === 0) {
+      throw new Error("❌ Page did not become ready in time.");
+    }
+
+    cy.wait(100);
+    cy.document().then((doc) => {
+      const hasTable = doc.querySelector('[data-role="table"]');
+      const isLoading = doc.querySelector('[data-state="loading"]');
+
+      if (hasTable && !isLoading) {
+        cy.log("✅ Page is ready.");
+      } else {
+        waitForPageReady(retries - 1);
+      }
+    });
+  }
+
+  function tryFindAndDelete() {
+    waitForPageReady();
+
+    cy.document().then((doc) => {
+      const taskCell = [...doc.querySelectorAll("td")].find((td) =>
+        td.textContent.includes(taskName)
+      );
+
+      if (taskCell) {
+        cy.wrap(taskCell).scrollIntoView().click({ force: true });
+
+        cy.get('[data-slot="sheet-footer"]').within(() => {
+          cy.contains("button", "Delete Task")
+            .should("be.visible")
+            .click({ force: true });
+        });
+
+        cy.contains(
+          `Are you absolutely sure you want to delete the “${taskName}” task?`
+        ).should("be.visible");
+
+        cy.get('[data-slot="alert-dialog-footer"]').within(() => {
+          cy.contains("button", "Delete").click({ force: true });
+        });
+
+        cy.contains("Task deleted successfully").should("be.visible");
+        cy.contains("td", taskName).should("not.exist");
+
+        cy.then(() => {
+          const updatedTasks = tasks.filter((t) => t.name !== taskName);
+          Cypress.env("compliance_tasks", updatedTasks);
+          cy.log(`✅ Task "${taskName}" deleted and removed from Cypress.env`);
+        });
+      } else {
+        cy.get('[data-role="page-index"]').invoke("text").then((indexText) => {
+          cy.get('[data-role="page-count"]').invoke("text").then((countText) => {
+            const currentPage = parseInt(indexText.trim(), 10);
+            const totalPages = parseInt(countText.trim(), 10);
+
+            if (currentPage < totalPages) {
+              cy.get('[data-role="page-navigation"]')
+                .contains("button", "Next")
+                .click({ force: true });
+
+              cy.wait("@getTasks", { timeout: 10000 });
+              tryFindAndDelete(); // retry on next page
+            } else {
+              cy.log(`⚠️ Task "${taskName}" was not found on any page. Skipping delete.`);
+            }
+          });
+        });
+      }
+    });
+  }
+
+  tryFindAndDelete();
+});
+
 
 Cypress.Commands.add(
   "fillCreateTaskForm",

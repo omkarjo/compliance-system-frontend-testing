@@ -277,7 +277,7 @@ export default function DataTable({
   const renderTableContent = () => {
     if (resolvedLoading) {
       return renderEmptyState(
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center" data-state="loading">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600"></div>
           <span className="ml-2">Loading...</span>
         </div>,
@@ -352,7 +352,7 @@ export default function DataTable({
           isPageChanging || isPageSizeChanging ? "opacity-50" : "opacity-100",
         )}
       >
-        <Table className="">
+        <Table className="" data-role="table">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -374,9 +374,15 @@ export default function DataTable({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between space-x-2 py-4">
+      <div
+        className="flex items-center justify-between space-x-2 py-4"
+        data-role="pagination"
+      >
         <div className="text-muted-foreground flex-1 text-sm">
-          Page {resolvedPagination.pageIndex + 1} of {table.getPageCount()}
+          Page{" "}
+          <span data-role="page-index">{resolvedPagination.pageIndex + 1}</span>
+          {" of "}
+          <span data-role="page-count">{table.getPageCount()}</span>
         </div>
 
         <div className="flex items-center space-x-4">
@@ -424,7 +430,7 @@ export default function DataTable({
             </div>
           )}
 
-          <div className="space-x-2">
+          <div className="space-x-2" data-role="page-navigation">
             <Button
               variant="outline"
               size="sm"
