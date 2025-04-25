@@ -1,6 +1,8 @@
 import { addDays } from "date-fns";
 
 describe("Limited Partner Onboarding Test", () => {
+  const createdIds = [];
+
   beforeEach(() => {
     cy.login();
     cy.visit("/dashboard/limited-partners");
@@ -9,42 +11,36 @@ describe("Limited Partner Onboarding Test", () => {
   it("should open and close the Onboard LP dialog", () => {
     cy.contains("button", "Onboard Limited Partner").click();
     cy.contains("Onboard new Limited Partner").should("be.visible");
-
     cy.contains("button", "Close").click({ force: true });
     cy.contains("Onboard new Limited Partner").should("not.exist");
   });
 
   it("should show validation errors when form is incomplete", () => {
     cy.contains("button", "Onboard Limited Partner").click();
-
-    // Try to submit without filling required fields
     cy.get("form").within(() => {
       cy.contains("button", "Onboard").click();
     });
-    // Check if validation errors appear
     cy.contains("Name is required").should("be.visible");
   });
 
   it("should successfully create a new Limited Partner", () => {
-    // Intercept API requests with correct paths
+    const record = { lp_id: null, task_id: null, document_id: null };
+    createdIds.push(record);
+
     cy.intercept("POST", "/api/api/lps/", (req) => {
-      // Delay the response by 500ms to ensure toast is visible
       req.on("response", (res) => {
-        // Using setTimeout to delay the response
+        record.lp_id = res.body?.lp_id;
         return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(res);
-          }, 500);
+          setTimeout(() => resolve(res), 500);
         });
       });
     }).as("createLP");
 
     cy.intercept("POST", "/api/api/tasks/", (req) => {
       req.on("response", (res) => {
+        record.task_id = res.body?.compliance_task_id;
         return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(res);
-          }, 500);
+          setTimeout(() => resolve(res), 500);
         });
       });
     }).as("createTask");
@@ -52,9 +48,7 @@ describe("Limited Partner Onboarding Test", () => {
     cy.intercept("PUT", "/api/api/lps/*", (req) => {
       req.on("response", (res) => {
         return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(res);
-          }, 500);
+          setTimeout(() => resolve(res), 500);
         });
       });
     }).as("updateLP");
@@ -62,18 +56,23 @@ describe("Limited Partner Onboarding Test", () => {
     cy.intercept("PATCH", "/api/api/tasks/*", (req) => {
       req.on("response", (res) => {
         return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(res);
-          }, 500);
+          setTimeout(() => resolve(res), 500);
         });
       });
     }).as("completeTask");
 
-    // Open onboarding dialog
+    cy.intercept("POST", "/api/documents/upload", (req) => {
+      req.on("response", (res) => {
+        record.document_id = res.body?.document_id;
+        return new Promise((resolve) => {
+          setTimeout(() => resolve(res), 500);
+        });
+      });
+    });
+
     cy.contains("button", "Onboard Limited Partner").click();
     cy.contains("Onboard new Limited Partner").should("be.visible");
 
-    // Fill the form
     cy.fillLPForm({
       lp_name: "Test LP",
       gender: "Male",
@@ -96,7 +95,6 @@ describe("Limited Partner Onboarding Test", () => {
       emaildrawdowns: ["draw@example.com", "notify@example.com"],
     });
 
-    // Submit the form
     cy.get("form").within(() => {
       cy.contains("button", "Onboard").click();
     });
@@ -105,7 +103,6 @@ describe("Limited Partner Onboarding Test", () => {
       return cy.contains(message, { timeout: 10000 }).should("be.visible");
     };
 
-    // Check only the key toast messages in sequence
     checkToast("Creating LP entry...");
     cy.wait("@createLP", { timeout: 15000 });
 
@@ -120,8 +117,52 @@ describe("Limited Partner Onboarding Test", () => {
     checkToast("Marking compliance task as completed...");
     cy.wait("@completeTask", { timeout: 15000 });
 
-    // Final success toast
     checkToast("LP Onboarded Successfully");
-    // cy.findElementByTextContent("Test LP", "td").should("exist");
+    cy.findElementByTextContent("Test LP", "td").should("exist");
+  });
+
+  it("should delete all created LPs, tasks, and documents", () => {
+    const accessToken = Cypress.env("accessToken");
+  
+    createdIds.forEach((entry) => {
+      if (entry.lp_id) {
+        cy.request({
+          method: "DELETE",
+          url: `/api/api/lps/${entry.lp_id}`,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          failOnStatusCode: false,
+        }).then((res) => {
+          cy.log(`Deleted LP ${entry.lp_id} - Status: ${res.status}`);
+        });
+      }
+  
+      if (entry.task_id) {
+        cy.request({
+          method: "DELETE",
+          url: `/api/api/tasks/${entry.task_id}`,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          failOnStatusCode: false,
+        }).then((res) => {
+          cy.log(`Deleted Task ${entry.task_id} - Status: ${res.status}`);
+        });
+      }
+  
+      if (entry.document_id) {
+        cy.request({
+          method: "DELETE",
+          url: `/api/api/documents/${entry.document_id}`,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          failOnStatusCode: false,
+        }).then((res) => {
+          cy.log(`Deleted Document ${entry.document_id} - Status: ${res.status}`);
+        });
+      }
+    });  
   });
 });

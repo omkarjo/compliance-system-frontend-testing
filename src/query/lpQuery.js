@@ -4,10 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 
 // In-memory cache for all LPs
 let allLPsCache = null;
+const forceRefreshCache = true; // Set to true to force refresh the cache
 
 const getAllLimitedPartners = async ({ pageIndex, pageSize }) => {
   try {
-    if (!allLPsCache || allLPsCache.length === 0 || false /* forceRefresh */) {
+    if (forceRefreshCache || !allLPsCache || allLPsCache.length === 0) {
       const response = await apiWithAuth.get(
         limitedPartnersApiPaths.getLimitedPartners,
         {
