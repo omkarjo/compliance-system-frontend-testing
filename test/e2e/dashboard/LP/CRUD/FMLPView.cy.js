@@ -61,14 +61,14 @@ describe("Limited Partner Onboarding Test", () => {
       });
     }).as("completeTask");
 
-    cy.intercept("POST", "/api/documents/upload", (req) => {
+    cy.intercept("POST", "/api/api/documents/upload", (req) => {
       req.on("response", (res) => {
         record.document_id = res.body?.document_id;
         return new Promise((resolve) => {
           setTimeout(() => resolve(res), 500);
         });
       });
-    });
+    }).as("uploadDocument");
 
     cy.contains("button", "Onboard Limited Partner").click();
     cy.contains("Onboard new Limited Partner").should("be.visible");
@@ -110,6 +110,7 @@ describe("Limited Partner Onboarding Test", () => {
     cy.wait("@createTask", { timeout: 15000 });
 
     checkToast("Uploading documents");
+    cy.wait("@uploadDocument", { timeout: 50000 });
 
     checkToast("Linking uploaded document to LP entry...");
     cy.wait("@updateLP", { timeout: 15000 });
@@ -118,12 +119,18 @@ describe("Limited Partner Onboarding Test", () => {
     cy.wait("@completeTask", { timeout: 15000 });
 
     checkToast("LP Onboarded Successfully");
-    cy.findElementByTextContent("Test LP", "td").should("exist");
+    cy.get("input[placeholder='Search LPs...']").type("Test LP", {
+      force: true,
+    });
+    cy.wait(500);
+    cy.findElementByTextContent("Test LP", "td", "/api/api/lps/**").should(
+      "exist",
+    );
   });
 
   it("should delete all created LPs, tasks, and documents", () => {
     const accessToken = Cypress.env("accessToken");
-  
+
     createdIds.forEach((entry) => {
       if (entry.lp_id) {
         cy.request({
@@ -137,7 +144,7 @@ describe("Limited Partner Onboarding Test", () => {
           cy.log(`Deleted LP ${entry.lp_id} - Status: ${res.status}`);
         });
       }
-  
+
       if (entry.task_id) {
         cy.request({
           method: "DELETE",
@@ -150,7 +157,7 @@ describe("Limited Partner Onboarding Test", () => {
           cy.log(`Deleted Task ${entry.task_id} - Status: ${res.status}`);
         });
       }
-  
+
       if (entry.document_id) {
         cy.request({
           method: "DELETE",
@@ -160,9 +167,11 @@ describe("Limited Partner Onboarding Test", () => {
           },
           failOnStatusCode: false,
         }).then((res) => {
-          cy.log(`Deleted Document ${entry.document_id} - Status: ${res.status}`);
+          cy.log(
+            `Deleted Document ${entry.document_id} - Status: ${res.status}`,
+          );
         });
       }
-    });  
+    });
   });
 });
