@@ -228,13 +228,16 @@ describe("Task Dashboard FundManager Test", () => {
 
   it("should delete all created tasks using UI", () => {
     const tasks = Cypress.env("compliance_tasks") || [];
-
+  
     if (!tasks.length) {
       throw new Error("No tasks available to delete");
     }
-
-    tasks.forEach((task) => {
-      cy.deleteTaskByNameUI(task.name);
+  
+    // Sequentially delete each task
+    cy.wrap(null).then(() => {
+      for (const task of tasks) {
+        cy.deleteTaskByNameUI(task.name, "td", "/api/api/tasks/**");
+      }
     });
   });
 });

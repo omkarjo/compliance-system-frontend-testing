@@ -136,7 +136,7 @@ export const TagsInput = React.forwardRef(
     const isBelowMin = minTags !== undefined && value.length < minTags;
 
     return (
-      <div className={cn("space-y-3", className)}>
+      <div className={cn("space-y-3", className)} data-tags-name={name}>
         {value.length > 0 && (
           <div className="flex flex-wrap gap-2 py-2">
             {value.map((tag, index) => (
@@ -201,6 +201,7 @@ TagsInput.displayName = "TagsInput";
 
 export const tagsInputFieldGenerator = (field, formField) => (
   <TagsInput
+    name={formField?.name || field.name}
     value={field.value || []}
     onChange={(newValue) => {
       field.onChange(newValue);

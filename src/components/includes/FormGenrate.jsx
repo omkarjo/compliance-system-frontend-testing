@@ -176,9 +176,10 @@ const FormGenerate = ({
       ),
 
       date: (field, formField) => (
-        <Popover name={field.name}>
+        <Popover name={formField.name}>
           <PopoverTrigger asChild>
             <Button
+              data-testid={formField.name}
               variant="outline"
               className={cn(
                 "w-full justify-start text-left font-normal",
@@ -190,7 +191,7 @@ const FormGenerate = ({
               {field.value ? (
                 format(field.value, "PPP")
               ) : (
-                <span>Pick a date</span>
+                <span>{formField?.placeholder || "Pick a date"}</span>
               )}
             </Button>
           </PopoverTrigger>
@@ -213,7 +214,7 @@ const FormGenerate = ({
 
       file: (field, formField) => (
         <FileUploader
-          name={field.name}
+          data-testid={formField.name}
           value={field.value}
           onValueChange={(files) => {
             if (typeof onFileChange === "function") {

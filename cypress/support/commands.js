@@ -1,3 +1,6 @@
+import { format, isAfter, isBefore, parse } from "date-fns";
+import "cypress-file-upload";
+
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -46,167 +49,6 @@ Cypress.Commands.add("login", () => {
 
   cy.url().should("include", "/dashboard");
 });
-
-Cypress.Commands.add("deleteTaskByNameUI", (taskName) => {
-  const tasks = Cypress.env("compliance_tasks") || [];
-
-  cy.visit("/dashboard/task");
-
-  cy.intercept("GET", "/api/api/tasks/**").as("getTasks");
-  cy.wait("@getTasks", { timeout: 10000 });
-
-  function waitForLoadingToFinishIfNeeded() {
-    // Wait 100ms and check for loading indicator
-    cy.wait(100).then(() => {
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-state="loading"]').length) {
-          cy.get('[data-state="loading"]', { timeout: 10000 }).should('not.exist');
-        }
-      });
-    });
-  }
-
-  function tryFindAndDelete() {
-    waitForLoadingToFinishIfNeeded();
-
-    cy.document().then((doc) => {
-      const taskCell = [...doc.querySelectorAll("td")].find((td) =>
-        td.textContent.includes(taskName)
-      );
-
-      if (taskCell) {
-        cy.wrap(taskCell).scrollIntoView().click({ force: true });
-
-        cy.get('[data-slot="sheet-footer"]').within(() => {
-          cy.contains("button", "Delete Task")
-            .should("be.visible")
-            .click({ force: true });
-        });
-
-        cy.contains(
-          `Are you absolutely sure you want to delete the “${taskName}” task?`
-        ).should("be.visible");
-
-        cy.get('[data-slot="alert-dialog-footer"]').within(() => {
-          cy.contains("button", "Delete").click({ force: true });
-        });
-
-        cy.contains("Task deleted successfully").should("be.visible");
-        cy.contains("td", taskName).should("not.exist");
-
-        cy.then(() => {
-          const updatedTasks = tasks.filter((t) => t.name !== taskName);
-          Cypress.env("compliance_tasks", updatedTasks);
-          cy.log(`✅ Task "${taskName}" deleted and removed from Cypress.env`);
-        });
-      } else {
-        cy.get('[data-role="page-index"]').invoke("text").then((indexText) => {
-          cy.get('[data-role="page-count"]').invoke("text").then((countText) => {
-            const currentPage = parseInt(indexText.trim(), 10);
-            const totalPages = parseInt(countText.trim(), 10);
-
-            if (currentPage < totalPages) {
-              cy.get('[data-role="page-navigation"]')
-                .contains("button", "Next")
-                .click({ force: true });
-
-              cy.wait("@getTasks", { timeout: 10000 });
-              tryFindAndDelete(); // retry on next page
-            } else {
-              cy.log(`⚠️ Task "${taskName}" was not found on any page. Skipping delete.`);
-            }
-          });
-        });
-      }
-    });
-  }
-
-  tryFindAndDelete();
-});
-Cypress.Commands.add("deleteTaskByNameUI", (taskName) => {
-  const tasks = Cypress.env("compliance_tasks") || [];
-
-  cy.visit("/dashboard/task");
-
-  cy.intercept("GET", "/api/api/tasks/**").as("getTasks");
-  cy.wait("@getTasks", { timeout: 10000 });
-
-  function waitForPageReady(retries = 50) {
-    if (retries === 0) {
-      throw new Error("❌ Page did not become ready in time.");
-    }
-
-    cy.wait(100);
-    cy.document().then((doc) => {
-      const hasTable = doc.querySelector('[data-role="table"]');
-      const isLoading = doc.querySelector('[data-state="loading"]');
-
-      if (hasTable && !isLoading) {
-        cy.log("✅ Page is ready.");
-      } else {
-        waitForPageReady(retries - 1);
-      }
-    });
-  }
-
-  function tryFindAndDelete() {
-    waitForPageReady();
-
-    cy.document().then((doc) => {
-      const taskCell = [...doc.querySelectorAll("td")].find((td) =>
-        td.textContent.includes(taskName)
-      );
-
-      if (taskCell) {
-        cy.wrap(taskCell).scrollIntoView().click({ force: true });
-
-        cy.get('[data-slot="sheet-footer"]').within(() => {
-          cy.contains("button", "Delete Task")
-            .should("be.visible")
-            .click({ force: true });
-        });
-
-        cy.contains(
-          `Are you absolutely sure you want to delete the “${taskName}” task?`
-        ).should("be.visible");
-
-        cy.get('[data-slot="alert-dialog-footer"]').within(() => {
-          cy.contains("button", "Delete").click({ force: true });
-        });
-
-        cy.contains("Task deleted successfully").should("be.visible");
-        cy.contains("td", taskName).should("not.exist");
-
-        cy.then(() => {
-          const updatedTasks = tasks.filter((t) => t.name !== taskName);
-          Cypress.env("compliance_tasks", updatedTasks);
-          cy.log(`✅ Task "${taskName}" deleted and removed from Cypress.env`);
-        });
-      } else {
-        cy.get('[data-role="page-index"]').invoke("text").then((indexText) => {
-          cy.get('[data-role="page-count"]').invoke("text").then((countText) => {
-            const currentPage = parseInt(indexText.trim(), 10);
-            const totalPages = parseInt(countText.trim(), 10);
-
-            if (currentPage < totalPages) {
-              cy.get('[data-role="page-navigation"]')
-                .contains("button", "Next")
-                .click({ force: true });
-
-              cy.wait("@getTasks", { timeout: 10000 });
-              tryFindAndDelete(); // retry on next page
-            } else {
-              cy.log(`⚠️ Task "${taskName}" was not found on any page. Skipping delete.`);
-            }
-          });
-        });
-      }
-    });
-  }
-
-  tryFindAndDelete();
-});
-
 
 Cypress.Commands.add(
   "fillCreateTaskForm",
@@ -274,6 +116,251 @@ Cypress.Commands.add("deleteRecurringTask", (taskId) => {
       cy.log(
         `Failed to delete recurring task: ${taskId} - Status: ${response.status}`,
       );
+    }
+  });
+});
+
+Cypress.Commands.add("fillLPForm", (lp) => {
+  cy.get('input[name="lp_name"]').clear().type(lp.lp_name);
+  cy.get('input[name="mobile_no"]').clear().type(lp.mobile_no);
+  cy.get('input[name="email"]').clear().type(lp.email);
+  cy.get('input[name="pan"]').clear().type(lp.pan);
+  cy.get('textarea[name="address"]').clear().type(lp.address);
+  cy.get('input[name="nominee"]').clear().type(lp.nominee);
+  cy.get('input[name="commitment_amount"]').clear().type(lp.commitment_amount);
+  cy.get('input[name="dpid"]').clear().type(lp.dpid);
+  cy.get('input[name="client_id"]').clear().type(lp.client_id);
+
+  // Gender
+  cy.contains("button", "Select Gender").click({ force: true });
+  cy.get("[role=option]").contains(lp.gender).click({ force: true });
+
+  // Acknowledgement of PPM
+  cy.contains("button", "Acknowledgement of PPM").click({ force: true });
+  cy.get("[role=option]")
+    .contains(lp.acknowledgement_of_ppm)
+    .click({ force: true });
+
+  // Class of Share
+  cy.contains("button", "Please select class of share").click({ force: true });
+  cy.get("[role=option]")
+    .contains(lp.class_of_shares.label)
+    .click({ force: true });
+
+  // Entity Type
+  cy.contains("button", "Please select entity type").click({ force: true });
+  cy.get("[role=option]").contains(lp.type).click({ force: true });
+
+  // Tax Jurisdiction
+  cy.contains("button", "Please select tax jurisdiction").click({
+    force: true,
+  });
+  cy.get("[role=option]").contains(lp.citizenship).click({ force: true });
+
+  // Geography (Country Select)
+  cy.contains("button", "Country").click({ force: true });
+  cy.get("input[placeholder='Search country...']")
+    .should("be.visible")
+    .type(lp.geography, { delay: 100 });
+  cy.contains("[role=option]", lp.geography).click({ force: true });
+
+  // Email drawdowns
+  cy.get('[data-tags-name="tags"]').within(() => {
+    lp.emaildrawdowns.forEach((email) => {
+      cy.get('input[placeholder="Please enter email"]').type(email);
+      cy.contains("button", "Add").click();
+    });
+  });
+
+  cy.selectDate("dob", lp.dob);
+  cy.selectDate("doi", lp.doi);
+  cy.selectDate("date_of_agreement", lp.date_of_agreement);
+
+  cy.get('[data-testid="cml"] input[type="file"]').attachFile("sample.pdf", {
+    force: true,
+  });
+});
+
+Cypress.Commands.add("selectDate", (fieldName, isoDate) => {
+  const targetDate = parse(isoDate, "yyyy-MM-dd", new Date());
+  const targetDay = format(targetDate, "d"); // day without leading zero
+
+  // Step 1: Open the calendar popover
+  cy.get(`[data-testid="${fieldName}"]`).click();
+
+  // Step 2: Navigate to correct month/year
+  function navigateToTarget() {
+    cy.get('[class*="calendar-caption-label"]').then(($caption) => {
+      const currentCaption = $caption.text().trim();
+      const currentDate = parse(currentCaption, "MMMM yyyy", new Date());
+
+      if (isBefore(currentDate, targetDate)) {
+        cy.get('button[name="next-month"]').click();
+        cy.wait(100);
+        navigateToTarget();
+      } else if (isAfter(currentDate, targetDate)) {
+        cy.get('button[name="previous-month"]').click();
+        cy.wait(100);
+        navigateToTarget();
+      } else {
+        // Correct month — select the day
+        cy.get('button[name="day"]')
+          .contains(new RegExp(`^${targetDay}$`))
+          .click()
+          .then(() => {
+            // Re-focus and then blur the input
+            const inputSelector = `[data-testid="${fieldName}"]`;
+            cy.get(inputSelector).focus().blur();
+          });
+      }
+    });
+  }
+
+  navigateToTarget();
+});
+
+Cypress.Commands.add(
+  "findElementByTextContent",
+  (textContent, selector = "td", apiPath = null) => {
+    function waitForPageReady(retries = 50) {
+      if (retries === 0) {
+        throw new Error("❌ Page did not become ready in time.");
+      }
+
+      return cy.wait(100).then(() => {
+        return cy.document().then((doc) => {
+          const hasTable = doc.querySelector('[data-role="table"]');
+          const isLoading = doc.querySelector('[data-state="loading"]');
+
+          if (hasTable && !isLoading) {
+            cy.log("✅ Page is ready.");
+            return;
+          } else {
+            return waitForPageReady(retries - 1);
+          }
+        });
+      });
+    }
+
+    function searchElementOnAllPages(textContent, searchForward = true) {
+      return cy.wrap(null, { log: false }).then(() => {
+        return waitForPageReady().then(() => {
+          return cy.document({ log: false }).then((doc) => {
+            const foundElement = [...doc.querySelectorAll(selector)].find(
+              (el) => el.textContent.includes(textContent),
+            );
+
+            if (foundElement) {
+              cy.log(`✅ Found element with text "${textContent}"`);
+              return cy.wrap(foundElement);
+            } else {
+              return cy
+                .get('[data-role="page-index"]', { log: false })
+                .invoke("text")
+                .then((indexText) => {
+                  return cy
+                    .get('[data-role="page-count"]', { log: false })
+                    .invoke("text")
+                    .then((countText) => {
+                      const currentPage = parseInt(indexText.trim(), 10);
+                      const totalPages = parseInt(countText.trim(), 10);
+
+                      if (searchForward && currentPage < totalPages) {
+                        cy.get('[data-role="page-navigation"]')
+                          .contains("button", "Next")
+                          .click({ force: true });
+
+                        if (apiPath) {
+                          cy.intercept("GET", apiPath).as("getTasksNext");
+                          return cy
+                            .wait("@getTasksNext", { timeout: 10000 })
+                            .then(() => {
+                              return searchElementOnAllPages(textContent, true);
+                            });
+                        } else {
+                          return waitForPageReady().then(() => {
+                            return searchElementOnAllPages(textContent, true);
+                          });
+                        }
+                      } else if (!searchForward && currentPage > 1) {
+                        cy.get('[data-role="page-navigation"]')
+                          .contains("button", "Previous")
+                          .click({ force: true });
+
+                        if (apiPath) {
+                          cy.intercept("GET", apiPath).as("getTasksPrev");
+                          return cy
+                            .wait("@getTasksPrev", { timeout: 10000 })
+                            .then(() => {
+                              return searchElementOnAllPages(
+                                textContent,
+                                false,
+                              );
+                            });
+                        } else {
+                          return waitForPageReady().then(() => {
+                            return searchElementOnAllPages(textContent, false);
+                          });
+                        }
+                      } else if (
+                        searchForward &&
+                        currentPage === totalPages &&
+                        totalPages > 1
+                      ) {
+                        return searchElementOnAllPages(textContent, false);
+                      }
+
+                      cy.log(
+                        `⚠️ Element with text "${textContent}" not found on any page.`,
+                      );
+                      return cy.wrap(null);
+                    });
+                });
+            }
+          });
+        });
+      });
+    }
+
+    return searchElementOnAllPages(textContent, true);
+  },
+);
+
+Cypress.Commands.add("deleteTaskByNameUI", (taskName) => {
+  const tasks = Cypress.env("compliance_tasks") || [];
+
+  cy.visit("/dashboard/task");
+  cy.intercept("GET", "/api/api/tasks/**").as("getTasks");
+  cy.wait("@getTasks", { timeout: 10000 });
+
+  cy.findElementByTextContent(taskName).then((taskCell) => {
+    if (taskCell) {
+      cy.wrap(taskCell).scrollIntoView().click({ force: true });
+
+      cy.get('[data-slot="sheet-footer"]').within(() => {
+        cy.contains("button", "Delete Task")
+          .should("be.visible")
+          .click({ force: true });
+      });
+
+      cy.contains(
+        `Are you absolutely sure you want to delete the “${taskName}” task?`,
+      ).should("be.visible");
+
+      cy.get('[data-slot="alert-dialog-footer"]').within(() => {
+        cy.contains("button", "Delete").click({ force: true });
+      });
+
+      cy.contains("Task deleted successfully").should("be.visible");
+      cy.contains("td", taskName).should("not.exist");
+
+      cy.then(() => {
+        const updatedTasks = tasks.filter((t) => t.name !== taskName);
+        Cypress.env("compliance_tasks", updatedTasks);
+        cy.log(`✅ Task deleted: ${taskName}`);
+      });
+    } else {
+      cy.log(`⚠️ Task not found: ${taskName}`);
     }
   });
 });
