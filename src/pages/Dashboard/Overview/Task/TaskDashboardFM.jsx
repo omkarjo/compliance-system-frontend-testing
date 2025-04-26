@@ -377,13 +377,21 @@ export default function TaskDashboardFundManager() {
   }, []);
 
   useEffect(() => {
-    console.log("Runing")
+    console.log("Running");
+    const today = new Date();
+
     if (defaultTabs === "calendar" && defaultDeadlineByCalendar) {
-      defaultValues.deadline = defaultDeadlineByCalendar;
+      const deadlineDate = new Date(defaultDeadlineByCalendar);
+      if (deadlineDate < today.setHours(0, 0, 0, 0)) {
+        defaultValues.deadline = today;
+      } else {
+        defaultValues.deadline = deadlineDate;
+      }
     } else {
-      defaultValues.deadline = new Date();
+      defaultValues.deadline = today;
     }
-    form.reset(defaultValues)
+
+    form.reset(defaultValues);
   }, [defaultDeadlineByCalendar, form, defaultTabs]);
 
   // console.log("formErrors", form.formState.errors);
