@@ -95,7 +95,6 @@ export const useGetTask = ({
   filters = [],
 }) => {
   const havePermission = useCheckRoles(["Fund Manager", "Compliance Officer"]);
-
   const { user } = useAppSelector((state) => state.user);
   const user_id = user.user_id;
   const first_sort = sortBy.at(0);

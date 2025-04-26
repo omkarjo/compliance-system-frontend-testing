@@ -27,7 +27,7 @@ export default function DashboardLatestTask() {
         optionid: format(addMonths(new Date(), 1), "yyyy-MM-dd"),
       },
     ],
-    sortBy: "deadline_asc",
+    sortBy: [ {'id': 'deadline', desc: false} ],
   });
 
   const task = data?.data || [];

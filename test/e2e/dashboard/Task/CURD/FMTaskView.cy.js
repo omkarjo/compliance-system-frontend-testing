@@ -50,6 +50,7 @@ describe("Task Dashboard FundManager Test", () => {
     cy.fillCreateTaskForm({
       description: taskName,
       isRecurring: false,
+      category: "SEBI"
     });
 
     cy.get("form").within(() => {
