@@ -377,11 +377,13 @@ export default function TaskDashboardFundManager() {
   }, []);
 
   useEffect(() => {
+    console.log("Runing")
     if (defaultTabs === "calendar" && defaultDeadlineByCalendar) {
       defaultValues.deadline = defaultDeadlineByCalendar;
     } else {
       defaultValues.deadline = new Date();
     }
+    form.reset(defaultValues)
   }, [defaultDeadlineByCalendar, form, defaultTabs]);
 
   // console.log("formErrors", form.formState.errors);
