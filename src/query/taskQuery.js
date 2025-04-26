@@ -110,8 +110,6 @@ export const useGetTask = ({
         { approver_id: user_id },
       ];
 
-
-
   return useQuery({
     queryKey: ["task-query", pageIndex, pageSize, sort, filters, multipleQuery],
     queryFn: () =>
@@ -127,15 +125,15 @@ export const useGetTask = ({
 };
 
 const searchTask = async ({
-  searchTerm,
+  search,
   pageIndex,
   pageSize,
   filters = [],
   sortBy = [],
 }) => {
   try {
-    if (!searchTerm || searchTerm.length < 2) {
-      console.log("searchTerm", searchTerm);
+    if (!search || search.length < 1) {
+      console.log("searchTerm", search);
       const response = await fetchData({
         pageIndex,
         pageSize,
@@ -155,7 +153,7 @@ const searchTask = async ({
       limit: pageSize,
       skip: pageIndex * pageSize,
       ...(sort && { sort }),
-      ...(searchTerm && { description: searchTerm }),
+      ...(search && { description: search }),
       ...filters.reduce((acc, filter) => {
         acc[filter.filterid] = filter.optionid;
         return acc;
@@ -183,7 +181,7 @@ const searchTask = async ({
 };
 
 export const useSearchTask = ({
-  searchTerm,
+  search = "",
   pageIndex = 0,
   pageSize = 100,
   filters = [],
@@ -192,14 +190,13 @@ export const useSearchTask = ({
   return useQuery({
     queryKey: [
       "task-search-query",
-      searchTerm,
+      search,
       pageIndex,
       pageSize,
       filters,
       sortBy,
     ],
-    queryFn: () =>
-      searchTask({ searchTerm, pageIndex, pageSize, filters, sortBy }),
+    queryFn: () => searchTask({ search, pageIndex, pageSize, filters, sortBy }),
     placeholderData: (keepPreviousData) => keepPreviousData,
   });
 };

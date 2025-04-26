@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { useGetTask } from "@/query/taskQuery";
+import { useGetTask, useSearchTask } from "@/query/taskQuery";
 import useCheckRoles from "@/utils/check-roles";
 import { getTaskByID } from "@/utils/getTaskByID";
 import { usePermissionTaskChange } from "@/utils/havePermission";
@@ -213,10 +213,12 @@ export default function TableTaskViewFM({ actionType, openView = () => {} }) {
   return (
     <DataTable
       columns={columns}
-      fetchData={useGetTask}
+      fetchData={useSearchTask}
       filterOptions={filterOptions}
       openView={openView}
       actionType={actionType}
+      searchBox={true}
+      searchBoxPlaceholder="Search tasks..."
     />
   );
 }

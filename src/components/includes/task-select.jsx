@@ -90,12 +90,11 @@ export default function TaskSelect({
   end_date = null,
   id = "",
 }) {
-
   const [open, setOpen] = useState(isFilter);
   const [search, setSearch] = useState("");
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedTaskData, setSelectedTaskData] = useState(null);
-  const debouncedSearch = useDebounce(search, 500);
+  const debouncedSearch = useDebounce(search, 300);
   const popoverId = `task-popover-${id}`;
   const commandId = `task-command-${id}`;
 
@@ -106,7 +105,7 @@ export default function TaskSelect({
   }, [defaultValue]);
 
   const { data, isLoading } = useSearchTask({
-    searchTerm: debouncedSearch,
+    search: debouncedSearch,
     filters: [
       ...(start_date
         ? [

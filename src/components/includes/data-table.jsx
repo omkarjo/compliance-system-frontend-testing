@@ -266,6 +266,18 @@ export default function DataTable({
     setRowSelection({});
   }, [resolvedPagination.pageIndex]);
 
+
+  // Set Pagination when search changes
+  React.useEffect(() => {
+    if (resolvedSearch) {
+      resolvedSetPagination({
+        pageIndex: 0,
+        pageSize: resolvedPagination.pageSize,
+      });
+    }
+  }, [resolvedSearch, resolvedSetPagination, resolvedPagination.pageSize]);
+  
+
   const renderEmptyState = (message) => (
     <TableRow>
       <TableCell colSpan={tableColumns.length} className="h-48 text-center">
