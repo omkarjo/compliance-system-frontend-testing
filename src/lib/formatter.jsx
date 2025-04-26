@@ -58,3 +58,9 @@ export const formatDate = (date, options) => {
   if (isNaN(dateObj.getTime())) return null; // Invalid date
   return dateObj.toLocaleDateString("en-IN", options);
 }
+
+
+export function fastapiDateFormatter(dateInput) {
+  const date = new Date(dateInput);
+  return new Intl.DateTimeFormat('en-CA').format(date);
+}

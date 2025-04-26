@@ -19,7 +19,7 @@ export const lpFromFields = [
 
       useFsAccessApi: false,
       maxFiles: 5,
-      maxSize: 1024 * 1024 * 4,
+      maxSize: 1024 * 1024 * 10,
       multiple: true,
     },
   },

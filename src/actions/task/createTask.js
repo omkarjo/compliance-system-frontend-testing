@@ -29,7 +29,7 @@ const createTasks = async ({ data, attachments, document_type }) => {
       Yearly: 1,
     };
 
-    const numberOfRepetitionsInYearCount = numberOfRepetitions[recurrence] * 1;
+    const numberOfRepetitionsInYearCount = numberOfRepetitions[recurrence] * 3;
     let dependent_task_id = data.dependent_task_id;
 
     for (let i = 0; i < numberOfRepetitionsInYearCount; i++) {

@@ -14,6 +14,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import useDebounce from "@/hooks/useDebounce";
+import { fastapiDateFormatter } from "@/lib/formatter";
 import { getStatusStyle } from "@/lib/getStatusStyleIcon";
 import { cn } from "@/lib/utils";
 import { useSearchTask } from "@/query/taskQuery";
@@ -36,7 +37,6 @@ function TaskSelectBadge({ task = {}, className }) {
   );
 }
 
-// ✅ Command dropdown listing
 const TaskCommandList = ({
   tasks,
   selectedValue,
@@ -79,7 +79,6 @@ const TaskCommandList = ({
   </Command>
 );
 
-// ✅ Main TaskSelect component
 export default function TaskSelect({
   defaultValue,
   onValueChange = () => {},
@@ -114,7 +113,7 @@ export default function TaskSelect({
         ? [
             {
               filterid: "start_date",
-              optionid: new Date(start_date).toISOString().split("T")[0],
+              optionid: fastapiDateFormatter(start_date),
             },
           ]
         : []),
@@ -122,7 +121,7 @@ export default function TaskSelect({
         ? [
             {
               filterid: "end_date",
-              optionid: end_date.toISOString().split("T")[0],
+              optionid: fastapiDateFormatter(end_date),
             },
           ]
         : []),
