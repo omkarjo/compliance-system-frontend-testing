@@ -34,7 +34,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Paperclip, Upload } from "lucide-react";
 import { memo, useMemo } from "react";
-import { useFormState } from "react-hook-form";
+import { useFormState, Controller } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { CountryDropdown } from "../extension/country-dropdown";
 import { PhoneInput } from "../extension/phone-input";
@@ -89,11 +89,7 @@ const FormGenerate = ({
         <Input
           className={cn("focus-visible:ring-0", formField?.className)}
           placeholder={formField?.placeholder || ""}
-          disabled={
-            isSubmitting ||
-            formField?.disabled ||
-            disabledFields?.includes(field.name)
-          }
+          disabled={isSubmitting || formField?.disabled || disabledFields?.includes(field.name)}
           {...field}
         />
       ),
@@ -101,11 +97,7 @@ const FormGenerate = ({
         <Textarea
           className={cn("focus-visible:ring-0", formField?.className)}
           placeholder={formField?.placeholder || ""}
-          disabled={
-            isSubmitting ||
-            formField?.disabled ||
-            disabledFields?.includes(field.name)
-          }
+          disabled={isSubmitting || formField?.disabled || disabledFields?.includes(field.name)}
           {...field}
         />
       ),
@@ -114,11 +106,7 @@ const FormGenerate = ({
           type="email"
           className={cn("focus-visible:ring-0", formField?.className)}
           placeholder={formField?.placeholder || ""}
-          disabled={
-            isSubmitting ||
-            formField?.disabled ||
-            disabledFields?.includes(field.name)
-          }
+          disabled={isSubmitting || formField?.disabled || disabledFields?.includes(field.name)}
           {...field}
         />
       ),
@@ -128,15 +116,8 @@ const FormGenerate = ({
           placeholder={formField?.placeholder || ""}
           min={formField?.min}
           max={formField?.max}
-          className={cn(
-            "no-spinners focus-visible:ring-0",
-            formField?.className,
-          )}
-          disabled={
-            isSubmitting ||
-            formField?.disabled ||
-            disabledFields?.includes(field.name)
-          }
+          className={cn("no-spinners focus-visible:ring-0", formField?.className)}
+          disabled={isSubmitting || formField?.disabled || disabledFields?.includes(field.name)}
           onKeyDown={(e) => {
             if (e.key === "ArrowUp" || e.key === "ArrowDown") {
               e.preventDefault();
@@ -149,14 +130,10 @@ const FormGenerate = ({
         <Select
           name={field.name}
           onValueChange={field.onChange}
-          defaultValue={field.value}
-          disabled={
-            isSubmitting ||
-            formField?.disabled ||
-            disabledFields?.includes(field.name)
-          }
+          value={field.value}
+          disabled={isSubmitting || formField?.disabled || disabledFields?.includes(field.name)}
         >
-          <SelectTrigger className="w-full" disabled={isSubmitting}>
+          <SelectTrigger className="w-full">
             <SelectValue placeholder={formField?.placeholder || ""} />
           </SelectTrigger>
           <SelectContent className="w-full">
@@ -168,42 +145,42 @@ const FormGenerate = ({
           </SelectContent>
         </Select>
       ),
-      date: (field, formField) => (
-        <Popover name={formField.name}>
-          <PopoverTrigger asChild>
-            <Button
-              data-testid={formField.name}
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !field.value && "text-muted-foreground",
-              )}
-              disabled={isSubmitting}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {field.value ? (
-                format(field.value, "PPP")
-              ) : (
-                <span>{formField?.placeholder || "Pick a date"}</span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={field.value}
-              onSelect={field.onChange}
-              initialFocus
-              disabled={(date) => {
-                const today = new Date();
-                if (formField?.pastDisable) return date < today;
-                if (formField?.futureDisable) return date > today;
-                return isSubmitting || false;
-              }}
-            />
-          </PopoverContent>
-        </Popover>
-      ),
+      date: (field, formField) => {
+        const selectedDate = field.value instanceof Date ? field.value : field.value ? new Date(field.value) : null;
+        return (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                data-testid={formField.name}
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !selectedDate && "text-muted-foreground"
+                )}
+                disabled={isSubmitting}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDate ? format(selectedDate, "PPP") : <span>{formField?.placeholder || "Pick a date"}</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => field.onChange(date)}
+                initialFocus
+                disabled={(date) => {
+                  const today = new Date();
+                  if (formField?.pastDisable) return date < today;
+                  if (formField?.futureDisable) return date > today;
+                  return false;
+                }}
+              />
+            </PopoverContent>
+          </Popover>
+        );
+      },
+      
       file: (field, formField) => (
         <FileUploader
           data-testid={formField.name}
@@ -217,10 +194,7 @@ const FormGenerate = ({
           }}
           dropzoneOptions={{
             ...formField?.dropZoneConfig,
-            disabled:
-              isSubmitting ||
-              formField?.disabled ||
-              disabledFields?.includes(field.name),
+            disabled: isSubmitting || formField?.disabled || disabledFields?.includes(field.name),
           }}
           reSelect={!isSubmitting}
           className={cn("bg-background relative rounded-lg p-2")}
@@ -228,9 +202,7 @@ const FormGenerate = ({
           <FileInput className="outline-2 outline-gray-400 outline-dashed">
             <div className="flex w-full flex-col items-center justify-center pt-3 pb-4">
               <FileSvgDraw
-                allowedTypes={Object.values(
-                  formField?.dropZoneConfig?.accept || {},
-                )}
+                allowedTypes={Object.values(formField?.dropZoneConfig?.accept || {})}
               />
             </div>
           </FileInput>
@@ -271,16 +243,9 @@ const FormGenerate = ({
             name={field.name}
             checked={field.value || false}
             onCheckedChange={field.onChange}
-            disabled={
-              isSubmitting ||
-              formField?.disabled ||
-              disabledFields?.includes(field.name)
-            }
+            disabled={isSubmitting || formField?.disabled || disabledFields?.includes(field.name)}
           />
-          <label
-            htmlFor={field.name}
-            className="space-y-1 font-sans text-sm leading-none font-semibold"
-          >
+          <label htmlFor={field.name} className="space-y-1 font-sans text-sm leading-none font-semibold">
             {formField.placeholder}
           </label>
         </div>
@@ -290,11 +255,7 @@ const FormGenerate = ({
           {...field}
           defaultCountry="IN"
           autoComplete="tel"
-          disabled={
-            isSubmitting ||
-            field?.disabled ||
-            disabledFields?.includes(field.name)
-          }
+          disabled={isSubmitting || field?.disabled || disabledFields?.includes(field.name)}
         />
       ),
       country_select: (field) => (
@@ -303,11 +264,7 @@ const FormGenerate = ({
           placeholder="Country"
           defaultValue={field.value}
           onChange={(country) => field.onChange(country.alpha3)}
-          disabled={
-            isSubmitting ||
-            field?.disabled ||
-            disabledFields?.includes(field.name)
-          }
+          disabled={isSubmitting || field?.disabled || disabledFields?.includes(field.name)}
         />
       ),
       user_select: (field, formField) => (
@@ -316,11 +273,7 @@ const FormGenerate = ({
           onValueChange={field.onChange}
           defaultValue={field.value}
           buttonText={formField?.placeholder || "Select User"}
-          disabled={
-            isSubmitting ||
-            field?.disabled ||
-            disabledFields?.includes(field.name)
-          }
+          disabled={isSubmitting || field?.disabled || disabledFields?.includes(field.name)}
         />
       ),
       task_select: (field, formField, specialProp) => (
@@ -329,11 +282,7 @@ const FormGenerate = ({
           onValueChange={field.onChange}
           defaultValue={field.value}
           className=""
-          disabled={
-            isSubmitting ||
-            field?.disabled ||
-            disabledFields?.includes(field.name)
-          }
+          disabled={isSubmitting || field?.disabled || disabledFields?.includes(field.name)}
           {...specialProp}
         />
       ),
@@ -346,11 +295,7 @@ const FormGenerate = ({
           maxTags={formField?.maxTags}
           minTags={formField?.minTags}
           validateTag={formField?.validateTag}
-          disabled={
-            isSubmitting ||
-            field?.disabled ||
-            disabledFields?.includes(field.name)
-          }
+          disabled={isSubmitting || field?.disabled || disabledFields?.includes(field.name)}
           className={formField?.inputClassName}
           {...specialProp}
         />
@@ -371,52 +316,29 @@ const FormGenerate = ({
             return <hr key={index} className={cn(formField?.className)} />;
           }
           if (formField?.type === "heading") {
-            return (
-              <HeadingField
-                key={index}
-                label={formField.label}
-                className={formField?.className}
-              />
-            );
+            return <HeadingField key={index} label={formField.label} className={formField?.className} />;
           }
           if (formField?.type === "subheading") {
-            return (
-              <SubheadingField
-                key={index}
-                label={formField.label}
-                className={formField?.className}
-              />
-            );
+            return <SubheadingField key={index} label={formField.label} className={formField?.className} />;
           }
           return (
             <FormField
               key={index}
               name={formField.name}
               render={({ field }) => (
-                <FormItem
-                  className={cn(
-                    "",
-                    formField?.className,
-                    hiddenFields.includes(formField.name) && "hidden",
-                  )}
-                >
+                <FormItem className={cn("", formField?.className, hiddenFields.includes(formField.name) && "hidden")}>
                   {formField?.label && (
                     <FormLabel>
                       {formField.label}
-                      {formField.required && (
-                        <span className="text-red-500">*</span>
-                      )}
+                      {formField.required && <span className="text-red-500">*</span>}
                     </FormLabel>
                   )}
-                  {formField?.description && (
-                    <FormDescription>{formField.description}</FormDescription>
-                  )}
+                  {formField?.description && <FormDescription>{formField.description}</FormDescription>}
                   <FormControl>
                     {generateField(
                       field,
                       formField,
-                      specialProps.find((sp) => sp.name === formField.name)
-                        ?.props || {},
+                      specialProps.find((sp) => sp.name === formField.name)?.props || {}
                     )}
                   </FormControl>
                   <FormMessage />

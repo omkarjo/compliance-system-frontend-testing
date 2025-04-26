@@ -91,7 +91,6 @@ export default function TaskSelect({
   id = "",
 }) {
 
-  console.log("TaskSelect", { start_date, end_date });
   const [open, setOpen] = useState(isFilter);
   const [search, setSearch] = useState("");
   const [selectedValue, setSelectedValue] = useState("");

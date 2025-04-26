@@ -277,6 +277,14 @@ export default function TaskDashboardUser() {
             ? []
             : ["document_type"]),
         ]}
+        specialProps={[
+          {
+            name: "predecessor_task",
+            props: {
+              end_date: form.watch("deadline"),
+            },
+          },
+        ]}
       />
       <SheetTaskViewFM
         data={sheetTask.data}

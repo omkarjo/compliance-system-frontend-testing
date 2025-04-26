@@ -23,22 +23,7 @@ export default function DialogForm({
   specialProps = [],
   children,
 }) {
-  console.log("DialogForm", {
-    title,
-    description,
-    submitText,
-    isOpen,
-    onClose,
-    formFields,
-    form,
-    onSubmit,
-    onFileChange,
-    hiddenFields,
-    disabledFields,
-    specialProps,
-  });
-
-  console.log("DialogForm", { formFields, form, specialProps });
+ 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose} className="">

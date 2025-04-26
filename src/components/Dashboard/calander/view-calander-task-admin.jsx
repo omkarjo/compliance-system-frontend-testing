@@ -52,7 +52,10 @@ const colStartClasses = [
 ];
 const MAX_TASKS_PER_DAY = 3;
 
-export default function ViewCalendarTaskFM({ buttons }) {
+export default function ViewCalendarTaskFM({
+  setSelectedDate: setSelectedDateProps = null,
+  buttons,
+}) {
   const havePermissionTaskChange = usePermissionTaskChange();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -238,6 +241,16 @@ export default function ViewCalendarTaskFM({ buttons }) {
       });
     }
   }, [taskId, searchParams, setSearchParams, havePermissionTaskChange]);
+
+  React.useEffect(() => {
+    if (typeof setSelectedDateProps === "function") {
+      if (viewMode === "day") {
+        setSelectedDateProps(selectedDay);
+      } else {
+        setSelectedDateProps(null);
+      }
+    }
+  }, [viewMode, selectedDay, setSelectedDateProps]);
 
   return (
     <div className="my-4 flex flex-1 flex-col">

@@ -16,11 +16,11 @@ import useCheckRoles from "@/utils/check-roles";
 import { usePermissionTaskChange } from "@/utils/havePermission";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Trash, Trash2 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-const defaultValues = {
+let defaultValues = {
   description: "",
   category: "",
   completion_criteria: "",
@@ -71,6 +71,10 @@ export default function TaskDashboardFundManager() {
   const [sheetTask, setSheetTask] = useState({
     isOpen: false,
   });
+
+  const [defaultDeadlineByCalendar, setDefaultDeadlineByCalendar] = useState(
+    new Date(),
+  );
 
   const handleDialogTaskClose = useCallback((isOpen) => {
     setDialogTask((prev) => ({ ...prev, isOpen }));
@@ -271,6 +275,7 @@ export default function TaskDashboardFundManager() {
       value: "calendar",
       children: (
         <ViewCalendarTaskAdmin
+          setSelectedDate={(date) => setDefaultDeadlineByCalendar(date)}
           buttons={haveAdminPermission ? subActions : []}
         />
       ),
@@ -370,6 +375,14 @@ export default function TaskDashboardFundManager() {
   const handelTabChange = useCallback((value) => {
     localStorage.setItem("taskTabs", value);
   }, []);
+
+  useEffect(() => {
+    if (defaultTabs === "calendar" && defaultDeadlineByCalendar) {
+      defaultValues.deadline = defaultDeadlineByCalendar;
+    } else {
+      defaultValues.deadline = new Date();
+    }
+  }, [defaultDeadlineByCalendar, form, defaultTabs]);
 
   // console.log("formErrors", form.formState.errors);
   // console.log("formValues", form.getValues());
