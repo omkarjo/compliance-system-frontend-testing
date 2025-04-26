@@ -15,10 +15,22 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import StateChangeSelector from "./state-change-selector";
+import useCheckRoles from "@/utils/check-roles";
+
+const STATUS_OPTIONS_ADMIN = [
+  { label: "Open", value: "Open" },
+  { label: "Pending", value: "Pending" },
+  { label: "Completed", value: "Completed" },
+  { label: "Review Required", value: "Review Required" },
+];
+
+const STATUS_OPTIONS_USER = [{ label: "Completed", value: "Completed" }];
 
 const TaskAccordion = ({ data, defaultOpen, buttons = [] }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen || false);
   const accordionRef = useRef(null);
+  const havePermission = useCheckRoles(["Fund Manager", "Compliance Officer"]);
+
 
   const formattedDates = {
     created: format(new Date(data.created_at), "MMM d, yyyy"),
@@ -168,7 +180,14 @@ const TaskAccordion = ({ data, defaultOpen, buttons = [] }) => {
                 </div>
                 <div>
                   <p className="mb-0.5 text-xs text-gray-500">State</p>
-                  <StateChangeSelector data={data} />
+                  <StateChangeSelector
+                    data={data}
+                    options={
+                      havePermission
+                        ? STATUS_OPTIONS_ADMIN
+                        : STATUS_OPTIONS_USER
+                    }
+                  />{" "}
                 </div>
               </div>
 
