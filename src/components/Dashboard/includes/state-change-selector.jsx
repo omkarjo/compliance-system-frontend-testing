@@ -3,7 +3,7 @@ import BadgeStatusSelector from "@/components/includes/badge-select";
 import BadgeStatusTask from "@/components/includes/badge-status";
 import { usePermissionTaskChange } from "@/utils/havePermission";
 
-const StateChangeSelector = ({ data = {} , options = []}) => {
+const StateChangeSelector = ({ data = {}, options = [] }) => {
   const updateTaskState = useUpdateTaskState();
 
   const havePermission = usePermissionTaskChange();

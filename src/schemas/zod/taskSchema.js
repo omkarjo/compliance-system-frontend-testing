@@ -45,7 +45,7 @@ export const taskSchema = z.object({
   attachments: z
     .array(
       z.union([
-        z.instanceof(File).refine((file) => file.size < 4 * 1024 * 1024, {
+        z.instanceof(File).refine((file) => file.size < 10 * 1024 * 1024, {
           message: "File size must be less than 4MB",
         }),
         z.object({

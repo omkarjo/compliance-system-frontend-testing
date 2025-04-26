@@ -57,19 +57,16 @@ export const FileSvgDraw = memo(({ allowedTypes }) => (
     )}
   </div>
 ));
-
 FileSvgDraw.displayName = "FileSvgDraw";
 
 const HeadingField = memo(({ label, className }) => (
   <h1 className={cn("mb-1 text-lg", className)}>{label}</h1>
 ));
-
 HeadingField.displayName = "HeadingField";
 
 const SubheadingField = memo(({ label, className }) => (
   <h2 className={cn("text-sm", className)}>{label}</h2>
 ));
-
 SubheadingField.displayName = "SubheadingField";
 
 const FormGenerate = ({
@@ -82,6 +79,7 @@ const FormGenerate = ({
   className,
   hiddenFields = [],
   disabledFields = [],
+  specialProps = [],
 }) => {
   const { isSubmitting } = useFormState({ control: form?.control });
 
@@ -99,7 +97,6 @@ const FormGenerate = ({
           {...field}
         />
       ),
-
       textarea: (field, formField) => (
         <Textarea
           className={cn("focus-visible:ring-0", formField?.className)}
@@ -112,7 +109,6 @@ const FormGenerate = ({
           {...field}
         />
       ),
-
       email: (field, formField) => (
         <Input
           type="email"
@@ -126,7 +122,6 @@ const FormGenerate = ({
           {...field}
         />
       ),
-
       number: (field, formField) => (
         <Input
           type="number"
@@ -150,7 +145,6 @@ const FormGenerate = ({
           {...field}
         />
       ),
-
       select: (field, formField) => (
         <Select
           name={field.name}
@@ -174,7 +168,6 @@ const FormGenerate = ({
           </SelectContent>
         </Select>
       ),
-
       date: (field, formField) => (
         <Popover name={formField.name}>
           <PopoverTrigger asChild>
@@ -211,7 +204,6 @@ const FormGenerate = ({
           </PopoverContent>
         </Popover>
       ),
-
       file: (field, formField) => (
         <FileUploader
           data-testid={formField.name}
@@ -272,7 +264,6 @@ const FormGenerate = ({
           )}
         </FileUploader>
       ),
-
       checkbox: (field, formField) => (
         <div className="flex items-center gap-1">
           <Checkbox
@@ -287,14 +278,13 @@ const FormGenerate = ({
             }
           />
           <label
-            for={field.name}
+            htmlFor={field.name}
             className="space-y-1 font-sans text-sm leading-none font-semibold"
           >
             {formField.placeholder}
           </label>
         </div>
       ),
-
       phone: (field) => (
         <PhoneInput
           {...field}
@@ -307,15 +297,12 @@ const FormGenerate = ({
           }
         />
       ),
-
       country_select: (field) => (
         <CountryDropdown
           name={field.name}
           placeholder="Country"
           defaultValue={field.value}
-          onChange={(country) => {
-            field.onChange(country.alpha3);
-          }}
+          onChange={(country) => field.onChange(country.alpha3)}
           disabled={
             isSubmitting ||
             field?.disabled ||
@@ -323,7 +310,6 @@ const FormGenerate = ({
           }
         />
       ),
-
       user_select: (field, formField) => (
         <UserSelect
           name={field.name}
@@ -337,22 +323,21 @@ const FormGenerate = ({
           }
         />
       ),
-
-      task_select: (field) => (
+      task_select: (field, formField, specialProp) => (
         <TaskInputCommand
           name={field.name}
           onValueChange={field.onChange}
           defaultValue={field.value}
-          className={""}
+          className=""
           disabled={
             isSubmitting ||
             field?.disabled ||
             disabledFields?.includes(field.name)
           }
+          {...specialProp}
         />
       ),
-
-      tags_input: (field, formField) => (
+      tags_input: (field, formField, specialProp) => (
         <TagsInput
           value={field.value || []}
           onChange={field.onChange}
@@ -367,13 +352,14 @@ const FormGenerate = ({
             disabledFields?.includes(field.name)
           }
           className={formField?.inputClassName}
+          {...specialProp}
         />
       ),
     };
 
-    return (field, formField) => {
+    return (field, formField, specialProp = {}) => {
       const generator = fieldGenerators[formField.type];
-      return generator ? generator(field, formField) : null;
+      return generator ? generator(field, formField, specialProp) : null;
     };
   }, [isSubmitting, onFileChange, disabledFields]);
 
@@ -384,7 +370,6 @@ const FormGenerate = ({
           if (formField?.type === "hr") {
             return <hr key={index} className={cn(formField?.className)} />;
           }
-
           if (formField?.type === "heading") {
             return (
               <HeadingField
@@ -394,7 +379,6 @@ const FormGenerate = ({
               />
             );
           }
-
           if (formField?.type === "subheading") {
             return (
               <SubheadingField
@@ -404,7 +388,6 @@ const FormGenerate = ({
               />
             );
           }
-
           return (
             <FormField
               key={index}
@@ -428,7 +411,14 @@ const FormGenerate = ({
                   {formField?.description && (
                     <FormDescription>{formField.description}</FormDescription>
                   )}
-                  <FormControl>{generateField(field, formField)}</FormControl>
+                  <FormControl>
+                    {generateField(
+                      field,
+                      formField,
+                      specialProps.find((sp) => sp.name === formField.name)
+                        ?.props || {},
+                    )}
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

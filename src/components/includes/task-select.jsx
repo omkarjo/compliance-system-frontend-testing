@@ -45,7 +45,7 @@ const TaskCommandList = ({
   search,
   setSearch,
 }) => (
-  <Command className="border-0 ">
+  <Command className="border-0">
     <CommandInput
       placeholder="Search task..."
       value={search}
@@ -59,7 +59,7 @@ const TaskCommandList = ({
           <CommandItem
             key={task.value}
             onSelect={() => handleSelect(task.value)}
-            className="flex items-center justify-between my-0.5"
+            className="my-0.5 flex items-center justify-between"
             value={`${task.label.toLowerCase()} ${task.id?.toLowerCase()}`}
           >
             <TaskSelectBadge
@@ -87,8 +87,12 @@ export default function TaskSelect({
   isFilter = false,
   buttonText = "Select Task",
   returnFullObject = false,
+  start_date = null,
+  end_date = null,
   id = "",
 }) {
+
+  console.log("TaskSelect", { start_date, end_date });
   const [open, setOpen] = useState(isFilter);
   const [search, setSearch] = useState("");
   const [selectedValue, setSelectedValue] = useState("");
@@ -105,6 +109,24 @@ export default function TaskSelect({
 
   const { data, isLoading } = useSearchTask({
     searchTerm: debouncedSearch,
+    filters: [
+      ...(start_date
+        ? [
+            {
+              filterid: "start_date",
+              optionid: new Date(start_date).toISOString().split("T")[0],
+            },
+          ]
+        : []),
+      ...(end_date
+        ? [
+            {
+              filterid: "end_date",
+              optionid: end_date.toISOString().split("T")[0],
+            },
+          ]
+        : []),
+    ],
   });
 
   const tasks = useMemo(() => {
@@ -146,7 +168,7 @@ export default function TaskSelect({
 
   if (isFilter) {
     return (
-      <div className={cn("w-full ", className)}>
+      <div className={cn("w-full", className)}>
         <div className="rounded-md border">
           <TaskCommandList
             tasks={tasks}

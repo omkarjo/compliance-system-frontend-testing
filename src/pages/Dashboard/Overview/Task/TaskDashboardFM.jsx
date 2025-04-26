@@ -384,7 +384,7 @@ export default function TaskDashboardFundManager() {
         <div className="flex items-center justify-between gap-4 px-4 py-2">
           <div className="flex items-center gap-2">
             <Button
-              className="flex items-center gap-1 px-3 text-sm cursor-pointer"
+              className="flex cursor-pointer items-center gap-1 px-3 text-sm"
               onClick={() => handleDialogTaskOpen("create")}
             >
               <Plus className="size-4" />{" "}
@@ -445,6 +445,14 @@ export default function TaskDashboardFundManager() {
             .some((attachment) => attachment instanceof File)
             ? []
             : ["document_type"]),
+        ]}
+        specialProps={[
+          {
+            name: "predecessor_task",
+            props: {
+              end_date: form.watch("deadline"),
+            },
+          },
         ]}
       />
       <SheetTaskViewFM

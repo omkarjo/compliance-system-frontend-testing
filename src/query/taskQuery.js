@@ -140,6 +140,8 @@ const searchTask = async ({
       const response = await fetchData({
         pageIndex,
         pageSize,
+        sortBy,
+        filters,
       });
 
       return response;

@@ -4,7 +4,7 @@ import { z } from "zod";
 export const lpSchema = z.object({
   docoments: z
     .array(
-      z.instanceof(File).refine((file) => file.size < 4 * 1024 * 1024, {
+      z.instanceof(File).refine((file) => file.size < 10 * 1024 * 1024, {
         message: "File size must be less than 4MB",
       }),
     )
@@ -35,7 +35,7 @@ export const lpSchema = z.object({
   acknowledgement_of_ppm: z.enum(["yes", "no"]),
   cml: z
     .array(
-      z.instanceof(File).refine((file) => file.size < 4 * 1024 * 1024, {
+      z.instanceof(File).refine((file) => file.size < 10 * 1024 * 1024, {
         message: "File size must be less than 4MB",
       }),
     )
