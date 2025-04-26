@@ -19,11 +19,15 @@ export default function BadgeStatusSelector({
   defaultStatus = "Open",
   onChange,
   options = STATUS_OPTIONS,
+  disabledPropagation = true,
 }) {
   const [open, setOpen] = useState(false);
 
   const handleStatusChange = (status, event) => {
-    event.stopPropagation();
+    if (disabledPropagation) {
+      event.stopPropagation();
+    }
+
     if (onChange) {
       onChange(status);
     }
@@ -52,6 +56,7 @@ export default function BadgeStatusSelector({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          data-type="status-selector"
           variant="outline"
           className={cn(
             bgColor,
@@ -79,6 +84,7 @@ export default function BadgeStatusSelector({
                 return (
                   <Button
                     key={status.value}
+                    data-role="status-option"
                     variant="ghost"
                     className={cn(
                       bgColor,
@@ -94,7 +100,10 @@ export default function BadgeStatusSelector({
               })}
           </div>
         ) : (
-          <div className="text-muted-foreground p-2 text-center text-xs" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="text-muted-foreground p-2 text-center text-xs"
+            onClick={(e) => e.stopPropagation()}
+          >
             <p>No Options</p>
           </div>
         )}

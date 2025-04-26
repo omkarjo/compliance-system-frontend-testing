@@ -5,6 +5,8 @@ import { Button } from "../ui/button";
 export default function SortButton({ column, children, className }) {
   return (
     <Button
+      data-state={column.getIsSorted()}
+      data-type="sort-button"
       variant="ghost"
       className={cn(
         "text-muted-foreground flex items-center justify-between text-sm font-medium",

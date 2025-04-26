@@ -72,7 +72,24 @@ export default function SheetTaskViewFM({
           {data?.category && <Badge variant="outline">{data.category}</Badge>}
           <SheetTitle>{data?.description}</SheetTitle>
           <SheetDescription>{""}</SheetDescription>
-          <StateChangeSelector data={data} />
+          <div
+            onClick={(e) => {
+              const target = e.target;
+              const insideStatusSelector = target.closest(
+                '[data-type="status-selector"]',
+              );
+              const insideStatusOption = target.closest(
+                '[data-role="status-option"]',
+              );
+
+              if (!insideStatusSelector || insideStatusOption) {
+                onClose(false);
+              }
+            }}
+            className="cursor-pointer"
+          >
+            <StateChangeSelector data={data} disabledPropagation={false} />
+          </div>{" "}
           {data?.assignee_id && (
             <div className="mt-2 flex items-center gap-2">
               <CircleUserRound className="h-6 w-6 text-gray-700/85" />
