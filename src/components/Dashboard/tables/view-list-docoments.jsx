@@ -41,11 +41,11 @@ export default function ViewListDocument() {
         window.open(data.drive_link, "_blank");
       },
     },
-    {
-      title: "Download",
-      className: "",
-      icon: <DownloadIcon />,
-    },
+    // {
+    //   title: "Download",
+    //   className: "",
+    //   icon: <DownloadIcon />,
+    // },
   ];
 
   const columns = [
