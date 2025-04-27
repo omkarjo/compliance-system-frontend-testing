@@ -21,33 +21,14 @@ import {
   FileSignature,
   FileText,
   MoreHorizontal,
+  Trash,
   Users,
   ViewIcon,
 } from "lucide-react";
 import { cloneElement } from "react";
 import { toast } from "sonner";
 
-export default function ViewListDocument() {
-  const actionType = [
-    {
-      title: "View",
-      className: "",
-      icon: <ViewIcon />,
-      onClick: (data) => {
-        if (!data.drive_link) {
-          toast.error("No Link Found");
-          return;
-        }
-        window.open(data.drive_link, "_blank");
-      },
-    },
-    // {
-    //   title: "Download",
-    //   className: "",
-    //   icon: <DownloadIcon />,
-    // },
-  ];
-
+export default function ViewListDocument({ actionType = [] }) {
   const columns = [
     {
       accessorKey: "category",

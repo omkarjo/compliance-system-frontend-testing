@@ -17,7 +17,7 @@ export const taskApiPaths = {
 export const documentApiPaths = {
   getDocument: "/api/documents/",
   uploadDocument: "/api/documents/upload",
-  deleteDocument: "/api/documents/",
+  deleteDocumentPrefix: "/api/documents/",
   getDocumentByIdPrefix: "/api/documents/",
 };
 

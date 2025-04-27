@@ -46,7 +46,7 @@ export const useGetAllDocuments = ({
     ? `${first_sort.id}_${first_sort.desc ? "desc" : "asc"}`
     : "";
   return useQuery({
-    queryKey: ["task-querry", pageIndex, pageSize, sort, filters, search],
+    queryKey: ["documents-query", pageIndex, pageSize, sort, filters, search],
     queryFn: () =>
       fetchData({ pageIndex, pageSize, sortBy: sort, filters, search }),
     placeholderData: (keepPreviousData) => keepPreviousData,

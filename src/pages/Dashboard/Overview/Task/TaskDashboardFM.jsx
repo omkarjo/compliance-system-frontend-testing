@@ -35,7 +35,7 @@ let defaultValues = {
 };
 
 export default function TaskDashboardFundManager() {
-  const haveAdminPermission = useCheckRoles("Fund Manager");
+  const haveAdminPermission = useCheckRoles(["Fund Manager", "Compliance Officer"]);
 
   const createTask = useCreateTask();
   const editTask = useUpdateTask();
