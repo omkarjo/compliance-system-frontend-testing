@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/popover";
 import useDebounce from "@/hooks/useDebounce";
 import { cn } from "@/lib/utils";
-import { useGetUserbyName } from "@/query/userQuery";
+import { useGetUserByName } from "@/query/userQuery";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import UserBadge from "./user-badge";
@@ -35,9 +35,7 @@ const UserCommandList = ({
       autoFocus
     />
     <CommandList>
-      <CommandEmpty>
-        {isLoading ? "Loading..." : "No user found"}
-      </CommandEmpty>
+      <CommandEmpty>{isLoading ? "Loading..." : "No user found"}</CommandEmpty>
       <CommandGroup>
         {users.map((user) => (
           <CommandItem
@@ -88,13 +86,14 @@ export default function UserSelect({
     }
   }, [defaultValue]);
 
-  const { data, isLoading } = useGetUserbyName({
-    searchTerm: debouncedSearch,
+  const { data, isLoading } = useGetUserByName({
+    search: debouncedSearch,
+    returnAll : true,
   });
 
   const users = useMemo(() => {
-    if (!data) return [];
-    return data.map((user) => ({
+    if (!data?.data) return [];
+    return data?.data.map((user) => ({
       value: user.UserId,
       label: user.UserName,
       email: user.email || "",

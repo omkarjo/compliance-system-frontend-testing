@@ -18,6 +18,7 @@ import {
   History,
   SquareTerminal,
   User,
+  UserCircle,
 } from "lucide-react";
 import { Navigate, Outlet } from "react-router-dom";
 
@@ -25,7 +26,7 @@ const PATH_PREFIX = "/dashboard";
 
 export default function DashboardLayout() {
   const havePermission = useCheckRoles(ADMIN_ROLES);
-  const activityViewPermission = useCheckRoles(["Fund Manager"]);
+  const isFundManger = useCheckRoles(["Fund Manager"]);
   const complianceMenu = [
     {
       title: "Compliance",
@@ -44,6 +45,21 @@ export default function DashboardLayout() {
         },
       ],
       // hiddenIcon: true,
+    },
+  ];
+
+  const adminMenu = [
+    {
+      title: "Admin",
+      url: PATH_PREFIX,
+      breadcrumbText: "Dashboard",
+      items: [
+        {
+          title: "Users Dashboard",
+          url: PATH_PREFIX + "/users",
+          icon: UserCircle,
+        },
+      ],
     },
   ];
 
@@ -69,7 +85,7 @@ export default function DashboardLayout() {
           url: PATH_PREFIX + "/documents",
           icon: BookOpen,
         },
-        ...(activityViewPermission
+        ...(isFundManger
           ? [
               {
                 title: "Activity Log",
@@ -82,6 +98,7 @@ export default function DashboardLayout() {
       ],
     },
     ...(havePermission ? complianceMenu : []),
+    ...(isFundManger ? adminMenu : []),
   ];
 
   const { isAuthenticated, user } = useAppSelector((state) => state.user);

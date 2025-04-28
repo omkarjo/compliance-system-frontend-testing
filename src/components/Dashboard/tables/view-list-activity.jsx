@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useGetAllActivities } from "@/query/activityQuery";
-import { useGetUserbyName } from "@/query/userQuery";
+import { useGetUserByName } from "@/query/userQuery";
 import {
   ArrowUpDown,
   CheckCircle,
@@ -80,17 +80,17 @@ export default function ViewListActivity() {
     },
   ];
 
-  const { data: usersData } = useGetUserbyName({ searchTerm: "" });
+  const { data: data } = useGetUserByName({ search: "" });
 
   const users = useMemo(() => {
     // console.log("usersData", usersData);
-    if (!usersData || !usersData?.length) return [];
-    return usersData.map((user) => ({
+    if (!data?.data || !data?.data?.length) return [];
+    return data.data.map((user) => ({
       id: user.UserName,
       label: user.UserName,
       icon: <CircleUserRound size={16} />,
     }));
-  }, [usersData]);
+  }, [data]);
 
   const filterOptions = [
     { type: "divider" },

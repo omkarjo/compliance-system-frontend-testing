@@ -28,6 +28,7 @@ import {
 } from "@tanstack/react-table";
 import * as React from "react";
 import FilterComponent from "./filters-table";
+import LoadingState, { EmptyState } from "./LoadingErrorState";
 
 export default function DataTable({
   // Core props
@@ -280,7 +281,7 @@ export default function DataTable({
 
   const renderEmptyState = (message) => (
     <TableRow>
-      <TableCell colSpan={tableColumns.length} className="h-48 text-center">
+      <TableCell colSpan={tableColumns.length} className="h-56 text-center">
         {message}
       </TableCell>
     </TableRow>
@@ -288,20 +289,15 @@ export default function DataTable({
 
   const renderTableContent = () => {
     if (resolvedLoading) {
-      return renderEmptyState(
-        <div className="flex items-center justify-center" data-state="loading">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600"></div>
-          <span className="ml-2">Loading...</span>
-        </div>,
-      );
+      return renderEmptyState(<LoadingState text="Loading..." />);
     }
 
     if (resolvedError) {
-      return renderEmptyState(resolvedError);
+      return renderEmptyState(<EmptyState text={resolvedError} type="error" />);
     }
 
     if (table.getFilteredRowModel().rows.length === 0) {
-      return renderEmptyState("No Records Found");
+      return renderEmptyState(<EmptyState text="No Records Found" type="empty" />);
     }
 
     return table.getRowModel().rows.map((row) => (

@@ -23,6 +23,10 @@ const LPBulkUpload = lazy(
   () => import("@/pages/Dashboard/Compliance/LPBulkUpload"),
 );
 
+const UsersDashboard = lazy(
+  () => import("@/pages/Dashboard/Admin/UsersDashboard"),
+);
+
 const AppRoutes = () => {
   return (
     // <Suspense fallback={<Loading />}>
@@ -46,6 +50,11 @@ const AppRoutes = () => {
               <Route path="bulk-upload" element={<LPBulkUpload />} />
             </Route>
             <Route path="portfolio-companies" element={<div>Portfolio</div>} />
+
+            <Route path="users" element={<ProtectRoutes  allowedRoles={ALL_ROLES} redirect="/dashboard" />}>
+              <Route index element={<UsersDashboard />} />
+            </Route>
+
           </Route>
         </Route>
         <Route element={<AuthLayout />}>

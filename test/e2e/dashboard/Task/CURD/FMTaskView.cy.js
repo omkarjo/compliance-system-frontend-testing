@@ -37,7 +37,9 @@ describe("Task Dashboard FundManager Test", () => {
       cy.contains("button", "Create").click();
     });
 
-    cy.contains("Task Created Successfully").should("be.visible");
+    cy.contains("Task Created Successfully", { timeout: 3000 }).should(
+      "be.visible",
+    );
 
     cy.wait("@createTask").then(({ response }) => {
       const { compliance_task_id, description, deadline } = response.body;
@@ -72,7 +74,9 @@ describe("Task Dashboard FundManager Test", () => {
       cy.contains("button", "Create").click();
     });
 
-    cy.contains("Task Created Successfully").should("be.visible");
+    cy.contains("Task Created Successfully", { timeout: 10000 }).should(
+      "be.visible",
+    );
 
     function waitAndCaptureRecurringTask(timesLeft) {
       if (timesLeft === 0) return;
@@ -121,48 +125,50 @@ describe("Task Dashboard FundManager Test", () => {
     cy.get("input[placeholder='Search tasks...']")
       .clear()
       .type(oldName, { force: true });
-    cy.wait(500); // Allow search results to populate
+    cy.wait(1000); // Allow search results to populate
 
-    cy.findElementByTextContent(oldName).then((taskCell) => {
-      if (!taskCell) {
-        throw new Error(
-          `❌ Task with name "${oldName}" not found after search.`,
-        );
-      }
+    cy.findElementByTextContent(oldName, "td", "/api/api/tasks/**").then(
+      (taskCell) => {
+        if (!taskCell) {
+          throw new Error(
+            `❌ Task with name "${oldName}" not found after search.`,
+          );
+        }
 
-      cy.wrap(taskCell).scrollIntoView().click({ force: true });
+        cy.wrap(taskCell).scrollIntoView().click({ force: true });
 
-      cy.get('[data-slot="sheet-footer"]').within(() => {
-        cy.contains("button", "Edit Task").click({ force: true });
-      });
+        cy.get('[data-slot="sheet-footer"]').within(() => {
+          cy.contains("button", "Edit Task").click({ force: true });
+        });
 
-      cy.get("form").within(() => {
-        cy.get('input[name="description"]').clear().type(newName);
-      });
+        cy.get("form").within(() => {
+          cy.get('input[name="description"]').clear().type(newName);
+        });
 
-      // Fix category dropdown selection
-      cy.contains("button", "SEBI").scrollIntoView().click({ force: true });
-      cy.get("[role=listbox]").should("be.visible");
-      cy.get("[role=option]")
-        .contains("RBI")
-        .should("be.visible")
-        .click({ force: true });
+        // Fix category dropdown selection
+        cy.contains("button", "SEBI").scrollIntoView().click({ force: true });
+        cy.get("[role=listbox]").should("be.visible");
+        cy.get("[role=option]")
+          .contains("RBI")
+          .should("be.visible")
+          .click({ force: true });
 
-      cy.get("form").within(() => {
-        cy.contains("button", "Save").click({ force: true });
-      });
+        cy.get("form").within(() => {
+          cy.contains("button", "Save").click({ force: true });
+        });
 
-      cy.contains("Task Updated Successfully").should("be.visible");
+        cy.contains("Task Updated Successfully").should("be.visible");
 
-      const updatedTask = {
-        ...first_task,
-        name: newName,
-      };
+        const updatedTask = {
+          ...first_task,
+          name: newName,
+        };
 
-      createdTasks[0] = updatedTask;
+        createdTasks[0] = updatedTask;
 
-      searchAndVerifyTask(newName);
-    });
+        searchAndVerifyTask(newName);
+      },
+    );
   });
 
   it("should change the first created task's status and verify", () => {
@@ -183,60 +189,69 @@ describe("Task Dashboard FundManager Test", () => {
     cy.get("input[placeholder='Search tasks...']")
       .clear()
       .type(oldName, { force: true });
-    cy.wait(500);
+    cy.wait(1000);
 
-    cy.findElementByTextContent(oldName).then((taskCell) => {
-      if (!taskCell) {
-        throw new Error(
-          `❌ Task with name "${oldName}" not found after search.`,
-        );
-      }
+    cy.findElementByTextContent(oldName, "td", "/api/api/tasks/**").then(
+      (taskCell) => {
+        if (!taskCell) {
+          throw new Error(
+            `❌ Task with name "${oldName}" not found after search.`,
+          );
+        }
 
-      cy.wrap(taskCell).scrollIntoView().click({ force: true });
+        cy.wrap(taskCell).scrollIntoView().click({ force: true });
+        cy.wait(500);
 
-      // Inside sheet header, open status selector
-      cy.get('[data-slot="sheet-header"]').within(() => {
-        cy.get('button[data-type="status-selector"]').click({ force: true });
-      });
+        // Inside sheet header, open status selector
+        cy.get('[data-slot="sheet-header"]').within(() => {
+          cy.get('button[data-type="status-selector"]').click({ force: true });
+        });
+        cy.wait(100);
 
-      // Wait for status options to appear
-      cy.get('[data-role="status-option"]').should("be.visible");
+        // Wait for status options to appear
+        cy.get('[data-role="status-option"]').should("be.visible");
 
-      // Grab the first status option text
-      cy.get('[data-role="status-option"]')
-        .first()
-        .then(($option) => {
-          const newStatus = $option.text().trim();
+        // Grab the first status option text
+        cy.get('[data-role="status-option"]')
+          .first()
+          .then(($option) => {
+            cy.wait(1000);
+            const newStatus = $option.text().trim();
 
-          // Click the first status option
-          cy.wrap($option).click({ force: true });
+            // Click the first status option
+            cy.wrap($option).click({ force: true });
 
-          // Re-search for the task
-          cy.get("input[placeholder='Search tasks...']")
-            .clear()
-            .type(oldName, { force: true });
-          cy.wait(500);
+            // Re-search for the task
+            cy.get("input[placeholder='Search tasks...']")
+              .clear()
+              .type(oldName, { force: true });
+            cy.wait(500);
 
-          // Find and click again
-          cy.findElementByTextContent(oldName).then((updatedTaskCell) => {
-            if (!updatedTaskCell) {
-              throw new Error(
-                `❌ Task with name "${oldName}" not found after status change.`,
-              );
-            }
+            // Find and click again
+            cy.findElementByTextContent(
+              oldName,
+              "td",
+              "/api/api/tasks/**",
+            ).then((updatedTaskCell) => {
+              if (!updatedTaskCell) {
+                throw new Error(
+                  `❌ Task with name "${oldName}" not found after status change.`,
+                );
+              }
 
-            cy.wrap(updatedTaskCell).scrollIntoView().click({ force: true });
+              cy.wrap(updatedTaskCell).scrollIntoView().click({ force: true });
 
-            // Inside sheet-header, check that new status is set
-            cy.get('[data-slot="sheet-header"]').within(() => {
-              cy.get('button[data-type="status-selector"]').should(
-                "contain.text",
-                newStatus,
-              );
+              // Inside sheet-header, check that new status is set
+              cy.get('[data-slot="sheet-header"]').within(() => {
+                cy.get('button[data-type="status-selector"]').should(
+                  "contain.text",
+                  newStatus,
+                );
+              });
             });
           });
-        });
-    });
+      },
+    );
   });
 
   it("should delete all created tasks using UI", () => {

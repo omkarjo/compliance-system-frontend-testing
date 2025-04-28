@@ -137,3 +137,25 @@ input[type=number]::-webkit-outer-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+@keyframes hourglass-rotate-delay {
+  0% {
+    transform: rotate(0deg);
+  }
+  40% {
+    transform: rotate(360deg);
+  }
+  50% {
+    transform: rotate(360deg); /* pause at 180deg */
+  }
+  90% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg); /* pause at 0deg */
+  }
+}
+
+.animate-hourglass-rotate-delay {
+  animation: hourglass-rotate-delay 4s ease-in-out infinite;
+}
