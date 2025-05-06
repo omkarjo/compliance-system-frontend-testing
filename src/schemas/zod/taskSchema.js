@@ -4,7 +4,7 @@ export const taskSchema = z.object({
   description: z.string().nonempty("Description is required"),
   category: z.preprocess(
     (val) => (val === "" ? undefined : val),
-    z.enum(["LP", "Portfolio Company", "SEBI", "RBI", "IT/GST"], {
+    z.enum(["LP", "Portfolio Company", "SEBI", "RBI", "IT/GST", "MCA"], {
       required_error: "Category is required",
     }),
   ),
