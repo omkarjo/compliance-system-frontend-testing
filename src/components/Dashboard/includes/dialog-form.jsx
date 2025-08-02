@@ -21,10 +21,8 @@ export default function DialogForm({
   hiddenFields = [],
   disabledFields = [],
   specialProps = [],
-  children,
+  children = null,
 }) {
- 
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose} className="">
       <DialogContent>

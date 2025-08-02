@@ -14,9 +14,10 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: process.env.NODE_ENV === "development" 
-          ? "http://localhost:8000/" // Local FastAPI server
-          : "https://ajvc-compliance-system.com/",
+        target:
+          process.env.NODE_ENV !== "development"
+            ? "http://localhost:8000/" // Local FastAPI server
+            : "https://ajvc-compliance-system.com/",
         changeOrigin: true,
         secure: false, // Since backend doesn't have SSL
         rewrite: (path) => path.replace(/^\/api/, ""), // Ensure proper request forwarding

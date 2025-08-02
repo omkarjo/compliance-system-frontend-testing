@@ -2,9 +2,8 @@ import { limitedPartnersApiPaths } from "@/constant/apiPaths";
 import { apiWithAuth } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 
-// In-memory cache for all LPs
 let allLPsCache = null;
-const forceRefreshCache = true; // Set to true to force refresh the cache
+const forceRefreshCache = true;
 
 const getAllLimitedPartners = async ({ pageIndex, pageSize }) => {
   try {
@@ -12,12 +11,10 @@ const getAllLimitedPartners = async ({ pageIndex, pageSize }) => {
       const response = await apiWithAuth.get(
         limitedPartnersApiPaths.getLimitedPartners,
         {
-          params: {
-            limit: 1000,
-          },
+          params: { limit: 1000 },
         },
       );
-      allLPsCache = response.data || [];
+      allLPsCache = response.data?.data || [];
     }
 
     const start = pageIndex * pageSize;
@@ -31,8 +28,7 @@ const getAllLimitedPartners = async ({ pageIndex, pageSize }) => {
   } catch (error) {
     console.error("Error fetching limited partners:", error);
     throw new Error(
-      error.response?.data?.message ||
-        "Failed to fetch limited partners. Please try again.",
+      error.response?.data?.message || "Failed to fetch limited partners.",
     );
   }
 };
@@ -58,8 +54,12 @@ const fetchData = async ({ pageIndex, pageSize, sortBy, search }) => {
         limitedPartnersApiPaths.searchLimitedPartners,
         { params },
       );
-      const data = response.data;
-      return { data, totalCount: data.length };
+      const searchResults = response.data;
+
+      return {
+        data: Array.isArray(searchResults) ? searchResults : [],
+        totalCount: Array.isArray(searchResults) ? searchResults.length : 0,
+      };
     } else {
       return await getAllLimitedPartners({ pageIndex, pageSize });
     }

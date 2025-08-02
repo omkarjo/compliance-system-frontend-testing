@@ -1,7 +1,7 @@
 import DashboardLatestTask from "@/components/Dashboard/includes/DashboardLatestTask";
 import CardStats from "@/components/includes/card-stats";
 import TaskOverviewChart from "@/components/includes/task-overview-chart";
-import { useGetOverviewStats } from "@/query/useOverviewQuery";
+import { useGetOverviewStats } from "@/react-query/query/overview/useOverviewQuery";
 
 const overviewStatsValues = [
   { title: "Total", color: "text-black", key: "total_tasks" },

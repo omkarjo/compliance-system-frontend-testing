@@ -1,5 +1,3 @@
-import { useCreateTask } from "@/actions/task/createTask";
-import { useUpdateTask } from "@/actions/task/updateTask";
 import ViewCalendarTaskAdmin from "@/components/Dashboard/calander/view-calander-task-admin";
 import DeleteAlertDialog from "@/components/Dashboard/includes/delete-alert-dilog";
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
@@ -8,14 +6,16 @@ import TableTaskViewFM from "@/components/Dashboard/tables/table-task-view-fm";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { taskApiPaths } from "@/constant/apiPaths";
-import queryClient from "@/query/queryClient";
+import { useCreateTask } from "@/react-query/mutations/task/createTask";
+import { useUpdateTask } from "@/react-query/mutations/task/updateTask";
 import { taskFormFields } from "@/schemas/form/taskSchema";
 import { taskSchema } from "@/schemas/zod/taskSchema";
 import { apiWithAuth } from "@/utils/api";
 import useCheckRoles from "@/utils/check-roles";
 import { usePermissionTaskChange } from "@/utils/havePermission";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Trash, Trash2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Plus, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -35,6 +35,7 @@ let defaultValues = {
 };
 
 export default function TaskDashboardFundManager() {
+  const queryClient = useQueryClient();
   const haveAdminPermission = useCheckRoles(["Fund Manager", "Compliance Officer"]);
 
   const createTask = useCreateTask();

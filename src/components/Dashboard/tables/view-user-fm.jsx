@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { useGetUserByName } from "@/query/userQuery";
+import { useGetUserByName } from "@/react-query/query/user/userQuery";
 import { MoreHorizontal, Trash, User, ViewIcon } from "lucide-react";
 import { cloneElement } from "react";
 import { toast } from "sonner";

@@ -27,6 +27,46 @@ const UsersDashboard = lazy(
   () => import("@/pages/Dashboard/Admin/UsersDashboard"),
 );
 
+const EntitiesPage = lazy(
+  () => import("@/pages/Dashboard/Compliance/Entities/EntitiesPage"),
+);
+
+const FundDetailsPage = lazy(
+  () => import("@/pages/Dashboard/Compliance/Fund/FundDetailsPage"),
+);
+
+const FundPage = lazy(() => import("@/pages/Dashboard/Compliance/Fund/FundPage"));
+
+const FundCreatePage = lazy(
+  () => import("@/pages/Dashboard/Compliance/Fund/FundCreatePage"),
+);
+
+const FundEditPage = lazy(
+  () => import("@/pages/Dashboard/Compliance/Fund/FundEditPage"),
+);
+
+const DrawDownsPage = lazy(
+  () => import("@/pages/Dashboard/Compliance/DrawdownsPage"),
+);
+
+
+const SebiReportPage = lazy(
+  () => import("@/pages/Dashboard/Compliance/SEBI-Report/SEBIReportPage"),
+);
+
+const SebiReportDetailsPage = lazy(
+  () => import("@/pages/Dashboard/Compliance/SEBI-Report/SebiReportDetailsPage"),
+);
+
+
+const PortfolioCompaniesPage = lazy(
+  () => import("@/pages/Dashboard/Compliance/Portfolio-Companies/Portfolio-Companies")
+);
+
+const PortfolioCompaniesDetails = lazy(
+  () => import("@/pages/Dashboard/Compliance/Portfolio-Companies/PortfolioCompaniesDetails")
+);
+
 const AppRoutes = () => {
   return (
     // <Suspense fallback={<Loading />}>
@@ -49,12 +89,45 @@ const AppRoutes = () => {
               <Route index element={<LPDashboard />} />
               <Route path="bulk-upload" element={<LPBulkUpload />} />
             </Route>
-            <Route path="portfolio-companies" element={<div>Portfolio</div>} />
+            <Route path="portfolio-companies">
+              <Route index element={<PortfolioCompaniesPage />} />
+              {/* <Route path=":id" element={<PortfolioCompaniesDetails />} /> */}
+            </Route>
 
-            <Route path="users" element={<ProtectRoutes  allowedRoles={ALL_ROLES} redirect="/dashboard" />}>
+            <Route
+              path="users"
+              element={
+                <ProtectRoutes allowedRoles={ALL_ROLES} redirect="/dashboard" />
+              }
+            >
               <Route index element={<UsersDashboard />} />
             </Route>
 
+            <Route path="sebi-reports">
+              <Route index element={<SebiReportPage />} />
+              <Route path=":id" element={<SebiReportDetailsPage />} />
+            </Route>
+
+            <Route path="processes">
+              <Route index element={<div>Processes</div>} />
+              <Route path=":id" element={<div>Process Details</div>} />
+            </Route>
+
+            <Route path="drawdowns">
+              <Route index element={<DrawDownsPage />} />
+              <Route path=":id" element={<div>Drawdown Details</div>} />
+            </Route>
+
+            <Route path="entities" element={<EntitiesPage />} />
+            <Route path="funds-details">
+              <Route index element={<FundPage />} />
+              <Route path="create" element={<FundCreatePage />} />
+
+              <Route path=":id">
+                <Route index element={<FundDetailsPage />} />
+                <Route path="edit" element={<FundEditPage />} />
+              </Route>
+            </Route>
           </Route>
         </Route>
         <Route element={<AuthLayout />}>

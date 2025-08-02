@@ -17,7 +17,7 @@ import useDebounce from "@/hooks/useDebounce";
 import { fastapiDateFormatter } from "@/lib/formatter";
 import { getStatusStyle } from "@/lib/getStatusStyleIcon";
 import { cn } from "@/lib/utils";
-import { useSearchTask } from "@/query/taskQuery";
+import { useSearchTask } from "@/react-query/query/task/taskQuery";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -206,7 +206,7 @@ export default function TaskSelect({
             <ChevronsUpDown className="ml-2 h-4 w-4 flex-shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0" align="start" id={commandId}>
+        <PopoverContent className="w-[var(--radix-popover-trigger-width)]  p-0" align="start" id={commandId}>
           <TaskCommandList
             tasks={tasks}
             selectedValue={selectedValue}

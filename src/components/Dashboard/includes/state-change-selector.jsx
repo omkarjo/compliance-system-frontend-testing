@@ -1,6 +1,6 @@
-import { useUpdateTaskState } from "@/actions/task/updateTaskState";
 import BadgeStatusSelector from "@/components/includes/badge-select";
 import BadgeStatusTask from "@/components/includes/badge-status";
+import { useUpdateTaskState } from "@/react-query/mutations/task/updateTaskState";
 import useCheckRoles from "@/utils/check-roles";
 import { usePermissionTaskChange } from "@/utils/havePermission";
 

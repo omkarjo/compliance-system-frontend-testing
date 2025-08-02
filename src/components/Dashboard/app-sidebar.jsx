@@ -5,7 +5,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { GalleryVerticalEnd, Globe } from "lucide-react";
+import { Globe } from "lucide-react";
 import NavHeading from "./includes/nav-heading";
 import NavMenu from "./includes/nav-menu";
 import NavUser from "./includes/nav-user";

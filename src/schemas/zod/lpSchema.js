@@ -1,17 +1,22 @@
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { z } from "zod";
 
+z.setErrorMap((issue, ctx) => {
+  if (issue.code === z.ZodIssueCode.invalid_enum_value) {
+    return { message: "Invalid value" };
+  }
+
+  if (issue.code === z.ZodIssueCode.invalid_type) {
+    return { message: "This field is required" };
+  }
+
+  if (issue.code === z.ZodIssueCode.too_small) {
+    return { message: "Value is too short" };
+  }
+
+  return { message: ctx.defaultError };
+});
 export const lpSchema = z.object({
-  docoments: z
-    .array(
-      z.instanceof(File).refine((file) => file.size < 10 * 1024 * 1024, {
-        message: "File size must be less than 4MB",
-      }),
-    )
-    .max(1, {
-      message: "Maximum 5 files are allowed",
-    })
-    .optional(),
   lp_name: z.string().min(1, "Name is required"),
   gender: z.enum(["male", "female", "others"]),
   dob: z.date().refine((date) => date <= new Date(), {
@@ -25,29 +30,15 @@ export const lpSchema = z.object({
   pan: z.string().regex(/[A-Z]{5}[0-9]{4}[A-Z]{1}/, "Invalid PAN number"),
   address: z.string().min(1, "Address is required"),
   nominee: z.string().min(1, "Nominee is required"),
-  // Min 1Cr
   commitment_amount: z
     .string()
     .transform((val) => parseFloat(val))
-    .refine((val) => !isNaN(val) && val > 10000000, {
+    .refine((val) => !isNaN(val) && val > 1e7, {
       message: "Commitment amount must be greater than ₹1Cr",
     }),
   acknowledgement_of_ppm: z.enum(["yes", "no"]),
-  cml: z
-    .array(
-      z.instanceof(File).refine((file) => file.size < 10 * 1024 * 1024, {
-        message: "File size must be less than 4MB",
-      }),
-    )
-    .min(1, {
-      message: "Required",
-    })
-    .max(1, {
-      message: "Maximum 1 files are allowed",
-    }),
   doi: z.date(),
   date_of_agreement: z.date(),
-  // depository: z.enum(["nsdl", "cdsl"]),
   dpid: z.string().min(1, "Dpid is required"),
   client_id: z.string().min(1, "Client ID is required"),
   class_of_shares: z.enum(["INF1C8N22014", "INF1C8N22022"]),
@@ -55,7 +46,67 @@ export const lpSchema = z.object({
   type: z.enum(["individual", "corporate", "partnership", "trust"]),
   citizenship: z.enum(["resident", "nro", "nre", "non-resident"]),
   geography: z.string().min(1, "Geography is required"),
-  emaildrawdowns: z.array(z.string().email("Invalid email address")).min(1, {
-    message: "At least one email is required",
-  }),
+  emaildrawdowns: z
+    .array(z.string().email("Invalid email address"))
+    .min(1, { message: "At least one email is required" }),
+});
+
+export const lpCreateZodSchema = z.object({
+  kyc_file: z
+    .array(
+      z
+        .instanceof(File)
+        .refine((file) => file.size <= 5 * 1024 * 1024, {
+          message: "KYC file size must be less than 5MB",
+        })
+        .refine(
+          (file) =>
+            ["application/pdf", "image/jpeg", "image/png"].includes(file.type),
+          { message: "Invalid KYC file type" },
+        ),
+    )
+    .max(1, { message: "Only one KYC file allowed" })
+    .min(1, { message: "KYC file is required" }),
+  kyc_category: z.string().min(1, "KYC Category is required"),
+  kyc_expiry_date: z.date().optional(),
+  ca_file: z
+    .array(
+      z
+        .instanceof(File)
+        .refine((file) => file.size <= 5 * 1024 * 1024, {
+          message: "CA file size must be less than 5MB",
+        })
+        .refine(
+          (file) =>
+            ["application/pdf", "image/jpeg", "image/png"].includes(file.type),
+          { message: "Invalid CA file type" },
+        ),
+    )
+    .max(1, { message: "Only one CA file allowed" })
+    .min(1, { message: "CA file is required" }),
+  ca_category: z.string().min(1, "CA Category is required"),
+  ca_expiry_date: z.date().optional(),
+  cml_file: z
+    .array(
+      z
+        .instanceof(File)
+        .refine((file) => file.size <= 4 * 1024 * 1024, {
+          message: "CML file size must be less than 4MB",
+        })
+        .refine(
+          (file) =>
+            [
+              "application/pdf",
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              "text/plain",
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ].includes(file.type),
+          { message: "Invalid CML file type" },
+        ),
+    )
+    .max(1, { message: "Only one CML file allowed" })
+    .min(1, { message: "CML file is required" }),
+  cml_category: z.string().min(1, "CML Category is required"),
+  cml_expiry_date: z.date().optional(),
+  fund_id: z.string().optional(),
 });

@@ -1,45 +1,11 @@
 const validateEmail = (email) => {
+  if (typeof email !== "string" || email.trim() === "") {
+    return false;
+  }
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
 export const lpFromFields = [
-  {
-    name: "documents",
-    label: "Upload Contribution Agreement",
-    description:
-      "Make sure the contribution agreement is in the specified format. You can download the template from here.",
-    type: "file",
-    placeholder: "",
-    required: false,
-    multiple: false,
-    dropZoneConfig: {
-      accept: {
-        "application/pdf": [".pdf"],
-      },
-
-      useFsAccessApi: false,
-      maxFiles: 5,
-      maxSize: 1024 * 1024 * 10,
-      multiple: true,
-    },
-  },
-  {
-    type: "hr",
-    className: "",
-  },
-  {
-    type: "heading",
-    label: "Manually fill details",
-    className: "",
-  },
-  {
-    type: "subheading",
-    label: "You can also manually fill all required details",
-  },
-  {
-    type: "subheading",
-    label: "General",
-  },
   {
     name: "lp_name",
     label: "Name",
@@ -98,10 +64,6 @@ export const lpFromFields = [
     required: true,
   },
   {
-    type: "hr",
-    className: "",
-  },
-  {
     type: "subheading",
     label: "Contribution",
     className: "font-bold",
@@ -127,40 +89,6 @@ export const lpFromFields = [
     className: "",
   },
   {
-    name: "acknowledgement_of_ppm",
-    label: "Acknowledgement of PPM",
-    type: "select",
-    placeholder: "Please Select Acknowledgement of PPM",
-    required: true,
-    options: [
-      { label: "Yes", value: "yes" },
-      { label: "No", value: "no" },
-    ],
-  },
-  {
-    name: "cml",
-    label: "CML",
-    type: "file",
-    placeholder: "",
-    required: true,
-    multiple: false,
-    dropZoneConfig: {
-      useFsAccessApi: false,
-      accept: {
-        "application/pdf": [".pdf"],
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-          ".xlsx",
-        ],
-        "text/plain": [".txt"],
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-          [".docx"],
-      },
-      maxFiles: 1,
-      maxSize: 1024 * 1024 * 4,
-      multiple: false,
-    },
-  },
-  {
     name: "doi",
     label: "Date of Incorporation",
     type: "date",
@@ -174,17 +102,6 @@ export const lpFromFields = [
     placeholder: "Select Date of Agreement",
     required: true,
   },
-  // {
-  //   name: "depository", // Not sure about this field
-  //   label: "Depository",
-  //   type: "select",
-  //   placeholder: "",
-  //   required: true,
-  //   options: [
-  //     { label: "NSDL", value: "nsdl" },
-  //     { label: "CDSL", value: "cdsl" },
-  //   ],
-  // },
   {
     name: "dpid",
     label: "Dpid",
@@ -245,13 +162,6 @@ export const lpFromFields = [
     ],
   },
   {
-    name: "geography",
-    label: "Geography",
-    type: "country_select",
-    placeholder: "Please select geography",
-    required: true,
-  },
-  {
     name: "emaildrawdowns",
     type: "tags_input",
     label: "Email For Drawdowns",
@@ -261,5 +171,108 @@ export const lpFromFields = [
     separators: [",", ";", "Enter"],
     maxTags: 5,
     validateTag: validateEmail,
+  },
+];
+
+
+export const lpCreateSchema = [
+  {
+    name: "kyc_file",
+    label: "KYC File",
+    type: "file",
+    required: true,
+    multiple: false,
+    dropZoneConfig: {
+      accept: {
+        "application/pdf": [".pdf"],
+      },
+      maxFiles: 1,
+      maxSize: 1024 * 1024 * 5,
+      multiple: false,
+    },
+  },
+  {
+    name: "kyc_category",
+    label: "KYC Category",
+    type: "select",
+    options: [{ label: "KYC", value: "kyc" }],
+    required: true,
+    placeholder: "Enter KYC Category",
+  },
+  {
+    name: "kyc_expiry_date",
+    label: "KYC Expiry Date",
+    type: "date",
+    required: false,
+    placeholder: "Select KYC Expiry Date",
+  },
+  {
+    name: "ca_file",
+    label: "CA File",
+    type: "file",
+    required: true,
+    multiple: false,
+    dropZoneConfig: {
+      accept: {
+        "application/pdf": [".pdf"],
+      },
+      maxFiles: 1,
+      maxSize: 1024 * 1024 * 5,
+      multiple: false,
+    },
+  },
+  {
+    name: "ca_category",
+    label: "CA Category",
+    type: "select",
+    options: [
+      { label: "Contribution Agreement", value: "contribution_agreement" },
+    ],
+    required: true,
+    placeholder: "Enter CA Category",
+  },
+  {
+    name: "ca_expiry_date",
+    label: "CA Expiry Date",
+    type: "date",
+    required: false,
+    placeholder: "Select CA Expiry Date",
+  },
+  {
+    name: "cml_file",
+    label: "CML File",
+    type: "file",
+    required: true,
+    multiple: false,
+    dropZoneConfig: {
+      accept: {
+        "application/pdf": [".pdf"],
+      },
+      maxFiles: 1,
+      maxSize: 1024 * 1024 * 4,
+      multiple: false,
+    },
+  },
+  {
+    name: "cml_category",
+    label: "CML Category",
+    type: "select",
+    options: [{ label: "CML", value: "cml" }],
+    required: true,
+    placeholder: "Enter CML Category",
+  },
+  {
+    name: "cml_expiry_date",
+    label: "CML Expiry Date",
+    type: "date",
+    required: false,
+    placeholder: "Select CML Expiry Date",
+  },
+  {
+    name: "fund_id",
+    label: "Fund ID",
+    type: "fund_select",
+    required: false,
+    placeholder: "Please select fund",
   },
 ];

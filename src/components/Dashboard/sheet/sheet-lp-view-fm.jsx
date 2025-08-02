@@ -1,5 +1,6 @@
 import BadgeStatusTask from "@/components/includes/badge-status";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
@@ -26,12 +27,6 @@ const statusKeyType = {
 };
 
 const lpDataSchema = [
-  {
-    key: "attachments",
-    label: "Attachments",
-    type: "file",
-    icon: <File size={20} />,
-  },
   { key: "lp_name", label: "Name", type: "text" },
   { key: "gender", label: "Gender", type: "text" },
   { key: "dob", label: "Date of Birth", type: "date" },
@@ -41,11 +36,6 @@ const lpDataSchema = [
   { key: "pan", label: "PAN Number", type: "text" },
   { key: "nominee", label: "Nominee", type: "text" },
   { key: "commitment_amount", label: "Commitment Amount", type: "currency" },
-  {
-    key: "acknowledgement_of_ppm",
-    label: "Acknowledgement of PPM",
-    type: "boolean",
-  },
   {
     key: "doi",
     label: "Date of Incorporation",
@@ -58,20 +48,19 @@ const lpDataSchema = [
     type: "date",
     icon: <Calendar size={20} />,
   },
-  { key: "depository", label: "Depository", type: "text" },
   { key: "dpid", label: "DPID", type: "text" },
   { key: "client_id", label: "Client ID", type: "text" },
   { key: "class_of_shares", label: "Class of Shares", type: "text" },
   { key: "isin", label: "ISIN", type: "text" },
   { key: "type", label: "Type", type: "text" },
   { key: "citizenship", label: "Citizenship", type: "text" },
-  { key: "geography", label: "Geography", type: "country" },
 ];
 
 export default function SheetLPViewFM({
   data = {},
   isOpen = true,
   onClose = () => {},
+  onEdit = () => {},
 }) {
   const status = data?.status || "N/A";
   const type = statusKeyType[status] || "Pending";
@@ -92,6 +81,15 @@ export default function SheetLPViewFM({
               )}
             </tbody>
           </table>
+          <div className="flex w-full justify-center pb-4">
+            <Button
+              onClick={() => onEdit(data)}
+              className={"mt-4 flex w-11/12 items-center justify-center gap-2"}
+              size={"lg"}
+            >
+              Edit
+            </Button>
+          </div>
         </ScrollArea>
       </SheetContent>
     </Sheet>

@@ -1,10 +1,10 @@
 import { Toaster } from "@/components/ui/sonner";
-import queryClient from "@/query/queryClient";
 import AppRoutes from "@/routes/routes";
 import store from "@/store/store";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
+import queryClient from "./react-query/lib/queryClient";
 
 function App() {
   return (

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/popover";
 import useDebounce from "@/hooks/useDebounce";
 import { cn } from "@/lib/utils";
-import { useGetUserByName } from "@/query/userQuery";
+import { useGetUserByName } from "@/react-query/query/user/userQuery";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import UserBadge from "./user-badge";
@@ -177,7 +177,7 @@ export default function UserSelect({
             <ChevronsUpDown className="ml-2 h-4 w-4 flex-shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0" align="start" id={commandId}>
+        <PopoverContent className="w-[var(--radix-popover-trigger-width)]  p-0" align="start" id={commandId}>
           <UserCommandList
             users={users}
             selectedValue={selectedValue}

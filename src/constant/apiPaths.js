@@ -33,3 +33,34 @@ export const limitedPartnersApiPaths = {
   updateLimitedPartnerPrefix: "/api/lps/",
   bulkUploadLimitedPartner: "/api/lps/bulk-upload/",
 };
+
+export const entityApiPaths = {
+  getEntities: "/api/entities/",
+  create: "/api/entities/",
+  update: "/api/entities/",
+  search: "/api/entities/search",
+  getEntityByIdPrefix: "/api/entities/",
+};
+
+export const fundApiPaths = {
+  getFunds: "/api/funds/",
+  createFund: "/api/funds/",
+  getFundByIdPrefix: "/api/funds/",
+  updateFundPrefix: "/api/funds/",
+  searchFunds: "/api/funds/search",
+};
+
+export const portfolioCompaniesApiPaths = {
+  get: "/api/portfolio-companies/",
+  create: "/api/portfolio-companies/onboard",
+  search: "/api/portfolio-companies/search",
+  delete: "/api/portfolio-companies/",
+  idPrefix: "/api/portfolio-companies/",
+};
+
+export const fundEntityApiPaths = {
+  get: "/api/fund-entities/",
+  create: "/api/fund-entities/",
+  getFundEntitiesByFundIdPrefix: "/api/fund-entities/funds/",
+  getFundEntityByFundIdSuffix: "/entities",
+};

@@ -3,7 +3,7 @@ import DataTable from "@/components/includes/data-table";
 import SortButton from "@/components/includes/SortButton";
 import { Button } from "@/components/ui/button";
 import { currencyFormatter } from "@/lib/formatter";
-import { useGetLP } from "@/query/lpQuery";
+import { useGetLP } from "@/react-query/query/lp/lpQuery";
 import { ArrowUpDown } from "lucide-react";
 
 const statusKeyType = {

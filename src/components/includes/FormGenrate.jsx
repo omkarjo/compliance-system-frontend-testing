@@ -34,13 +34,15 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Paperclip, Upload } from "lucide-react";
 import { memo, useMemo } from "react";
-import { Controller, useFormState } from "react-hook-form";
+import { useFormState } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { CountryDropdown } from "../extension/country-dropdown";
 import { PhoneInput } from "../extension/phone-input";
 import { TagsInput } from "./tags-input";
 import TaskInputCommand from "./task-select";
 import UserSelect from "./user-select";
+import EntitySelect from "./EntitySelect";
+import FundSelect from "./fund-select";
 
 export const FileSvgDraw = memo(({ allowedTypes }) => (
   <div className="flex flex-col items-center justify-center p-4 text-gray-500 dark:text-gray-400">
@@ -80,6 +82,8 @@ const FormGenerate = ({
   hiddenFields = [],
   disabledFields = [],
   specialProps = [],
+  submitButtonClassName,
+  onCancel,
 }) => {
   const { isSubmitting } = useFormState({ control: form?.control });
 
@@ -364,6 +368,32 @@ const FormGenerate = ({
           {...specialProp}
         />
       ),
+
+      entity_select: (field, formField, specialProp) => (
+        <EntitySelect
+          defaultValue={field.value}
+          onValueChange={field.onChange}
+          className={cn("w-full", formField?.className)}
+          isFilter={formField?.isFilter || false}
+          buttonText={formField?.placeholder || "Select Entity"}
+          returnFullObject={formField?.returnFullObject || false}
+          id={formField?.id || ""}
+          {...specialProp}
+        />
+      ),
+
+      fund_select: (field, formField, specialProp) => (
+        <FundSelect
+          defaultValue={field.value}
+          onValueChange={field.onChange}
+          className={cn("w-full", formField?.className)}
+          isFilter={formField?.isFilter || false}
+          buttonText={formField?.placeholder || "Select Fund"}
+          returnFullObject={formField?.returnFullObject || false}
+          id={formField?.id || ""}
+          {...specialProp}
+        />
+      ),
     };
 
     return (field, formField, specialProp = {}) => {
@@ -372,14 +402,23 @@ const FormGenerate = ({
     };
   }, [isSubmitting, onFileChange, disabledFields]);
 
+  console.log("Error in FormGenerate:", form.formState.errors);
+
   return (
     <Form {...form}>
       <form onSubmit={onSubmit} className={cn("relative space-y-4", className)}>
         {formFields.map((formField, index) => {
-          if (formField?.type === "hr") {
+          if (
+            formField?.type === "hr" &&
+            formField?.name &&
+            !hiddenFields.includes(formField.name)
+          ) {
             return <hr key={index} className={cn(formField?.className)} />;
-          }
-          if (formField?.type === "heading") {
+          } else if (
+            formField?.type === "heading" &&
+            formField?.label &&
+            !hiddenFields.includes(formField.name)
+          ) {
             return (
               <HeadingField
                 key={index}
@@ -387,8 +426,11 @@ const FormGenerate = ({
                 className={formField?.className}
               />
             );
-          }
-          if (formField?.type === "subheading") {
+          } else if (
+            (formField?.type === "subheading" ||
+              formField?.type === "subtitle") &&
+            !hiddenFields.includes(formField?.name)
+          ) {
             return (
               <SubheadingField
                 key={index}
@@ -396,49 +438,70 @@ const FormGenerate = ({
                 className={formField?.className}
               />
             );
-          }
-          return (
-            <FormField
-              key={index}
-              name={formField.name}
-              render={({ field }) => (
-                <FormItem
-                  className={cn(
-                    "",
-                    formField?.className,
-                    hiddenFields.includes(formField.name) && "hidden",
-                  )}
-                >
-                  {formField?.label && (
-                    <FormLabel>
-                      {formField.label}
-                      {formField.required && (
-                        <span className="text-red-500">*</span>
-                      )}
-                    </FormLabel>
-                  )}
-                  {formField?.description && (
-                    <FormDescription>{formField.description}</FormDescription>
-                  )}
-                  <FormControl>
-                    {generateField(
-                      field,
-                      formField,
-                      specialProps.find((sp) => sp.name === formField.name)
-                        ?.props || {},
+          } else {
+            return (
+              <FormField
+                key={index}
+                name={formField.name}
+                render={({ field }) => (
+                  <FormItem
+                    className={cn(
+                      "",
+                      formField?.className,
+                      hiddenFields.includes(formField.name) && "hidden",
                     )}
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          );
+                  >
+                    {formField?.label && (
+                      <FormLabel>
+                        {formField.label}
+                        {formField.required && (
+                          <span className="text-red-500">*</span>
+                        )}
+                      </FormLabel>
+                    )}
+                    {formField?.description && (
+                      <FormDescription>{formField.description}</FormDescription>
+                    )}
+                    <FormControl>
+                      {generateField(
+                        field,
+                        formField,
+                        specialProps.find((sp) => sp.name === formField.name)
+                          ?.props || {},
+                      )}
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            );
+          }
         })}
         {children}
+
+        {onCancel && (
+          <Button
+            type="button"
+            variant="destructive"
+            className={cn(
+              "w-full cursor-pointer transition-transform duration-150 active:scale-95",
+              submitButtonClassName,
+            )}
+            data-testid="cancel-button"
+            onClick={onCancel}
+          >
+            Cancel
+          </Button>
+        )}
+
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full cursor-pointer transition-transform duration-150 active:scale-95"
+          className={cn(
+            "w-full cursor-pointer transition-transform duration-150 active:scale-95",
+            submitButtonClassName,
+          )}
+          data-testid="submit-button"
         >
           {isSubmitting ? "Submitting..." : submitText}
         </Button>

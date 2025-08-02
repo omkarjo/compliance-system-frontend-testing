@@ -1,148 +1,172 @@
-import { useLPOnboarding } from "@/actions/LPOnboarding";
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import SheetLPViewFM from "@/components/Dashboard/sheet/sheet-lp-view-fm";
-import CapitalCallDialogTable from "@/components/Dashboard/tables/table-capital-call-dilog";
 import TableLPViewFM from "@/components/Dashboard/tables/table-lp-view-fm";
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
-import { campaignCapitalCallSchema } from "@/schemas/form/CaptialCallSchema";
-import { lpFromFields } from "@/schemas/form/lpSchema";
-import { lpSchema } from "@/schemas/zod/lpSchema";
+import { useCreateLimitedPartner } from "@/react-query/mutations/LP/useCreateLP";
+import { useUpdateLimitedPartner } from "@/react-query/mutations/LP/useUpdateLimitedPartner";
+import { useGetLimitedPartnerById } from "@/react-query/query/lp/useGetLimitedPartnerById";
+import { lpCreateSchema, lpFromFields } from "@/schemas/form/lpSchema";
+import { lpCreateZodSchema, lpSchema } from "@/schemas/zod/lpSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Upload } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { toast } from "sonner";
 
-const defaultValues = {
-  lp_name: "",
-  gender: "",
-  mobile_no: "",
-  email: "",
-  pan: "",
-  address: "",
-  nominee: "",
-  commitment_amount: "",
-  acknowledgement_of_ppm: undefined,
-  cml: [],
-  // depository: undefined,
-  dpid: "",
-  client_id: "",
-  class_of_shares: undefined,
-  isin: "",
-  type: undefined,
-  citizenship: undefined,
-  geography: "",
-  emaildrawdowns: [],
-  documents: [],
-};
-
 export default function LPDashboard() {
-  const [sheetTask, setSheetTask] = useState({
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const action = searchParams.get("action");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [sheet, setSheet] = useState({ isOpen: false, data: null });
+
+  const [createDialog, setCreateDialog] = useState({ isOpen: false });
+  const [editDialog, setEditDialog] = useState({
     isOpen: false,
+    id: null,
     data: null,
   });
 
-  const [dialogTask, setDialogTask] = useState({
-    isOpen: false,
-    variant: "",
-    defaultValues: defaultValues,
+  const { data: lpData, isLoading: isLoadingLpData } = useGetLimitedPartnerById(
+    id,
+    {
+      enabled: !!id && (action === "view" || action === "edit"),
+    },
+  );
+
+  const createLpMutation = useCreateLimitedPartner();
+  const updateLpMutation = useUpdateLimitedPartner();
+
+  const createForm = useForm({
+    resolver: zodResolver(lpCreateZodSchema),
   });
 
-  const [capitalCallTask, setCapitalCallTask] = useState({
-    isOpen: false,
-    variant: "",
-  });
-
-  const onboardingMutation = useLPOnboarding();
-
-  const form = useForm({
+  const editForm = useForm({
     resolver: zodResolver(lpSchema),
-    defaultValues: defaultValues,
-    // mode: "onChange",
   });
 
   useEffect(() => {
-    if (!dialogTask.isOpen) {
-      form.reset(defaultValues);
+    if (isLoadingLpData) return;
+    if (lpData && id) {
+      if (action === "view") {
+        setSheet({ isOpen: true, data: lpData });
+      } else if (action === "edit") {
+        setEditDialog({ isOpen: true, id, data: lpData });
+      }
+      navigate(location.pathname, { replace: true });
     }
-  }, [dialogTask.isOpen, form]);
-
-  const handleDialogTaskOpen = useCallback(
-    (variant) => {
-      if (variant === "create") {
-        form.reset(defaultValues);
-        setDialogTask({
-          isOpen: true,
-          variant: "create",
-          defaultValues: defaultValues,
-        });
-      } else {
-        // setDialogTask({ isOpen: true, variant: "edit", defaultValues: {} });
-      }
-    },
-    [form],
-  );
-
-  const handleDialogTaskClose = useCallback(() => {
-    form.reset(defaultValues);
-    setDialogTask((prev) => ({ ...prev, isOpen: false }));
-  }, [form]);
-
-  const handleCapitalCallOpen = useCallback(() => {
-    form.reset(defaultValues);
-    setCapitalCallTask((prev) => ({ ...prev, isOpen: true }));
-  }, [form]);
-
-  const handleCapitalCallClose = useCallback(() => {
-    form.reset(defaultValues);
-    setCapitalCallTask((prev) => ({ ...prev, isOpen: false }));
-  }, [form]);
-
-  const onSubmit = useCallback(
-    async (data) => {
-      const { cml, emaildrawdowns, ...rest } = data;
-
-      const body = {
-        ...rest,
-        emaildrawdowns: emaildrawdowns.join(","),
-      };
-
-      try {
-        await onboardingMutation.mutate({
-          lpData: body,
-          cmlFile: cml[0],
-        });
-        form.reset(defaultValues);
-        handleDialogTaskClose();
-      } catch (error) {
-        // console.log(error);
-        toast.error("Failed to onboard Limited Partner", {
-          description: error.response?.data?.detail || "Unknown error occurred",
-        });
-      }
-    },
-    [form, onboardingMutation, handleDialogTaskClose],
-  );
+  }, [id, action, lpData, isLoadingLpData]);
 
   useEffect(() => {
-    const classOfShares = form.watch("class_of_shares");
-    if (classOfShares) {
-      form.setValue("isin", classOfShares);
+    if (editDialog.isOpen && editDialog.data) {
+      const { emaildrawdowns, dob, doi, date_of_agreement, ...rest } =
+        editDialog.data;
+      const emailsArray = emaildrawdowns
+        ? emaildrawdowns.split(",").map((email) => email.trim())
+        : [];
+
+      const formattedDob = dob ? new Date(dob) : null;
+      const formattedDoi = doi ? new Date(doi) : null;
+      const formattedDateOfAgreement = date_of_agreement
+        ? new Date(date_of_agreement)
+        : null;
+
+      const updatedData = {
+        ...rest,
+        emaildrawdowns: emailsArray,
+        dob: formattedDob,
+        doi: formattedDoi,
+        date_of_agreement: formattedDateOfAgreement,
+      };
+      console.log("Updated Data for Edit Form:", updatedData);
+      editForm.reset(updatedData);
+    } else {
+      editForm.reset();
     }
-  }, [form, form.watch("class_of_shares")]);
+  }, [editDialog.isOpen, editDialog.data, editForm]);
+
+  const handleEditDialogOpen = useCallback((data) => {
+    setEditDialog({ isOpen: true, id: data.lp_id, data });
+  }, []);
+
+  const handleCreateDialogOpen = useCallback(() => {
+    setCreateDialog({ isOpen: true });
+    createForm.reset();
+  }, [createForm]);
+
+  const handleCreateDialogClose = useCallback(() => {
+    createForm.reset();
+    setCreateDialog({ isOpen: false });
+  }, [createForm]);
+
+  const onSubmitCreate = useCallback(
+    async (data) => {
+      try {
+        createLpMutation.mutate(data);
+        createForm.reset();
+        handleCreateDialogClose();
+      } catch (error) {
+        const description =
+          error?.response?.data?.detail ||
+          error?.response?.data?.msg ||
+          (typeof error?.response?.data === "string"
+            ? error.response.data
+            : "Unknown error occurred");
+
+        toast.error("Failed to onboard Limited Partner", { description });
+      }
+    },
+    [createForm, handleCreateDialogClose, createLpMutation],
+  );
+
+  const onSubmitEdit = useCallback(
+    async (data) => {
+      try {
+        await updateLpMutation.mutateAsync({ id: editDialog.id, values: data });
+        editForm.reset();
+        setEditDialog({ isOpen: false, id: null, data: null });
+      } catch (error) {
+        const description =
+          error?.response?.data?.detail ||
+          error?.response?.data?.msg ||
+          (typeof error?.response?.data === "string"
+            ? error.response.data
+            : "Unknown error occurred");
+
+        toast.error("Failed to update Limited Partner", { description });
+      }
+    },
+    [editDialog.id, editForm, updateLpMutation],
+  );
+
+  const classOfShares = editForm.watch("class_of_shares");
+
+  useEffect(() => {
+    if (classOfShares) {
+      editForm.setValue("isin", classOfShares);
+    }
+  }, [editForm, classOfShares]);
+
   return (
-    <section className="">
+    <section>
       <Tabs defaultValue="list" className="h-full w-full">
         <div className="flex items-center justify-between gap-4 px-4 py-2">
           <div className="flex w-full items-center justify-between gap-2 px-2">
             <div className="flex items-center gap-2">
               <Button
                 className="flex items-center gap-1 px-3 text-sm"
-                onClick={() => handleDialogTaskOpen("create")}
+                onClick={handleCreateDialogOpen}
               >
-                <Plus className="size-4" />{" "}
+                <Plus className="size-4" />
                 <span className="max-md:hidden">Onboard Limited Partner</span>
               </Button>
               <Button variant="outline" className="px-3" asChild>
@@ -151,49 +175,44 @@ export default function LPDashboard() {
                 </Link>
               </Button>
             </div>
-            <Button
-              variant="outline"
-              className="px-3"
-              onClick={handleCapitalCallOpen}
-            >
-              Capital Call
-            </Button>
           </div>
         </div>
+
         <main className="mx-4 flex-1">
           <TableLPViewFM
-            openView={(data) => setSheetTask({ isOpen: true, data })}
+            openView={(data) => setSheet({ isOpen: true, data })}
           />
         </main>
       </Tabs>
+
       <DialogForm
-        title={"Onboard new Limited Partner"}
+        title={"Update Limited Partner"}
+        description={"Update the details."}
+        submitText={"Update"}
+        form={editForm}
+        onSubmit={editForm.handleSubmit(onSubmitEdit)}
+        formFields={lpFromFields}
+        isOpen={editDialog.isOpen}
+        onClose={() => setEditDialog({ isOpen: false, id: null, data: null })}
+      />
+      <DialogForm
+        title={"Onboard Limited Partner"}
         description={
           "You can upload the 'Contribution Agreement' to automatically fill all fields."
         }
         submitText={"Onboard"}
-        form={form}
-        onSubmit={form.handleSubmit((data) => onSubmit(data))}
-        formFields={lpFromFields}
-        isOpen={dialogTask.isOpen}
-        onClose={handleDialogTaskClose}
+        form={createForm}
+        onSubmit={createForm.handleSubmit(onSubmitCreate)}
+        formFields={lpCreateSchema}
+        isOpen={createDialog.isOpen}
+        onClose={handleCreateDialogClose}
       />
-      <DialogForm
-        title={"Capital Call"}
-        description={"Send capital call to all onboarded Limited Partners"}
-        submitText={"Send"}
-        form={form}
-        onSubmit={form.handleSubmit((data) => onSubmit(data))}
-        formFields={campaignCapitalCallSchema}
-        isOpen={capitalCallTask.isOpen}
-        onClose={handleCapitalCallClose}
-      >
-        <CapitalCallDialogTable />
-      </DialogForm>
+
       <SheetLPViewFM
-        isOpen={sheetTask.isOpen}
-        data={sheetTask.data}
-        onClose={() => setSheetTask({ isOpen: false, data: null })}
+        isOpen={sheet.isOpen}
+        data={sheet.data}
+        onClose={() => setSheet({ isOpen: false, data: null })}
+        onEdit={handleEditDialogOpen}
       />
     </section>
   );

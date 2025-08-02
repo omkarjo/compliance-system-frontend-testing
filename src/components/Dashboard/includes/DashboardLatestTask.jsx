@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/lib/formatter";
-import { useGetTask } from "@/query/taskQuery";
+import { useGetTask } from "@/react-query/query/task/taskQuery";
 import { addMonths, format } from "date-fns";
 import { CalendarDays, UserCircle } from "lucide-react";
 import { Link } from "react-router-dom";

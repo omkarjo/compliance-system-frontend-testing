@@ -7,8 +7,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useGetAllActivities } from "@/query/activityQuery";
-import { useGetUserByName } from "@/query/userQuery";
+import { useGetAllActivities } from "@/react-query/query/activity/activityQuery";
+import { useGetUserByName } from "@/react-query/query/user/userQuery";
 import {
   ArrowUpDown,
   CheckCircle,

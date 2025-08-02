@@ -8,20 +8,39 @@ export const campaignCapitalCallSchema = [
 //     type: "subheading",
 //     label: "Send capital call to all onboarded Limited Partners",
 //   },
+ {
+    name: "notice_date",
+    label: "Notice Date",
+    placeholder: "Select notice date",
+    type: "date",
+    required: true,
+  },
+  {
+    name: "due_date",
+    label: "Due Date",
+    placeholder: "Select due date",
+    type: "date",
+
+  },
   {
     name: "percentage",
     label: "Percentage drawdown",
     placeholder: "Enter percentage drawdown",
-    description: "Enter the value in percentage",
     type: "number",
     required: true,
   },
   {
     name: "amount",
-    label: "Expected Drawdown Amount",
-    placeholder: "Enter expected drawdown amount",
-    description: "Enter the value in INR",
+    label: "Expected drawdown amount for this quarter",
+    placeholder: "2000000",
     type: "number",
     required: true,
-  }
+  },
+  {
+    name: "force_drawdown",
+    label: "Forecasted drawdown for next quarter",
+    type : "number",
+    placeholder: "2000000",
+    required: true,
+  },
 ];

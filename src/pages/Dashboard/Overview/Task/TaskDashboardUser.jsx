@@ -1,7 +1,7 @@
-import { useUpdateTask } from "@/actions/task/updateTask";
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import SheetTaskViewFM from "@/components/Dashboard/sheet/sheet-task-view-fm";
 import TableTaskViewFM from "@/components/Dashboard/tables/table-task-view-fm";
+import { useUpdateTask } from "@/react-query/mutations/task/updateTask";
 import { taskFormFields } from "@/schemas/form/taskSchema";
 import { taskSchema } from "@/schemas/zod/taskSchema";
 import { usePermissionTaskChange } from "@/utils/havePermission";

@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { getStatusStyle } from "@/lib/getStatusStyleIcon";
 import { cn } from "@/lib/utils";
-import { useGetTask } from "@/query/taskQuery";
+import { useGetTask } from "@/react-query/query/task/taskQuery";
 import { getTaskByID } from "@/utils/getTaskByID";
 import { usePermissionTaskChange } from "@/utils/havePermission";
 import {
@@ -40,6 +40,7 @@ import * as React from "react";
 import { useSearchParams } from "react-router-dom";
 import TaskAccordion from "../includes/accordion-task";
 import TaskHoverCard from "../includes/card-hower-task";
+import { toast } from "sonner";
 
 const colStartClasses = [
   "",
@@ -227,7 +228,7 @@ export default function ViewCalendarTaskFM({
       getTaskByID(taskId).then((res) => {
         const havePermissionToView = havePermissionTaskChange(res);
         if (!havePermissionToView) {
-          tost.error("You don't have permission to view this task.");
+          toast.error("You don't have permission to view this task.");
           return;
         }
         setSelectedDay(new Date(res.deadline));

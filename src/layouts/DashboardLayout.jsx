@@ -1,6 +1,5 @@
 import { AppSidebar } from "@/components/Dashboard/app-sidebar";
 import DashboardBreadcrumb from "@/components/Dashboard/includes/breadcrumb";
-import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -11,11 +10,15 @@ import { ADMIN_ROLES } from "@/constant/roles";
 import { useAppSelector } from "@/store/hooks";
 import useCheckRoles from "@/utils/check-roles";
 import {
+  Banknote,
   BookOpen,
   Bot,
   Building,
+  ClipboardCheck,
   GalleryVerticalEnd,
+  GitCompare,
   History,
+  IndianRupee,
   SquareTerminal,
   User,
   UserCircle,
@@ -42,6 +45,26 @@ export default function DashboardLayout() {
           title: "Portfolio Companies",
           url: PATH_PREFIX + "/portfolio-companies",
           icon: Building,
+        },
+        {
+          title: "Drawdowns",
+          url: PATH_PREFIX + "/drawdowns",
+          icon: IndianRupee,
+        },
+        {
+          title: "SEBI Reports",
+          url: PATH_PREFIX + "/sebi-reports",
+          icon: ClipboardCheck,
+        },
+        {
+          title: "Fund Details",
+          url: PATH_PREFIX + "/funds-details",
+          icon: Banknote,
+        },
+        {
+          title: "Entitys",
+          url: PATH_PREFIX + "/entities",
+          icon: GalleryVerticalEnd,
         },
       ],
       // hiddenIcon: true,
@@ -74,6 +97,11 @@ export default function DashboardLayout() {
           url: PATH_PREFIX,
           icon: SquareTerminal,
           isIndex: true,
+        },
+        {
+          title: "Processes",
+          url: PATH_PREFIX + "/processes",
+          icon: GitCompare,
         },
         {
           title: "Tasks",

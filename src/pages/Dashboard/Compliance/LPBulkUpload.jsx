@@ -6,20 +6,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+  TooltipTrigger
 } from "@/components/ui/tooltip";
 import { limitedPartnersApiPaths } from "@/constant/apiPaths";
-import createPaginatedFetcher from "@/hooks/createPaginatedFetcher";
 import { cn } from "@/lib/utils";
 import { apiWithAuth } from "@/utils/api";
+import { useQueryClient } from "@tanstack/react-query";
 import { CheckCircle, Database, Upload, XCircle } from "lucide-react";
 import Papa from "papaparse";
-import { use, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import queryClient from "@/query/queryClient";
-
 const requiredHeaders = [
   "lp_name",
   "mobile_no",
@@ -67,6 +64,7 @@ const dropZoneConfig = {
 };
 
 export default function LPBulkUpload() {
+  const queryClient = useQueryClient();
   const [isDisabled, setIsDisabled] = useState(false);
   const [files, setFiles] = useState([]);
   const [error, setError] = useState(null);
