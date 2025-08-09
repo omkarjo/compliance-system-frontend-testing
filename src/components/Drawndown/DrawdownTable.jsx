@@ -3,8 +3,8 @@ import DataTable from "@/components/includes/data-table";
 import SortButton from "@/components/includes/SortButton";
 import { Button } from "@/components/ui/button";
 import { currencyFormatter } from "@/lib/formatter";
-import { ArrowUpDown } from "lucide-react";
 import { useGetDrawdowns } from "@/react-query/query/drawdown/useGetDrawdowns";
+import { ArrowUpDown } from "lucide-react";
 
 const statusKeyType = {
   Onboarded: "Completed",
@@ -12,7 +12,7 @@ const statusKeyType = {
   "Under Review": "Review",
 };
 
-export default function TableDrawdownView({ openView = () => {} }) {
+export default function DrawdownTable({ openView = () => {} }) {
   const columns = [
     {
       accessorKey: "drawdown_quarter",

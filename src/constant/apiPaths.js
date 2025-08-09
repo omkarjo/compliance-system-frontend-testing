@@ -64,3 +64,13 @@ export const fundEntityApiPaths = {
   getFundEntitiesByFundIdPrefix: "/api/fund-entities/funds/",
   getFundEntityByFundIdSuffix: "/entities",
 };
+
+export const drawdownApiPaths = {
+  get: "/api/drawdowns/",
+  create: "/api/drawdowns/",
+  getDrawdownByIdPrefix: "/api/drawdowns/",
+  updateDrawdownPrefix: "/api/drawdowns/",
+  searchDrawdowns: "/api/drawdowns/search",
+  deleteDrawdownPrefix: "/api/drawdowns/",
+  preview: "/api/drawdowns/preview",
+};

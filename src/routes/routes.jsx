@@ -17,7 +17,9 @@ const Login = lazy(() => import("@/pages/Auth/Login"));
 const ActivityLog = lazy(
   () => import("@/pages/Dashboard/Overview/ActivityLog"),
 );
-const Docoments = lazy(() => import("@/pages/Dashboard/Overview/Docoments"));
+const Docoments = lazy(
+  () => import("@/pages/Dashboard/Overview/Documents/Docoments"),
+);
 const DashBoard = lazy(() => import("@/pages/Dashboard/Overview/DashBoard"));
 const LPBulkUpload = lazy(
   () => import("@/pages/Dashboard/Compliance/LPBulkUpload"),
@@ -35,7 +37,9 @@ const FundDetailsPage = lazy(
   () => import("@/pages/Dashboard/Compliance/Fund/FundDetailsPage"),
 );
 
-const FundPage = lazy(() => import("@/pages/Dashboard/Compliance/Fund/FundPage"));
+const FundPage = lazy(
+  () => import("@/pages/Dashboard/Compliance/Fund/FundPage"),
+);
 
 const FundCreatePage = lazy(
   () => import("@/pages/Dashboard/Compliance/Fund/FundCreatePage"),
@@ -46,25 +50,30 @@ const FundEditPage = lazy(
 );
 
 const DrawDownsPage = lazy(
-  () => import("@/pages/Dashboard/Compliance/DrawdownsPage"),
+  () => import("@/pages/Dashboard/Compliance/Drawdown/DrawdownsPage"),
 );
-
 
 const SebiReportPage = lazy(
   () => import("@/pages/Dashboard/Compliance/SEBI-Report/SEBIReportPage"),
 );
 
 const SebiReportDetailsPage = lazy(
-  () => import("@/pages/Dashboard/Compliance/SEBI-Report/SebiReportDetailsPage"),
+  () =>
+    import("@/pages/Dashboard/Compliance/SEBI-Report/SebiReportDetailsPage"),
 );
 
-
 const PortfolioCompaniesPage = lazy(
-  () => import("@/pages/Dashboard/Compliance/Portfolio-Companies/Portfolio-Companies")
+  () =>
+    import(
+      "@/pages/Dashboard/Compliance/Portfolio-Companies/Portfolio-Companies"
+    ),
 );
 
 const PortfolioCompaniesDetails = lazy(
-  () => import("@/pages/Dashboard/Compliance/Portfolio-Companies/PortfolioCompaniesDetails")
+  () =>
+    import(
+      "@/pages/Dashboard/Compliance/Portfolio-Companies/PortfolioCompaniesDetails"
+    ),
 );
 
 const AppRoutes = () => {
@@ -76,7 +85,7 @@ const AppRoutes = () => {
         <Route path="dashboard" element={<DashboardLayout />}>
           <Route element={<ProtectRoutes redirect="/login" />}>
             <Route index element={<DashBoard />} />
-            <Route path="documents" element={<Docoments />} />
+            <Route path="documents/*" element={<Docoments />} />
             <Route path="activity-log" element={<ActivityLog />} />
             <Route path="task" element={<TaskPage />} />
           </Route>

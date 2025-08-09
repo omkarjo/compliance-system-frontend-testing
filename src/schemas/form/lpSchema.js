@@ -192,14 +192,6 @@ export const lpCreateSchema = [
     },
   },
   {
-    name: "kyc_category",
-    label: "KYC Category",
-    type: "select",
-    options: [{ label: "KYC", value: "kyc" }],
-    required: true,
-    placeholder: "Enter KYC Category",
-  },
-  {
     name: "kyc_expiry_date",
     label: "KYC Expiry Date",
     type: "date",
@@ -222,16 +214,6 @@ export const lpCreateSchema = [
     },
   },
   {
-    name: "ca_category",
-    label: "CA Category",
-    type: "select",
-    options: [
-      { label: "Contribution Agreement", value: "contribution_agreement" },
-    ],
-    required: true,
-    placeholder: "Enter CA Category",
-  },
-  {
     name: "ca_expiry_date",
     label: "CA Expiry Date",
     type: "date",
@@ -252,14 +234,6 @@ export const lpCreateSchema = [
       maxSize: 1024 * 1024 * 4,
       multiple: false,
     },
-  },
-  {
-    name: "cml_category",
-    label: "CML Category",
-    type: "select",
-    options: [{ label: "CML", value: "cml" }],
-    required: true,
-    placeholder: "Enter CML Category",
   },
   {
     name: "cml_expiry_date",

@@ -1,5 +1,7 @@
 import { AppSidebar } from "@/components/Dashboard/app-sidebar";
 import DashboardBreadcrumb from "@/components/Dashboard/includes/breadcrumb";
+import { AuthButtons } from "@/components/includes/AuthButtons";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -51,11 +53,11 @@ export default function DashboardLayout() {
           url: PATH_PREFIX + "/drawdowns",
           icon: IndianRupee,
         },
-        {
-          title: "SEBI Reports",
-          url: PATH_PREFIX + "/sebi-reports",
-          icon: ClipboardCheck,
-        },
+        // {
+        //   title: "SEBI Reports",
+        //   url: PATH_PREFIX + "/sebi-reports",
+        //   icon: ClipboardCheck,
+        // },
         {
           title: "Fund Details",
           url: PATH_PREFIX + "/funds-details",
@@ -143,6 +145,9 @@ export default function DashboardLayout() {
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <DashboardBreadcrumb menu={menu} prefix={PATH_PREFIX} />
+            <Button variant="" asChild className="ml-auto">
+            {/* <AuthButtons className="ml-auto" /> */}
+            </Button>
           </div>
         </header>
 

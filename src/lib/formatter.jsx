@@ -52,15 +52,23 @@ export function getCountryDetails(alpha3Code) {
   };
 }
 
-
 export const formatDate = (date, options) => {
   const dateObj = new Date(date);
   if (isNaN(dateObj.getTime())) return null; // Invalid date
   return dateObj.toLocaleDateString("en-IN", options);
-}
-
+};
 
 export function fastapiDateFormatter(dateInput) {
   const date = new Date(dateInput);
-  return new Intl.DateTimeFormat('en-CA').format(date);
+  return new Intl.DateTimeFormat("en-CA").format(date);
 }
+
+export const serializeDates = (data) => {
+  const result = { ...data };
+  for (const key in result) {
+    if (result[key] instanceof Date && !isNaN(result[key])) {
+      result[key] = result[key].toISOString().split("T")[0];
+    }
+  }
+  return result;
+};

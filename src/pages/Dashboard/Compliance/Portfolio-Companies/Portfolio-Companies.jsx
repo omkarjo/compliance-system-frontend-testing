@@ -1,5 +1,5 @@
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
-import PortfolioCompaniesTable from "@/components/PortfolioCompanies/PortfolioCompaniesTable";
+import PortfolioCompaniesTable from "@/components/PortfolioCompany/PortfolioCompaniesTable";
 import SheetPortfolioCompanyView from "@/components/PortfolioCompany/SheetPortfolioCompanyView";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,78 +18,65 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCreatePortfolioCompany } from "@/react-query/mutations/PortfolioCompanies/useCreatePortfolioCompany";
-import { useGetPortfolioCompanyById } from "@/react-query/query/PortfolioCompanies/useGetPortfolioCompaniesById";
+import { useGetPortfolioCompanyFullData } from "@/react-query/query/PortfolioCompanies/useGetPortfolioCompaniesById";
 import { PortfolioCompanieCreateFeilds } from "@/schemas/form/PortfolioCompanieCreateFeilds";
 import { PortfolioCompanieSchema } from "@/schemas/zod/PortfolioCompanieSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { Plus, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 
 const dummyData = {
-  startup_brand: "GreenHive Agrotech",
-  sector: "Agritech",
-  pan: "ABCDE1234F",
-  isin: "INE123456789",
-  product_description:
-    "An AI-powered platform helping farmers optimize crop yields and reduce water usage.",
-  founders: [
-    {
-      name: "Ananya Mehta",
-      email: "ananya@greenhive.in",
-      role: "CEO",
-    },
-    {
-      name: "Ravi Kumar",
-      email: "ravi@greenhive.in",
-      role: "CTO",
-    },
-  ],
-  fund_id: "fund-xyz-001",
-  amount_invested: 20000000, // 2 Crores
-  termsheet_sign_date: new Date("2023-04-15"),
-  funding_date: new Date("2023-05-01"),
-  ec_sign_date: new Date("2023-04-20"),
-  latest_valuation: 75000000, // 7.5 Crores
-  valuation_date: new Date("2024-01-10"),
+  startup_brand: "",
+  sector: "",
+  pan: "",
+  isin: "",
+  product_description: "",
+  founders: [{ name: "", email: "", role: "" }],
+  fund_id: "",
+  amount_invested: "",
+  termsheet_sign_date: "",
+  funding_date: "",
+  ec_sign_date: "",
+  latest_valuation: "",
+  valuation_date: "",
 };
 
 export default function PortfolioCompaniesPage() {
   const [searchParams] = useSearchParams();
-  const id = searchParams.get("id");
-  const action = searchParams.get("action");
+  const defaultId = searchParams.get("id");
+  const defaultAction = searchParams.get("action");
+  const [id, setId] = useState(defaultId);
+  const [action, setAction] = useState(defaultAction);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { data: portfolioData, isLoading: isLoadingPortfolioData } =
-    useGetPortfolioCompanyById(id, {
-      enabled: !!id && (action === "view" || action === "edit"),
-    });
+  const isInitialMount = useRef(true);
+
+  const memoID = useMemo(() => {
+    return id;
+  }, [id]);
+
+  const memoAction = useMemo(() => {
+    return action;
+  }, [action]);
+
+  const { data, isLoading } = useGetPortfolioCompanyFullData(memoID, {
+    enabled: !!memoID && (memoAction === "view" || memoAction === "edit"),
+  });
 
   const [sheet, setSheet] = useState({ isOpen: false, data: null });
-
   const [dialogProps, setDialogProps] = useState({
     isOpen: false,
+    mode: "create",
     title: "",
     description: "",
     submitText: "",
   });
 
   const { mutateAsync: createPortfolioCompany } = useCreatePortfolioCompany();
-
-  useEffect(() => {
-    if (isLoadingPortfolioData) return;
-    if (portfolioData && id) {
-      if (action === "view") {
-        setSheet({ isOpen: true, data: portfolioData });
-      } else if (action === "edit") {
-        setEditDialog({ isOpen: true, id, data: portfolioData });
-      }
-      navigate(location.pathname, { replace: true });
-    }
-  }, [id, action, portfolioData, isLoadingPortfolioData]);
 
   const form = useForm({
     resolver: zodResolver(PortfolioCompanieSchema),
@@ -101,26 +88,95 @@ export default function PortfolioCompaniesPage() {
     name: "founders",
   });
 
-  const handleDialogOpen = useCallback(() => {
+  const handleCreateOpen = useCallback(() => {
+    form.reset(dummyData);
     setDialogProps({
       isOpen: true,
+      mode: "create",
       title: "Onboard Company",
       description: "Add all relevant company details below",
       submitText: "Onboard",
     });
-    form.reset();
   }, [form]);
 
+  const handleEditOpen = useCallback(
+    (companyData) => {
+      const prefill = {
+        ...companyData,
+        termsheet_sign_date: companyData.termsheet_sign_date
+          ? format(new Date(companyData.termsheet_sign_date), "yyyy-MM-dd")
+          : "",
+        funding_date: companyData.funding_date
+          ? format(new Date(companyData.funding_date), "yyyy-MM-dd")
+          : "",
+        ec_sign_date: companyData.ec_sign_date
+          ? format(new Date(companyData.ec_sign_date), "yyyy-MM-dd")
+          : "",
+        valuation_date: companyData.valuation_date
+          ? format(new Date(companyData.valuation_date), "yyyy-MM-dd")
+          : "",
+        founders: Array.isArray(companyData.founders)
+          ? companyData.founders
+          : Object.entries(companyData.founders || {}).map(
+              ([name, details]) => ({
+                name,
+                ...details,
+              }),
+            ),
+      };
+
+      form.reset(prefill);
+
+      setDialogProps({
+        isOpen: true,
+        mode: "edit",
+        title: "Edit Company",
+        description: "Update the company details below",
+        submitText: "Save Changes",
+      });
+    },
+    [form],
+  );
+
   const handleDialogClose = useCallback(() => {
-    form.reset();
+    form.reset(dummyData);
     setDialogProps((prev) => ({ ...prev, isOpen: false }));
   }, [form]);
 
-  const onSubmit = useCallback(
-    async (data) => {
-      const formData = new FormData();
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    if (isLoading) return;
+    if (data && memoID) {
+      if (memoAction === "view") {
+        setSheet((prev) => {
+          if (!prev.isOpen || prev.data?.company?.company_id !== data.company?.company_id) {
+            return { isOpen: true, data };
+          }
+          return prev;
+        });
+      } else if (memoAction === "edit") {
+        handleEditOpen(data.company);
+      }
+      navigate(location.pathname, { replace: true });
+    }
+  }, [memoID, memoAction, data, isLoading, navigate, location, handleEditOpen]);
 
-      const founders = data.founders.reduce((acc, curr) => {
+  const openView = useCallback(
+    (company) => {
+      const cid = company.company_id;
+      setId(cid);
+      setAction("view");
+      setSheet({ isOpen: true, data: company });
+    },
+    [],
+  );
+
+  const onSubmit = useCallback(
+    async (formValues) => {
+      const founders = formValues.founders.reduce((acc, curr) => {
         if (curr.name) {
           acc[curr.name] = {
             email: curr.email,
@@ -130,72 +186,62 @@ export default function PortfolioCompaniesPage() {
         return acc;
       }, {});
 
-      const portfolioData = {
-        startup_brand: data.startup_brand?.trim(),
-        sector: data.sector?.trim(),
-        pan: data.pan?.trim().toUpperCase(),
-        isin: data.isin?.trim().toUpperCase(),
-        product_description: data.product_description?.trim(),
+      const payload = {
+        startup_brand: formValues.startup_brand?.trim(),
+        sector: formValues.sector?.trim(),
+        pan: formValues.pan?.trim().toUpperCase(),
+        isin: formValues.isin?.trim().toUpperCase(),
+        product_description: formValues.product_description?.trim(),
         founders,
         fund_id: 1,
-        amount_invested: Number(data.amount_invested),
-        termsheet_sign_date: data.termsheet_sign_date
-          ? format(new Date(data.termsheet_sign_date), "yyyy-MM-dd")
-          : null,
-        funding_date: data.funding_date
-          ? format(new Date(data.funding_date), "yyyy-MM-dd")
-          : null,
-        ec_sign_date: data.ec_sign_date
-          ? format(new Date(data.ec_sign_date), "yyyy-MM-dd")
-          : null,
-        latest_valuation: Number(data.latest_valuation),
-        valuation_date: data.valuation_date
-          ? format(new Date(data.valuation_date), "yyyy-MM-dd")
-          : null,
+        amount_invested: Number(formValues.amount_invested),
+        termsheet_sign_date: formValues.termsheet_sign_date || null,
+        funding_date: formValues.funding_date || null,
+        ec_sign_date: formValues.ec_sign_date || null,
+        latest_valuation: Number(formValues.latest_valuation),
+        valuation_date: formValues.valuation_date || null,
       };
 
-      formData.append("portfolio_data", JSON.stringify(portfolioData));
+      const formData = new FormData();
+      formData.append("portfolio_data", JSON.stringify(payload));
 
-      for (const file of data.sha_document || []) {
+      for (const file of formValues.sha_document || []) {
         formData.append("sha_document", file);
       }
 
-      createPortfolioCompany(formData);
+      if (dialogProps.mode === "edit" && id) {
+      } else {
+        await createPortfolioCompany(formData);
+      }
+
       handleDialogClose();
-      form.reset();
     },
-    [createPortfolioCompany, handleDialogClose, form],
+    [createPortfolioCompany, dialogProps.mode, id, handleDialogClose],
   );
+
   const foundersError = form.formState.errors.founders;
-  console.log("Founders Error:", foundersError);
 
   return (
-    <section className="">
+    <section>
       <div className="flex items-center justify-between gap-4 px-4 py-2">
-        <div className="flex w-full items-center justify-between gap-2 px-2">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="default"
-              className="px-3"
-              onClick={handleDialogOpen}
-            >
-              Onboard Company
-            </Button>
-          </div>
-        </div>
+        <Button variant="default" className="px-3" onClick={handleCreateOpen}>
+          Onboard Company
+        </Button>
       </div>
+
       <main className="mx-4 flex-1">
         <PortfolioCompaniesTable
-          openView={(data) => setSheet({ isOpen: true, data })}
+          openView={openView}
+          openEdit={handleEditOpen}
         />
       </main>
 
       <DialogForm
-        title={"Onboard Company"}
-        description={"Add all relevant company details below"}
-        submitText={"Onboard"}
+        title={dialogProps.title}
+        description={dialogProps.description}
+        submitText={dialogProps.submitText}
         form={form}
-        onSubmit={form.handleSubmit((data) => onSubmit(data))}
+        onSubmit={form.handleSubmit(onSubmit)}
         formFields={PortfolioCompanieCreateFeilds}
         isOpen={dialogProps.isOpen}
         onClose={handleDialogClose}
@@ -246,10 +292,9 @@ export default function PortfolioCompaniesPage() {
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="w-full"
                     >
                       <FormControl>
-                        <SelectTrigger className={"w-full"}>
+                        <SelectTrigger>
                           <SelectValue placeholder="Select Role" />
                         </SelectTrigger>
                       </FormControl>
@@ -306,7 +351,11 @@ export default function PortfolioCompaniesPage() {
       <SheetPortfolioCompanyView
         isOpen={sheet.isOpen}
         data={sheet.data}
-        onClose={() => setSheet({ isOpen: false, data: null })}
+        onClose={() => {
+          setId(null);
+          setAction(null);
+          setSheet({ isOpen: false, data: null });
+        }}
       />
     </section>
   );

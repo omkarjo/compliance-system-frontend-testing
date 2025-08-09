@@ -4,7 +4,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
-
 function showToastWithView(id) {
   const url = `/dashboard/limited-partners?id=${id}&action=view`;
 
@@ -26,16 +25,25 @@ const createLP = async (values) => {
   if (values.ca_file?.[0]) formData.append("ca_file", values.ca_file[0]);
   if (values.cml_file?.[0]) formData.append("cml_file", values.cml_file[0]);
 
-  if (values.kyc_category) formData.append("kyc_category", values.kyc_category);
-  if (values.ca_category) formData.append("ca_category", values.ca_category);
-  if (values.cml_category) formData.append("cml_category", values.cml_category);
+  formData.append("kyc_category", "kyc");
+  formData.append("ca_category", "contribution_agreement");
+  formData.append("cml_category", "cml");
 
   if (values.kyc_expiry_date)
-    formData.append("kyc_expiry_date", format(values.kyc_expiry_date, "yyyy-MM-dd"));
+    formData.append(
+      "kyc_expiry_date",
+      format(values.kyc_expiry_date, "yyyy-MM-dd"),
+    );
   if (values.ca_expiry_date)
-    formData.append("ca_expiry_date", format(values.ca_expiry_date, "yyyy-MM-dd"));
+    formData.append(
+      "ca_expiry_date",
+      format(values.ca_expiry_date, "yyyy-MM-dd"),
+    );
   if (values.cml_expiry_date)
-    formData.append("cml_expiry_date", format(values.cml_expiry_date, "yyyy-MM-dd"));
+    formData.append(
+      "cml_expiry_date",
+      format(values.cml_expiry_date, "yyyy-MM-dd"),
+    );
 
   if (values.fund_id) formData.append("fund_id", values.fund_id);
 
@@ -47,7 +55,7 @@ const createLP = async (values) => {
         "Content-Type": "multipart/form-data",
       },
       timeout: 0,
-    }
+    },
   );
 
   if (response.status !== 201) {

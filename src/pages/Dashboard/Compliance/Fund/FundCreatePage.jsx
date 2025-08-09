@@ -64,6 +64,8 @@ export default function FundCreatePage() {
       await createFund(data);
       navigate("/dashboard/funds-details");
     } catch (error) {
+      const data = error?.response?.data || {};
+      console.log("Error creating fund:", data);
       console.log("Create Fund failed", error);
     }
   };
@@ -77,7 +79,7 @@ export default function FundCreatePage() {
       <div className="mb-4 flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <Link
-            to="/dashboard/funds"
+            to="/dashboard/funds-details"
             className={cn(
               buttonVariants({ variant: "outline", size: "icon" }),
               "flex items-center gap-2",
