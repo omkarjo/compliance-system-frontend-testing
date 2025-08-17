@@ -47,7 +47,8 @@ const fundSchema = z.object({
   greenshoe_option: z.coerce.number().min(0, {
     message: "Must be a valid non-negative number",
   }),
-  extension_permitted: z.boolean(),
+  // convert "true" or "false" to boolean
+  extension_permitted: z.enum(["true", "false"]).transform((val) => val === "true"),
   nav: z.coerce.number().min(0, {
     message: "NAV must be a valid non-negative number",
   }),

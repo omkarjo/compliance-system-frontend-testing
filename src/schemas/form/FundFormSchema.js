@@ -169,8 +169,8 @@ export const fund_Schmema_fields = [
     placeholder: "Please select if extension of term is permitted",
     required: true,
     options: [
-      { label: "Yes", value: true },
-      { label: "No", value: false },
+      { label: "Yes", value: "true" },
+      { label: "No", value: "false" },
     ],
   },
   {
