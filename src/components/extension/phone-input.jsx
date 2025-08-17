@@ -22,6 +22,17 @@ import flags from "react-phone-number-input/flags";
 const PhoneInput = React.forwardRef((props, ref) => {
   const { className, onChange, ...restProps } = props;
 
+  let phoneNumberDefault = props.value || "";
+  if (
+    !phoneNumberDefault.startsWith("+") &&
+    !phoneNumberDefault.startsWith("91") &&
+    phoneNumberDefault.length === 10
+  ) {
+    phoneNumberDefault = `+91${phoneNumberDefault}`;
+  }
+
+  console.log("Phone number:", phoneNumberDefault);
+
   return (
     <RPNInput.default
       ref={ref}
@@ -32,6 +43,7 @@ const PhoneInput = React.forwardRef((props, ref) => {
       smartCaret={false}
       onChange={(value) => onChange?.(value || "")}
       {...restProps}
+      value={phoneNumberDefault || ""}
     />
   );
 });
@@ -41,7 +53,10 @@ const InputComponent = React.forwardRef((props, ref) => {
   const { className, ...restProps } = props;
   return (
     <Input
-      className={cn("rounded-s-none rounded-e-lg focus-visible:ring-0", className)}
+      className={cn(
+        "rounded-s-none rounded-e-lg focus-visible:ring-0",
+        className,
+      )}
       {...restProps}
       ref={ref}
     />

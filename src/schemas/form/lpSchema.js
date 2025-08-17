@@ -191,13 +191,13 @@ export const lpCreateSchema = [
       multiple: false,
     },
   },
-  {
-    name: "kyc_expiry_date",
-    label: "KYC Expiry Date",
-    type: "date",
-    required: false,
-    placeholder: "Select KYC Expiry Date",
-  },
+  // {
+  //   name: "kyc_expiry_date",
+  //   label: "KYC Expiry Date",
+  //   type: "date",
+  //   required: false,
+  //   placeholder: "Select KYC Expiry Date",
+  // },
   {
     name: "ca_file",
     label: "CA File",
@@ -213,13 +213,13 @@ export const lpCreateSchema = [
       multiple: false,
     },
   },
-  {
-    name: "ca_expiry_date",
-    label: "CA Expiry Date",
-    type: "date",
-    required: false,
-    placeholder: "Select CA Expiry Date",
-  },
+  // {
+  //   name: "ca_expiry_date",
+  //   label: "CA Expiry Date",
+  //   type: "date",
+  //   required: false,
+  //   placeholder: "Select CA Expiry Date",
+  // },
   {
     name: "cml_file",
     label: "CML File",
@@ -235,13 +235,13 @@ export const lpCreateSchema = [
       multiple: false,
     },
   },
-  {
-    name: "cml_expiry_date",
-    label: "CML Expiry Date",
-    type: "date",
-    required: false,
-    placeholder: "Select CML Expiry Date",
-  },
+  // {
+  //   name: "cml_expiry_date",
+  //   label: "CML Expiry Date",
+  //   type: "date",
+  //   required: false,
+  //   placeholder: "Select CML Expiry Date",
+  // },
   {
     name: "fund_id",
     label: "Fund ID",

@@ -11,7 +11,17 @@ export const currencyFormatter = (value, currency = "INR") => {
 
 export const getPhoneDetails = (value) => {
   try {
-    const phoneNumber = parsePhoneNumber(value);
+    // handel if there is no prefix like +91 or 91 and is like indian  number take indian number as default
+    let phoneNumberDefault = value;
+    if (
+      !phoneNumberDefault.startsWith("+") &&
+      !phoneNumberDefault.startsWith("91") &&
+      phoneNumberDefault.length === 10
+    ) {
+      phoneNumberDefault = `+91${phoneNumberDefault}`;
+    }
+
+    const phoneNumber = parsePhoneNumber(phoneNumberDefault);
     if (!phoneNumber) return { formatted: null, country: null, flag: null };
 
     const countryCode = phoneNumber.country;

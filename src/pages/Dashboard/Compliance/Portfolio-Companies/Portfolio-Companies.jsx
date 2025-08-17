@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { fastapiDateFormatter, formatDate } from "@/lib/formatter";
 import { useCreatePortfolioCompany } from "@/react-query/mutations/PortfolioCompanies/useCreatePortfolioCompany";
 import { useGetPortfolioCompanyFullData } from "@/react-query/query/PortfolioCompanies/useGetPortfolioCompaniesById";
 import { PortfolioCompanieCreateFeilds } from "@/schemas/form/PortfolioCompanieCreateFeilds";
@@ -189,17 +190,17 @@ export default function PortfolioCompaniesPage() {
       const payload = {
         startup_brand: formValues.startup_brand?.trim(),
         sector: formValues.sector?.trim(),
-        pan: formValues.pan?.trim().toUpperCase(),
+        pan: formValues.pan?.trim().toUpperCase(),  
         isin: formValues.isin?.trim().toUpperCase(),
         product_description: formValues.product_description?.trim(),
         founders,
         fund_id: 1,
         amount_invested: Number(formValues.amount_invested),
-        termsheet_sign_date: formValues.termsheet_sign_date || null,
-        funding_date: formValues.funding_date || null,
-        ec_sign_date: formValues.ec_sign_date || null,
+        termsheet_sign_date: formValues.termsheet_sign_date ? fastapiDateFormatter(formValues.termsheet_sign_date) : null,
+        funding_date: formValues.funding_date ? fastapiDateFormatter(formValues.funding_date) : null,
+        ec_sign_date: formValues.ec_sign_date ? fastapiDateFormatter(formValues.ec_sign_date) : null,
         latest_valuation: Number(formValues.latest_valuation),
-        valuation_date: formValues.valuation_date || null,
+        valuation_date: formValues.valuation_date ? fastapiDateFormatter(formValues.valuation_date) : null,
       };
 
       const formData = new FormData();
@@ -338,6 +339,22 @@ export default function PortfolioCompaniesPage() {
                   </FormItem>
                 )}
               />
+
+
+                <FormField
+                  control={form.control}
+                  name={`founders.${index}.LinkedIn`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>LinkedIn Profile</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter LinkedIn profile URL" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
             </div>
           ))}
         </div>

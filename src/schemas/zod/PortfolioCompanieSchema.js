@@ -12,6 +12,7 @@ export const PortfolioCompanieSchema = z.object({
         name: z.string().min(1, "Founder name is required"),
         email: z.string().email("Invalid email"),
         role: z.string().min(1, "Role is required"),
+        LinkedIn: z.string().url("Invalid LinkedIn URL").optional(),
       }),
     )
     .min(1, "At least one founder is required"),

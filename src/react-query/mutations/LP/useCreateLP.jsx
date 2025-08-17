@@ -29,22 +29,6 @@ const createLP = async (values) => {
   formData.append("ca_category", "contribution_agreement");
   formData.append("cml_category", "cml");
 
-  if (values.kyc_expiry_date)
-    formData.append(
-      "kyc_expiry_date",
-      format(values.kyc_expiry_date, "yyyy-MM-dd"),
-    );
-  if (values.ca_expiry_date)
-    formData.append(
-      "ca_expiry_date",
-      format(values.ca_expiry_date, "yyyy-MM-dd"),
-    );
-  if (values.cml_expiry_date)
-    formData.append(
-      "cml_expiry_date",
-      format(values.cml_expiry_date, "yyyy-MM-dd"),
-    );
-
   if (values.fund_id) formData.append("fund_id", values.fund_id);
 
   const response = await apiWithAuth.post(

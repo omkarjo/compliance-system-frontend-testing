@@ -12,6 +12,15 @@ export const PortfolioCompanieCreateFeilds = [
     type: "text",
     required: true,
     placeholder: "Enter sector",
+    suggestions: [
+      "Information Technology",
+      "Finance & Banking",
+      "Healthcare",
+      "Retail & E-commerce",
+      "Manufacturing",
+      "Education",
+      "Telecommunications",
+    ],
   },
   {
     name: "product_description",
@@ -125,5 +134,12 @@ export const founderFields = [
     type: "text",
     required: true,
     placeholder: "Enter founder's role",
+  },
+  {
+    name: "LinkedIn",
+    label: "LinkedIn Profile",
+    type: "text",
+    required: false,
+    placeholder: "Enter LinkedIn profile URL",
   },
 ];

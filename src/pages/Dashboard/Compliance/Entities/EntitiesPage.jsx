@@ -53,19 +53,30 @@ export default function EntitiesPage() {
 
   useEffect(() => {
     const allFields = entityFormFields.map((field) => field.name);
-    const breakingVisible = !entityType;
 
-    const visibleFields = new Set([
-      ...alwaysVisibleFields,
-      ...(breakingVisible ? [] : ["entity_breaking"]),
-      ...(registrationRequired.includes(entityType) ? ["entity_registration_number"] : []),
+    const optionalVisibleFields = new Set([
+      ...(registrationRequired.includes(entityType)
+        ? ["entity_registration_number"]
+        : []),
       ...(tanRequired.includes(entityType) ? ["entity_tan"] : []),
-      ...(incorporationDateRequired.includes(entityType) ? ["entity_date_of_incorporation"] : []),
+      ...(incorporationDateRequired.includes(entityType)
+        ? ["entity_date_of_incorporation"]
+        : []),
       ...(gstRequired.includes(entityType) ? ["entity_gst_number"] : []),
       ...(pocDinPanRequired.includes(entityType)
         ? ["entity_poc", "entity_poc_din", "entity_poc_pan"]
         : []),
     ]);
+
+    const breakingVisible = !!entityType && optionalVisibleFields.size > 0;
+
+    const visibleFields = new Set([
+      ...alwaysVisibleFields,
+      ...optionalVisibleFields,
+      ...(breakingVisible ? ["entity_breaking"] : []),
+    ]);
+
+    console.log("Visible fields:", visibleFields);
 
     const hidden = allFields.filter((f) => !visibleFields.has(f));
     setHiddenFields(hidden);
@@ -84,10 +95,20 @@ export default function EntitiesPage() {
   const handleDialogOpen = useCallback((variant, data = null) => {
     if (variant === "edit" && data) {
       form.reset(data);
-      setDialog({ isOpen: true, variant, defaultValues: data, entity_id: data.id });
+      setDialog({
+        isOpen: true,
+        variant,
+        defaultValues: data,
+        entity_id: data.id,
+      });
     } else {
       form.reset(defaultValues);
-      setDialog({ isOpen: true, variant: "create", defaultValues: {}, entity_id: "" });
+      setDialog({
+        isOpen: true,
+        variant: "create",
+        defaultValues: {},
+        entity_id: "",
+      });
     }
   }, []);
 
@@ -135,16 +156,30 @@ export default function EntitiesPage() {
   );
 
   const tabs = [
-    { title: "Table", value: "table", children: <TableEntitiesView openView={(data) => setViewEntity({ isOpen: true, data })} /> },
+    {
+      title: "Table",
+      value: "table",
+      children: (
+        <TableEntitiesView
+          openView={(data) => setViewEntity({ isOpen: true, data })}
+        />
+      ),
+    },
     {
       title: "Card",
       value: "card",
-      children: <EntitiesSection openView={(data) => setViewEntity({ isOpen: true, data })} />,
+      children: (
+        <EntitiesSection
+          openView={(data) => setViewEntity({ isOpen: true, data })}
+        />
+      ),
     },
   ];
 
   const defaultTab =
-    typeof window !== "undefined" ? localStorage.getItem("entitiesTab") || "table" : "table";
+    typeof window !== "undefined"
+      ? localStorage.getItem("entitiesTab") || "table"
+      : "table";
 
   const handleTabChange = (value) => {
     localStorage.setItem("entitiesTab", value);
@@ -152,9 +187,18 @@ export default function EntitiesPage() {
 
   return (
     <section>
-      <Tabs defaultValue={defaultTab} className="h-full w-full" onValueChange={handleTabChange}>
+      <Tabs
+        defaultValue={defaultTab}
+        className="h-full w-full"
+        onValueChange={handleTabChange}
+      >
         <div className="flex items-center justify-between px-4 py-2">
-          <Button className="flex items-center gap-1 px-3 text-sm" onClick={() => handleDialogOpen("create")}>            <Plus className="size-4" />
+          <Button
+            className="flex items-center gap-1 px-3 text-sm"
+            onClick={() => handleDialogOpen("create")}
+          >
+            {" "}
+            <Plus className="size-4" />
             <span className="max-md:hidden">Create Entity</span>
           </Button>
           <TabsList className="flex gap-2">

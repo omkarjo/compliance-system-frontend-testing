@@ -43,6 +43,7 @@ import TaskInputCommand from "./task-select";
 import UserSelect from "./user-select";
 import EntitySelect from "./EntitySelect";
 import FundSelect from "./fund-select";
+import { AutocompleteInput } from "./AutocompleteInput";
 
 export const FileSvgDraw = memo(({ allowedTypes }) => (
   <div className="flex flex-col items-center justify-center p-4 text-gray-500 dark:text-gray-400">
@@ -90,7 +91,7 @@ const FormGenerate = ({
   const generateField = useMemo(() => {
     const fieldGenerators = {
       text: (field, formField) => (
-        <Input
+        <AutocompleteInput
           className={cn("focus-visible:ring-0", formField?.className)}
           placeholder={formField?.placeholder || ""}
           disabled={
@@ -98,6 +99,7 @@ const FormGenerate = ({
             formField?.disabled ||
             disabledFields?.includes(field.name)
           }
+          suggestions={formField?.suggestions || []}
           {...field}
         />
       ),
@@ -205,6 +207,7 @@ const FormGenerate = ({
                 selected={selectedDate}
                 onSelect={(date) => field.onChange(date)}
                 initialFocus
+                captionLayout="dropdown"
                 disabled={(date) => {
                   const today = new Date();
                   if (formField?.pastDisable) return date < today;

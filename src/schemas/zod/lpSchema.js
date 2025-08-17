@@ -67,7 +67,7 @@ export const lpCreateZodSchema = z.object({
     )
     .max(1, { message: "Only one KYC file allowed" })
     .min(1, { message: "KYC file is required" }),
-  kyc_expiry_date: z.date().optional(),
+  // kyc_expiry_date: z.date().optional(),
   ca_file: z
     .array(
       z
@@ -83,7 +83,7 @@ export const lpCreateZodSchema = z.object({
     )
     .max(1, { message: "Only one CA file allowed" })
     .min(1, { message: "CA file is required" }),
-  ca_expiry_date: z.date().optional(),
+  // ca_expiry_date: z.date().optional(),
   cml_file: z
     .array(
       z
@@ -104,6 +104,6 @@ export const lpCreateZodSchema = z.object({
     )
     .max(1, { message: "Only one CML file allowed" })
     .min(1, { message: "CML file is required" }),
-  cml_expiry_date: z.date().optional(),
+  // cml_expiry_date: z.date().optional(),
   fund_id: z.string().optional(),
 });
