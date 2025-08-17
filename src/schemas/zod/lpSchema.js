@@ -37,7 +37,6 @@ export const lpSchema = z.object({
       message: "Commitment amount must be greater than ₹1Cr",
     }),
   acknowledgement_of_ppm: z.enum(["yes", "no"]),
-  doi: z.date(),
   date_of_agreement: z.date(),
   dpid: z.string().min(1, "Dpid is required"),
   client_id: z.string().min(1, "Client ID is required"),

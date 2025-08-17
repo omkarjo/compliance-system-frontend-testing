@@ -153,7 +153,10 @@ export default function PortfolioCompaniesPage() {
     if (data && memoID) {
       if (memoAction === "view") {
         setSheet((prev) => {
-          if (!prev.isOpen || prev.data?.company?.company_id !== data.company?.company_id) {
+          if (
+            !prev.isOpen ||
+            prev.data?.company?.company_id !== data.company?.company_id
+          ) {
             return { isOpen: true, data };
           }
           return prev;
@@ -165,15 +168,12 @@ export default function PortfolioCompaniesPage() {
     }
   }, [memoID, memoAction, data, isLoading, navigate, location, handleEditOpen]);
 
-  const openView = useCallback(
-    (company) => {
-      const cid = company.company_id;
-      setId(cid);
-      setAction("view");
-      setSheet({ isOpen: true, data: company });
-    },
-    [],
-  );
+  const openView = useCallback((company) => {
+    const cid = company.company_id;
+    setId(cid);
+    setAction("view");
+    setSheet({ isOpen: true, data: company });
+  }, []);
 
   const onSubmit = useCallback(
     async (formValues) => {
@@ -190,17 +190,25 @@ export default function PortfolioCompaniesPage() {
       const payload = {
         startup_brand: formValues.startup_brand?.trim(),
         sector: formValues.sector?.trim(),
-        pan: formValues.pan?.trim().toUpperCase(),  
+        pan: formValues.pan?.trim().toUpperCase(),
         isin: formValues.isin?.trim().toUpperCase(),
         product_description: formValues.product_description?.trim(),
         founders,
         fund_id: 1,
         amount_invested: Number(formValues.amount_invested),
-        termsheet_sign_date: formValues.termsheet_sign_date ? fastapiDateFormatter(formValues.termsheet_sign_date) : null,
-        funding_date: formValues.funding_date ? fastapiDateFormatter(formValues.funding_date) : null,
-        ec_sign_date: formValues.ec_sign_date ? fastapiDateFormatter(formValues.ec_sign_date) : null,
+        termsheet_sign_date: formValues.termsheet_sign_date
+          ? fastapiDateFormatter(formValues.termsheet_sign_date)
+          : null,
+        funding_date: formValues.funding_date
+          ? fastapiDateFormatter(formValues.funding_date)
+          : null,
+        ec_sign_date: formValues.ec_sign_date
+          ? fastapiDateFormatter(formValues.ec_sign_date)
+          : null,
         latest_valuation: Number(formValues.latest_valuation),
-        valuation_date: formValues.valuation_date ? fastapiDateFormatter(formValues.valuation_date) : null,
+        valuation_date: formValues.valuation_date
+          ? fastapiDateFormatter(formValues.valuation_date)
+          : null,
       };
 
       const formData = new FormData();
@@ -340,21 +348,22 @@ export default function PortfolioCompaniesPage() {
                 )}
               />
 
-
-                <FormField
-                  control={form.control}
-                  name={`founders.${index}.LinkedIn`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>LinkedIn Profile</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter LinkedIn profile URL" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
+              <FormField
+                control={form.control}
+                name={`founders.${index}.LinkedIn`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>LinkedIn Profile</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter LinkedIn profile URL"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           ))}
         </div>

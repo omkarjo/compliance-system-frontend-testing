@@ -37,12 +37,6 @@ const lpDataSchema = [
   { key: "nominee", label: "Nominee", type: "text" },
   { key: "commitment_amount", label: "Commitment Amount", type: "currency" },
   {
-    key: "doi",
-    label: "Date of Incorporation",
-    type: "date",
-    icon: <Timer size={20} />,
-  },
-  {
     key: "date_of_agreement",
     label: "Date of Agreement",
     type: "date",

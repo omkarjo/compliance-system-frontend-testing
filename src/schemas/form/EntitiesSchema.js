@@ -86,13 +86,6 @@ export const entityFormFields = [
     required: false,
   },
   {
-    name: "entity_date_of_incorporation",
-    label: "Date of Incorporation",
-    type: "date",
-    placeholder: "Select Date of Incorporation",
-    required: false,
-  },
-  {
     name: "entity_gst_number",
     label: "GST Number",
     type: "text",

@@ -1,4 +1,5 @@
 import { countries } from "country-data-list";
+import { format, isValid, parseISO } from "date-fns";
 import { CircleFlag } from "react-circle-flags";
 import { parsePhoneNumber } from "react-phone-number-input";
 
@@ -82,3 +83,39 @@ export const serializeDates = (data) => {
   }
   return result;
 };
+
+export function formatPayloadForFastAPI(data, type = "json") {
+  const payload = {};
+
+  for (const [key, value] of Object.entries(data)) {
+    if (value instanceof Date && isValid(value)) {
+      payload[key] = format(value, "yyyy-MM-dd");
+    } else if (typeof value === "string" && isValid(parseISO(value))) {
+      payload[key] = format(parseISO(value), "yyyy-MM-dd");
+    } else {
+      payload[key] = value;
+    }
+  }
+
+  if (type === "formData") {
+    const formData = new FormData();
+    Object.entries(payload).forEach(([k, v]) => {
+      if (Array.isArray(v)) {
+        v.forEach((item) => {
+          if (item instanceof File || item instanceof Blob) {
+            formData.append(k, item);
+          } else {
+            formData.append(k, String(item));
+          }
+        });
+      } else if (v instanceof File || v instanceof Blob) {
+        formData.append(k, v);
+      } else {
+        formData.append(k, String(v));
+      }
+    });
+    return formData;
+  }
+
+  return payload;
+}

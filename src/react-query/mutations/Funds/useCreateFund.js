@@ -1,10 +1,12 @@
 import { fundApiPaths } from "@/constant/apiPaths";
+import { formatPayloadForFastAPI } from "@/lib/formatter";
 import { apiWithAuth } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 const createFund = async (data) => {
-  const response = await apiWithAuth.post(fundApiPaths.createFund, data);
+  const payload = formatPayloadForFastAPI(data);
+  const response = await apiWithAuth.post(fundApiPaths.createFund, payload);
   return response.data;
 };
 
@@ -32,7 +34,7 @@ export function useCreateFund() {
           ? detail
           : "Something went wrong";
 
-          console.error("Create Fund Error:", errorMessages);
+      console.error("Create Fund Error:", errorMessages);
 
       toast.error("Fund creation failed", {
         id: "fund-loading",

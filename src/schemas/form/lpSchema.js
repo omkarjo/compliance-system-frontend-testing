@@ -89,13 +89,6 @@ export const lpFromFields = [
     className: "",
   },
   {
-    name: "doi",
-    label: "Date of Incorporation",
-    type: "date",
-    placeholder: "Select Date of Incorporation",
-    required: true,
-  },
-  {
     name: "date_of_agreement",
     label: "Date of Agreement",
     type: "date",

@@ -22,16 +22,14 @@ import flags from "react-phone-number-input/flags";
 const PhoneInput = React.forwardRef((props, ref) => {
   const { className, onChange, ...restProps } = props;
 
-  let phoneNumberDefault = props.value || "";
+  let isDefault = false;
   if (
-    !phoneNumberDefault.startsWith("+") &&
-    !phoneNumberDefault.startsWith("91") &&
-    phoneNumberDefault.length === 10
+    !props.value.startsWith("+") &&
+    !props.value.startsWith("91") &&
+    props.value.length === 10
   ) {
-    phoneNumberDefault = `+91${phoneNumberDefault}`;
+    isDefault = true;
   }
-
-  console.log("Phone number:", phoneNumberDefault);
 
   return (
     <RPNInput.default
@@ -43,7 +41,6 @@ const PhoneInput = React.forwardRef((props, ref) => {
       smartCaret={false}
       onChange={(value) => onChange?.(value || "")}
       {...restProps}
-      value={phoneNumberDefault || ""}
     />
   );
 });
@@ -67,7 +64,7 @@ InputComponent.displayName = "InputComponent";
 const CountrySelect = (props) => {
   const {
     disabled,
-    value: selectedCountry,
+    value: selectedCountry = "IN",
     options: countryList,
     onChange,
   } = props;

@@ -68,14 +68,13 @@ export default function LPDashboard() {
 
   useEffect(() => {
     if (editDialog.isOpen && editDialog.data) {
-      const { emaildrawdowns, dob, doi, date_of_agreement, ...rest } =
+      const { emaildrawdowns, dob, date_of_agreement, ...rest } =
         editDialog.data;
       const emailsArray = emaildrawdowns
         ? emaildrawdowns.split(",").map((email) => email.trim())
         : [];
 
       const formattedDob = dob ? new Date(dob) : null;
-      const formattedDoi = doi ? new Date(doi) : null;
       const formattedDateOfAgreement = date_of_agreement
         ? new Date(date_of_agreement)
         : null;
@@ -84,7 +83,6 @@ export default function LPDashboard() {
         ...rest,
         emaildrawdowns: emailsArray,
         dob: formattedDob,
-        doi: formattedDoi,
         date_of_agreement: formattedDateOfAgreement,
       };
       console.log("Updated Data for Edit Form:", updatedData);

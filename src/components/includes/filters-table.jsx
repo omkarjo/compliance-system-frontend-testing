@@ -319,6 +319,7 @@ const FilterComponent = ({
       return (
         <Calendar
           mode="range"
+          captionLayout="dropdown"
           selected={dateRange}
           onSelect={(range) => {
             setDateRange(range);
