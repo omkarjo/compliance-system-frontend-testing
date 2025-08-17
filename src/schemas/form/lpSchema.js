@@ -239,7 +239,7 @@ export const lpCreateSchema = [
     name: "fund_id",
     label: "Fund ID",
     type: "fund_select",
-    required: false,
+    required: true,
     placeholder: "Please select fund",
   },
 ];

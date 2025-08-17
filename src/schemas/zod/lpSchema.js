@@ -104,5 +104,5 @@ export const lpCreateZodSchema = z.object({
     .max(1, { message: "Only one CML file allowed" })
     .min(1, { message: "CML file is required" }),
   // cml_expiry_date: z.date().optional(),
-  fund_id: z.string().optional(),
+  fund_id: z.string()
 });
