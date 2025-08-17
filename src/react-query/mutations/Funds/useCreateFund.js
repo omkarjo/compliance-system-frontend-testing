@@ -6,6 +6,8 @@ import { toast } from "sonner";
 
 const createFund = async (data) => {
   const payload = formatPayloadForFastAPI(data);
+  console.log("Creating fund with payload:", payload);
+  return;
   const response = await apiWithAuth.post(fundApiPaths.createFund, payload);
   return response.data;
 };

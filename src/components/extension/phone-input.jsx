@@ -22,15 +22,6 @@ import flags from "react-phone-number-input/flags";
 const PhoneInput = React.forwardRef((props, ref) => {
   const { className, onChange, ...restProps } = props;
 
-  let isDefault = false;
-  if (
-    !props.value.startsWith("+") &&
-    !props.value.startsWith("91") &&
-    props.value.length === 10
-  ) {
-    isDefault = true;
-  }
-
   return (
     <RPNInput.default
       ref={ref}
