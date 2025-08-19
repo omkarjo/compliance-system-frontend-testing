@@ -11,6 +11,7 @@ const fetchPortfolioCompanies = async ({
     pageSize,
     sortBy = [],
     filters = [],
+    searchType = "query"
 }) => {
     try {
         let sortByParams = null;
@@ -32,8 +33,11 @@ const fetchPortfolioCompanies = async ({
                 acc[filter.filterid] = filter.optionid;
                 return acc;
             }, {}),
-            ...(search && search.length > 0 ? { name: search } : {}),
         };
+
+        if (search && search.length > 0) {
+            params[searchType] = search;
+        }
 
         const url = search && search.length > 0
             ? portfolioCompaniesApiPaths.search
@@ -61,6 +65,7 @@ export const useGETPortfolioCompanies = ({
     pageSize = 10,
     sortBy = [],
     filters = [],
+    searchType = "company_name"
 }) => {
     const first_sort = sortBy.at(0);
     const sort = first_sort
@@ -75,6 +80,7 @@ export const useGETPortfolioCompanies = ({
             pageSize,
             sort,
             filters,
+            searchType
         ],
         queryFn: () =>
             fetchPortfolioCompanies({
@@ -83,6 +89,7 @@ export const useGETPortfolioCompanies = ({
                 pageSize,
                 sortBy: sort,
                 filters,
+                searchType
             }),
         placeholderData: (keepPreviousData) => keepPreviousData,
     });

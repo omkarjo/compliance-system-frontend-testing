@@ -68,6 +68,7 @@ export const fundEntityApiPaths = {
 export const drawdownApiPaths = {
   get: "/api/drawdowns/",
   create: "/api/drawdowns/",
+  generateDrawdownReport: "/api/drawdowns/generate_drawdowns",
   getDrawdownByIdPrefix: "/api/drawdowns/",
   updateDrawdownPrefix: "/api/drawdowns/",
   searchDrawdowns: "/api/drawdowns/search",

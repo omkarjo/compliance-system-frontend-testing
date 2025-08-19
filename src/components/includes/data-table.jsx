@@ -51,6 +51,8 @@ export default function DataTable({
   filterOptions = [],
   onRowSelectionChange = null,
   openView = null,
+  searchTypeOptions = [],
+  defaultSearchType = "",
 
   // Search options
   searchBox = false,
@@ -78,6 +80,7 @@ export default function DataTable({
   });
   const [search, setSearch] = React.useState("");
   const [inputValue, setInputValue] = React.useState("");
+  const [searchType, setSearchType] = React.useState(defaultSearchType);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -147,6 +150,7 @@ export default function DataTable({
       sortBy: resolvedSorting,
       filters: [...resolvedFilters, ...extraFilters],
       search: resolvedSearch,
+      searchType: searchType,
     }),
     [
       resolvedPagination.pageIndex,
@@ -155,6 +159,7 @@ export default function DataTable({
       resolvedFilters,
       extraFilters,
       resolvedSearch,
+      searchType,
     ],
   );
 
@@ -178,6 +183,7 @@ export default function DataTable({
       setFilters: resolvedSetFilters,
       searchOptions: resolvedSearchOptions,
       setSearchOptions: resolvedSetSearchOptions,
+      searchType,
     }),
     [
       filterOptions,
@@ -267,7 +273,6 @@ export default function DataTable({
     setRowSelection({});
   }, [resolvedPagination.pageIndex]);
 
-
   // Set Pagination when search changes
   React.useEffect(() => {
     if (resolvedSearch) {
@@ -277,7 +282,6 @@ export default function DataTable({
       });
     }
   }, [resolvedSearch, resolvedSetPagination, resolvedPagination.pageSize]);
-  
 
   const renderEmptyState = (message) => (
     <TableRow>
@@ -297,7 +301,9 @@ export default function DataTable({
     }
 
     if (table.getFilteredRowModel().rows.length === 0) {
-      return renderEmptyState(<EmptyState text="No Records Found" type="empty" />);
+      return renderEmptyState(
+        <EmptyState text="No Records Found" type="empty" />,
+      );
     }
 
     return table.getRowModel().rows.map((row) => (
@@ -337,7 +343,34 @@ export default function DataTable({
       {/* Search and filters */}
       <div className="flex items-center justify-between gap-4 py-4">
         <div className="flex-1">
-          {searchBox && (
+          {searchBox && searchTypeOptions.length > 0 ? (
+            <div className="flex max-w-xl items-center rounded-lg border bg-white shadow-sm transition-all duration-300 focus-within:ring-2 focus-within:ring-blue-300">
+              {/* Left select inside input */}
+              <Select value={searchType} onValueChange={setSearchType}>
+                <SelectTrigger className="h-10 border-none bg-transparent focus:ring-0 focus:outline-none">
+                  <SelectValue placeholder="Search type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {searchTypeOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Divider */}
+              <div className="mx-2 h-6 w-px bg-gray-300" />
+
+              {/* Search input */}
+              <Input
+                placeholder={searchBoxPlaceholder}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                className="flex-1 border-none shadow-none focus:outline-none focus-visible:ring-0"
+              />
+            </div>
+          ) : (
             <Input
               placeholder={searchBoxPlaceholder}
               value={inputValue}

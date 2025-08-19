@@ -55,6 +55,12 @@ const fundSchema = z.object({
   date_of_appointment: z.coerce.date({
     errorMap: () => ({ message: "Date of appointment is required" }),
   }),
+  stamp_duty_rate: z.coerce.number().min(0, {
+    message: "Stamp duty rate must be a valid non-negative number",
+  }),
+  mgmt_fee_rate: z.coerce.number().min(0, {
+    message: "Management fee rate must be a valid non-negative number",
+  }),
 });
 
 const bankDetailsSchema = z.object({

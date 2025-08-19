@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { drawdownApiPaths } from "@/constant/apiPaths";
 
 const generateDrawdowns = async (data) => {
-  const res = await apiWithAuth.post(drawdownApiPaths.create, data);
+  const res = await apiWithAuth.post(drawdownApiPaths.generateDrawdownReport, data);
   return res.data;
 };
 

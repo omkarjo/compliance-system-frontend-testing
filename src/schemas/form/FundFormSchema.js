@@ -194,6 +194,20 @@ export const fund_Schmema_fields = [
     placeholder: "Select date of appointment",
     required: true,
   },
+  {
+    name : "mgmt_fee_rate",
+    label: "Management Fee Rate",
+    type: "number",
+    placeholder: "Please enter management fee rate",
+    required: true,
+  },
+  {
+    name: "stamp_duty_rate",
+    label: "Stamp Duty Rate",
+    type: "number",
+    placeholder: "Please enter stamp duty rate",
+    required: true,
+  }
 ];
 
 export const fund_bank_details_fields = [

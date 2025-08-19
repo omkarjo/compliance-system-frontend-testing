@@ -134,6 +134,26 @@ export default function PortfolioCompaniesTable({ openView = () => {} }) {
     },
   ];
 
+  const searchTypeOptions = [
+    {
+      label: "Name",
+      value: "query",
+    },
+    {
+      label: "Sector",
+      value: "sector",
+    },
+    {
+      label: "Product Description",
+      value: "product_description",
+    },
+    {
+      label: "Registered Address",
+      value: "registered_address",
+    },
+  ];
+
+
   const filterOptions = [];
 
   return (
@@ -145,6 +165,8 @@ export default function PortfolioCompaniesTable({ openView = () => {} }) {
       searchBox={true}
       searchBoxPlaceholder="Search..."
       openView={openView}
+      searchTypeOptions={searchTypeOptions}
+      defaultSearchType="query"
     />
   );
 }
