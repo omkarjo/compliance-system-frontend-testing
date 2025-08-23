@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { currencyFormatter } from "@/lib/formatter";
-import { useGenerateUnitAllotments } from "@/react-query/mutations/unit-allotment/useGenerateUnitAllotments";
+import { useGenerateUnitAllotments } from "@/react-query/mutations/UnitAllotment/useGenerateUnitAllotments";
 import { useGetDrawdownsById } from "@/react-query/query/drawdown/useGetDrawdownsById";
 import { useGetLP } from "@/react-query/query/lp/lpQuery";
+import { useGetUnitAllotments } from "@/react-query/query/UnitAllotments/useGetUnitAllotments";
 import { ArrowUpDown } from "lucide-react";
 import { useParams } from "react-router-dom";
 
@@ -298,8 +299,12 @@ export default function DrawdownDetailPage() {
         <TabsContent value="unit-allotments">
           <DataTable
             columns={columnsUnitAllotments}
-            // data={lpInvolved}
-            isLoading={isLoadingLP}
+            fetchData={(args) => {
+              return useGetUnitAllotments({
+                fundId: drawdownData.fund_id,
+                ...args,
+              });
+            }}
           />
         </TabsContent>
       </Tabs>
