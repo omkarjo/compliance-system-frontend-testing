@@ -1,8 +1,16 @@
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { renderCell } from "@/lib/renderCell";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router";
+import { Button } from "../ui/button";
 
 const drawdownSchema = [
   { key: "drawdown_quarter", label: "Quarter", type: "text" },
@@ -12,10 +20,22 @@ const drawdownSchema = [
   { key: "committed_amt", label: "Committed Amount", type: "currency" },
   { key: "drawdown_amount", label: "Drawdown Amount", type: "currency" },
   { key: "amount_called_up", label: "Amount Called Up", type: "currency" },
-  { key: "remaining_commitment", label: "Remaining Commitment", type: "currency" },
-  { key: "forecast_next_quarter", label: "Forecast Next Quarter", type: "currency" },
+  {
+    key: "remaining_commitment",
+    label: "Remaining Commitment",
+    type: "currency",
+  },
+  {
+    key: "forecast_next_quarter",
+    label: "Forecast Next Quarter",
+    type: "currency",
+  },
   { key: "status", label: "Status", type: "badge" },
-  { key: "payment_received_date", label: "Payment Received Date", type: "date" },
+  {
+    key: "payment_received_date",
+    label: "Payment Received Date",
+    type: "date",
+  },
   { key: "amt_accepted", label: "Amount Accepted", type: "currency" },
   { key: "allotted_units", label: "Allotted Units", type: "number" },
   { key: "nav_value", label: "NAV Value", type: "currency" },
@@ -26,16 +46,21 @@ const drawdownSchema = [
   { key: "notes", label: "Notes", type: "textarea" },
 ];
 
-export default function SheetDrawdownView({ data = {}, isOpen = true, onClose = () => {} }) {
+export default function SheetDrawdownView({
+  data = {},
+  isOpen = true,
+  onClose = () => {},
+}) {
+  if (data == null) return null;
 
-    if (data == null) return null;
-    
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent side="right" className={cn("w-full sm:max-w-md")}>
         <SheetHeader className="mt-4 pb-0 md:mt-8">
           <SheetTitle>Drawdown Details</SheetTitle>
-          <SheetDescription>{data?.drawdown_quarter || "No Quarter Info"}</SheetDescription>
+          <SheetDescription>
+            {data?.drawdown_quarter || "No Quarter Info"}
+          </SheetDescription>
           {data?.status && (
             <Badge variant="outline" className="w-fit text-xs">
               {data.status}
@@ -47,12 +72,22 @@ export default function SheetDrawdownView({ data = {}, isOpen = true, onClose = 
           <table className="mx-auto w-11/12 text-sm">
             <tbody>
               {drawdownSchema
-                .filter(({ key }) => data[key] !== null && data[key] !== undefined && data[key] !== "")
+                .filter(
+                  ({ key }) =>
+                    data[key] !== null &&
+                    data[key] !== undefined &&
+                    data[key] !== "",
+                )
                 .map(({ key, label, type }) =>
-                  renderCell(key, label, type, null, data)
+                  renderCell(key, label, type, null, data),
                 )}
             </tbody>
           </table>
+          <div className="mt-3 px-4">
+            <Button asChild>
+              <Link to={`/dashboard/drawdowns/${data.drawdown_id}`}>View Details</Link>
+            </Button>
+          </div>
         </ScrollArea>
       </SheetContent>
     </Sheet>

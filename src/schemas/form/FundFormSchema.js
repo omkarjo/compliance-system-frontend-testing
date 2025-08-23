@@ -197,7 +197,7 @@ export const fund_Schmema_fields = [
   {
     name : "mgmt_fee_rate",
     label: "Management Fee Rate",
-    type: "number",
+    type: "amount",
     placeholder: "Please enter management fee rate",
     required: true,
   },

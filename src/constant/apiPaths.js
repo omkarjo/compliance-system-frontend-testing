@@ -75,3 +75,10 @@ export const drawdownApiPaths = {
   deleteDrawdownPrefix: "/api/drawdowns/",
   preview: "/api/drawdowns/preview",
 };
+
+
+export const unitAllotmentApiPaths = {
+  generateUnitAllotments: "/api/unit-allotments/generate",
+  get: "/api/unit-allotments",
+  getByIdPrefix: "/api/unit-allotments/"
+};

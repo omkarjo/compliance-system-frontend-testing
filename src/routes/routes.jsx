@@ -53,6 +53,11 @@ const DrawDownsPage = lazy(
   () => import("@/pages/Dashboard/Compliance/Drawdown/DrawdownsPage"),
 );
 
+
+const DrawdownDetailPage = lazy(
+  () => import("@/pages/Dashboard/Compliance/Drawdown/DrawdownDetailPage"),
+);
+
 const SebiReportPage = lazy(
   () => import("@/pages/Dashboard/Compliance/SEBI-Report/SEBIReportPage"),
 );
@@ -124,7 +129,7 @@ const AppRoutes = () => {
 
             <Route path="drawdowns">
               <Route index element={<DrawDownsPage />} />
-              <Route path=":id" element={<div>Drawdown Details</div>} />
+              <Route path=":id" element={<DrawdownDetailPage />} />
             </Route>
 
             <Route path="entities" element={<EntitiesPage />} />

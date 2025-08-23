@@ -38,12 +38,13 @@ import { useFormState } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { CountryDropdown } from "../extension/country-dropdown";
 import { PhoneInput } from "../extension/phone-input";
+import { AmountInput } from "./AmountInput";
+import { AutocompleteInput } from "./AutocompleteInput";
+import EntitySelect from "./EntitySelect";
+import FundSelect from "./fund-select";
 import { TagsInput } from "./tags-input";
 import TaskInputCommand from "./task-select";
 import UserSelect from "./user-select";
-import EntitySelect from "./EntitySelect";
-import FundSelect from "./fund-select";
-import { AutocompleteInput } from "./AutocompleteInput";
 
 export const FileSvgDraw = memo(({ allowedTypes }) => (
   <div className="flex flex-col items-center justify-center p-4 text-gray-500 dark:text-gray-400">
@@ -148,6 +149,23 @@ const FormGenerate = ({
               e.preventDefault();
             }
           }}
+          {...field}
+        />
+      ),
+      amount: (field, formField, isSubmitting, disabledFields = []) => (
+        <AmountInput
+          placeholder={formField?.placeholder || ""}
+          min={formField?.min}
+          max={formField?.max}
+          className={cn(
+            "no-spinners focus-visible:ring-0",
+            formField?.className,
+          )}
+          disabled={
+            isSubmitting ||
+            formField?.disabled ||
+            disabledFields?.includes(field.name)
+          }
           {...field}
         />
       ),
