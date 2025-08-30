@@ -82,3 +82,14 @@ export const unitAllotmentApiPaths = {
   get: "/api/unit-allotments",
   getByIdPrefix: "/api/unit-allotments/"
 };
+
+
+export const paymentApiPaths = {
+  uploadStatement: "/api/payment-reconciliations/upload-statement",
+  manualRecord: "/api/payment-reconciliations/manual-record",
+  list: "/api/payment-reconciliations/",
+  updatePrefix: "/api/payment-reconciliations/",
+  deletePrefix: "/api/payment-reconciliations/",
+  getByIdPrefix: "/api/payment-reconciliations/",
+  deleteReconciliationPrefix: "/api/payment-reconciliations/reconciliation/",
+};

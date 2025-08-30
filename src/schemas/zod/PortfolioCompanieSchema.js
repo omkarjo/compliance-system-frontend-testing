@@ -2,7 +2,19 @@ import { z } from "zod";
 
 export const PortfolioCompanieSchema = z.object({
   startup_brand: z.string().min(1, "Startup Brand is required"),
-  sector: z.string().min(1, "Sector is required"),
+  sector: z
+    .array(z.string())
+    .min(1, "Select at least 1 sector")
+    .max(2, "You can select up to 2 sectors"),
+
+  subSector: z
+    .record(
+      z.string(), // sector key
+      z.array(z.string()).max(1, "Only one sub-sector allowed per sector"),
+    )
+    .refine((val) => Object.keys(val).length > 0, {
+      message: "At least one sub-sector is required",
+    }),
   pan: z.string().min(1, "PAN is required"),
   isin: z.string().min(1, "ISIN is required"),
   product_description: z.string().min(1, "Product Description is required"),

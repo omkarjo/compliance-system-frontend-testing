@@ -42,6 +42,7 @@ import { AmountInput } from "./AmountInput";
 import { AutocompleteInput } from "./AutocompleteInput";
 import EntitySelect from "./EntitySelect";
 import FundSelect from "./fund-select";
+import { MultiSelect } from "./MultiSelect";
 import { TagsInput } from "./tags-input";
 import TaskInputCommand from "./task-select";
 import UserSelect from "./user-select";
@@ -191,6 +192,15 @@ const FormGenerate = ({
             ))}
           </SelectContent>
         </Select>
+      ),
+      multiSelect: (field, formField, specialProp) => (
+        <MultiSelect
+          field={field}
+          formField={formField}
+          isSubmitting={isSubmitting}
+          disabledFields={disabledFields}
+          specialProps={specialProp}
+        />
       ),
       date: (field, formField) => {
         const selectedDate =

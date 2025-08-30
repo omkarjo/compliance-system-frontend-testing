@@ -1,8 +1,8 @@
-import { unitAllotmentApiPaths } from "@/constant/apiPaths";
+import { paymentApiPaths } from "@/constant/apiPaths";
 import { apiWithAuth } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 
-const fetchUnitAllotments = async ({
+const fetchPayments = async ({
   pageIndex,
   pageSize,
   sortBy,
@@ -25,19 +25,21 @@ const fetchUnitAllotments = async ({
       }, {}),
     };
 
-    const response = await apiWithAuth.get(unitAllotmentApiPaths.get, {
+    const response = await apiWithAuth.get(paymentApiPaths.list, {
       params: searchParams,
     });
 
-    const { allotments, total_count } = response.data;
+    const payments = response.data.payments || [];
+    const total_count = response.data.total_count || 0;
+
     return {
-      data: allotments || [],
-      totalCount: total_count || 0,
+      data: payments,
+      totalCount: total_count,
     };
   } catch (error) {
-    console.error("Error fetching unit allotments:", error);
+    console.error("Error fetching payments:", error);
 
-    let message = "Failed to fetch unit allotments";
+    let message = "Failed to fetch payments";
     if (
       error.response?.data?.detail &&
       typeof error.response.data.detail === "string"
@@ -48,7 +50,7 @@ const fetchUnitAllotments = async ({
   }
 };
 
-export const useGetUnitAllotments = ({
+export const useGetPayments = ({
   pageIndex,
   pageSize,
   sortBy = [],
@@ -61,9 +63,9 @@ export const useGetUnitAllotments = ({
       : "";
 
   return useQuery({
-    queryKey: ["unit-allotments", pageIndex, pageSize, sort, filters],
+    queryKey: ["payments", pageIndex, pageSize, sort, filters],
     queryFn: () =>
-      fetchUnitAllotments({
+      fetchPayments({
         pageIndex,
         pageSize,
         sortBy,

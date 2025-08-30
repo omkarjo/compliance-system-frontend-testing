@@ -1,7 +1,13 @@
 import { apiWithAuth } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 
-const fetchDrawdowns = async ({ pageIndex, pageSize, sortBy, filters }) => {
+const fetchDrawdowns = async ({
+  pageIndex,
+  pageSize,
+  sortBy,
+  filters,
+  groupByQuarter = false,
+}) => {
   try {
     const firstSort = sortBy?.[0];
     const sort =
@@ -23,10 +29,40 @@ const fetchDrawdowns = async ({ pageIndex, pageSize, sortBy, filters }) => {
       params: searchParams,
     });
 
-    const { drawdowns, total_count } = response.data;
+    let drawdowns = response.data.drawdowns || [];
+    const total_count = response.data.total_count || 0;
+
+    if (groupByQuarter) {
+      const grouped = {};
+      for (const d of drawdowns) {
+        const q = d.drawdown_quarter;
+        if (!grouped[q]) {
+          grouped[q] = {
+            drawdown_quarter: q,
+            notice_date: d.notice_date,
+            status: d.status,
+            invi_filling: d.invi_filling,
+            drawdown_amount: 0,
+            remaining_commitment: 0,
+            drawdown_count: 0,
+          };
+        }
+        grouped[q].drawdown_amount += parseFloat(d.drawdown_amount || 0);
+        grouped[q].remaining_commitment += parseFloat(
+          d.remaining_commitment || 0,
+        );
+        grouped[q].drawdown_count += 1;
+      }
+      drawdowns = Object.values(grouped);
+      return {
+        data: drawdowns,
+        totalCount: drawdowns.length,
+      };
+    }
+
     return {
-      data: drawdowns || [],
-      totalCount: total_count || 0,
+      data: drawdowns,
+      totalCount: total_count,
     };
   } catch (error) {
     console.error("Error fetching drawdowns:", error);
@@ -47,6 +83,7 @@ export const useGetDrawdowns = ({
   pageSize,
   sortBy = [],
   filters = [],
+  groupByQuarter = false,
 }) => {
   const firstSort = sortBy.at(0);
   const sort =
@@ -55,13 +92,14 @@ export const useGetDrawdowns = ({
       : "";
 
   return useQuery({
-    queryKey: ["drawdowns", pageIndex, pageSize, sort, filters],
+    queryKey: ["drawdowns", pageIndex, pageSize, sort, filters, groupByQuarter],
     queryFn: () =>
       fetchDrawdowns({
         pageIndex,
         pageSize,
         sortBy,
         filters,
+        groupByQuarter,
       }),
     placeholderData: (prev) => prev,
   });

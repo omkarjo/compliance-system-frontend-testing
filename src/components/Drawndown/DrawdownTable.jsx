@@ -93,13 +93,12 @@ export default function DrawdownTable({ openView = () => {} }) {
     },
   ];
 
-  const filterOptions = [
-  ];
+  const filterOptions = [];
 
   return (
     <DataTable
       columns={columns}
-      fetchData={useGetDrawdowns}
+      fetchData={props => useGetDrawdowns({ ...props, groupByQuarter: true })}
       filterOptions={filterOptions}
       initialPageSize={10}
       searchBox

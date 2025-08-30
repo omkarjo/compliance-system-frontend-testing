@@ -135,7 +135,7 @@ export const fund_Schmema_fields = [
   {
     label: "Total Commitment received (Corpus) as on Initial Close (Rs. Cr)",
     name: "commitment_initial_close_cr",
-    type: "number",
+    type: "amount",
     placeholder:
       "Please enter total commitment received (Corpus) as on Initial Close (Rs. Cr)",
     required: true,
@@ -143,14 +143,14 @@ export const fund_Schmema_fields = [
   {
     label: "Target Fund Size",
     name: "target_fund_size",
-    type: "number",
+    type: "amount",
     placeholder: "Please enter target fund size",
     required: true,
   },
   {
     label: "Greenshoe option",
     name: "greenshoe_option",
-    type: "number",
+    type: "amount",
     placeholder: "Please enter greenshoe option",
     required: true,
   },
@@ -197,7 +197,9 @@ export const fund_Schmema_fields = [
   {
     name : "mgmt_fee_rate",
     label: "Management Fee Rate",
-    type: "amount",
+    type: "number",
+    min: 0,
+    max: 100,
     placeholder: "Please enter management fee rate",
     required: true,
   },
@@ -205,6 +207,8 @@ export const fund_Schmema_fields = [
     name: "stamp_duty_rate",
     label: "Stamp Duty Rate",
     type: "number",
+    min: 0,
+    max: 100,
     placeholder: "Please enter stamp duty rate",
     required: true,
   }

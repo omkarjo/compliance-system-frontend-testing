@@ -129,7 +129,7 @@ const AppRoutes = () => {
 
             <Route path="drawdowns">
               <Route index element={<DrawDownsPage />} />
-              <Route path=":id" element={<DrawdownDetailPage />} />
+              <Route path=":quarter" element={<DrawdownDetailPage />} />
             </Route>
 
             <Route path="entities" element={<EntitiesPage />} />

@@ -43,6 +43,7 @@ const drawdownSchema = [
   { key: "mgmt_fees", label: "Management Fees", type: "currency" },
   { key: "stamp_duty", label: "Stamp Duty", type: "currency" },
   { key: "reference_number", label: "Reference Number", type: "text" },
+  { key: "drawdown_count", label: "No Of LPs", type: "number" },
   { key: "notes", label: "Notes", type: "textarea" },
 ];
 
@@ -85,7 +86,7 @@ export default function SheetDrawdownView({
           </table>
           <div className="mt-3 px-4">
             <Button asChild>
-              <Link to={`/dashboard/drawdowns/${data.drawdown_id}`}>View Details</Link>
+              <Link to={`/dashboard/drawdowns/${encodeURIComponent(data.drawdown_quarter)}`}>View Details</Link>
             </Button>
           </div>
         </ScrollArea>
