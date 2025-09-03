@@ -1,7 +1,7 @@
 import { ServerDataTable } from "@/components/Table/ServerDataTable";
 import { useGetAllActivities } from "@/react-query/query/activity/useGetAllActivities";
-import { activityColumns } from "@/schemas/columns/activityColumns";
-import { activityFilterOptions } from "@/schemas/filters/activityFilterOptions";
+import { activityColumns } from "@/components/Table/columns/activityColumns";
+import { activityFilterOptions } from "@/components/Table/filters/activityFilterOptions";
 import React from "react";
 
 export default function ActivityLog() {

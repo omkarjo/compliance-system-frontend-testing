@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCreateFundEntity } from "@/react-query/mutations/FundEntity/useCreateFundEntity";
 import { useGetFundById } from "@/react-query/query/Funds/useGetFundById";
 import { useGetFundEntitiesByFundId } from "@/react-query/query/Funds/useGetFundEntitiesByFundId";
-import { fundEntityLinkFields } from "@/schemas/form/FundFormSchema";
+import { fundEntityLinkFields } from "@/schemas/feilds/fundFormFields";
 import { fundEntityLinkSchema } from "@/schemas/zod/fundSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";

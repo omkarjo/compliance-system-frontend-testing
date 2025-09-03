@@ -30,7 +30,7 @@ export function DataTablePagination({ table }) {
         Page <span>{pageIndex + 1}</span> of <span>{pageCount}</span>
       </div>
       <div className="flex items-center gap-2">
-        <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
+        <Select value={pageSize.toString() || "10"} onValueChange={handlePageSizeChange}>
           <SelectTrigger className="h-8 w-20">
             <SelectValue />
           </SelectTrigger>

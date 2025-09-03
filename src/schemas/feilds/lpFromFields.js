@@ -168,7 +168,7 @@ export const lpFromFields = [
 ];
 
 
-export const lpCreateSchema = [
+export const lpCreateFeilds = [
   {
     name: "kyc_file",
     label: "KYC File",

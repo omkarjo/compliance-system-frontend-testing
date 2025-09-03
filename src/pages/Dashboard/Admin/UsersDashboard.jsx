@@ -1,7 +1,7 @@
 import DeleteAlertDialog from "@/components/Dashboard/includes/delete-alert-dilog";
 import { ServerDataTable } from "@/components/Table";
 import { useGetUserByName } from "@/react-query/query/user/userQuery";
-import { userColumns } from "@/schemas/columns/userColumns";
+import { userColumns } from "@/components/Table/columns/userColumns";
 import { useAppSelector } from "@/store/hooks";
 import { apiWithAuth } from "@/utils/api";
 import useCheckRoles from "@/utils/check-roles";

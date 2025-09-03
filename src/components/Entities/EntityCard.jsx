@@ -76,15 +76,6 @@ ${data.entity_tan ? `TAN: ${data.entity_tan}` : ""}
         </div>
 
         <div className="flex items-center gap-2">
-          <Avatar className="size-12">
-            <AvatarImage
-              src={data.profile_url || "/images/avatar-placeholder.png"}
-              alt={data.entity_name}
-            />
-            <AvatarFallback>
-              {(data.entity_name?.[0] || "?").toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

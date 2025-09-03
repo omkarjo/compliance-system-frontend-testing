@@ -8,8 +8,8 @@ import { useGenerateDrawdowns } from "@/react-query/mutations/drawndown/useGener
 import { usePreviewDrawdowns } from "@/react-query/mutations/drawndown/usePreviewDrawdowns";
 import { useGetDrawdownById } from "@/react-query/query/drawdown/useGetDrawdownById";
 import { useGetDrawdowns } from "@/react-query/query/drawdown/useGetDrawdowns";
-import { drawdownColumns } from "@/schemas/columns/drawdownColumns";
-import { drawnDownFeilds } from "@/schemas/form/DrawnDownSchema";
+import { drawdownColumns } from "@/components/Table/columns/drawdownColumns";
+import { drawnDownFeilds } from "@/schemas/feilds/drawnDownFeilds";
 import { DrawdownSchema } from "@/schemas/zod/DrawdownSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect, useState } from "react";

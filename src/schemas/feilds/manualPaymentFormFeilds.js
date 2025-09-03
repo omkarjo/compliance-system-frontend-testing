@@ -1,4 +1,4 @@
-export const manualPaymentSchema = [
+export const manualPaymentFormFeilds = [
     {
         name: "paid_amount",
         label: "Paid Amount",

@@ -7,8 +7,8 @@ import { useCreateLimitedPartner } from "@/react-query/mutations/LP/useCreateLP"
 import { useUpdateLimitedPartner } from "@/react-query/mutations/LP/useUpdateLimitedPartner";
 import { useGetLP } from "@/react-query/query/lp/lpQuery";
 import { useGetLimitedPartnerById } from "@/react-query/query/lp/useGetLimitedPartnerById";
-import { lpColumns } from "@/schemas/columns/lpColumns";
-import { lpCreateSchema, lpFromFields } from "@/schemas/form/lpSchema";
+import { lpColumns } from "@/components/Table/columns/lpColumns";
+import { lpCreateFeilds, lpFromFields } from "@/schemas/feilds/lpFromFields";
 import { lpCreateZodSchema, lpSchema } from "@/schemas/zod/lpSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Upload } from "lucide-react";
@@ -214,7 +214,7 @@ export default function LPDashboard() {
         submitText={"Onboard"}
         form={createForm}
         onSubmit={createForm.handleSubmit(onSubmitCreate)}
-        formFields={lpCreateSchema}
+        formFields={lpCreateFeilds}
         isOpen={createDialog.isOpen}
         onClose={handleCreateDialogClose}
       />

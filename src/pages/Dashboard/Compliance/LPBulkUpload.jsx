@@ -1,5 +1,5 @@
 import { FileInput, FileUploader } from "@/components/extension/file-uploader";
-import { DataTable } from "@/components/Table";
+import { DataTable, ServerDataTable } from "@/components/Table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -456,10 +456,10 @@ export default function LPBulkUpload() {
                 </Button>
               </div>
             </div>
-            <DataTable
+            <ServerDataTable
               columns={columns}
-              filterOptions={filterOptions}
-              fetchData={({ pageIndex, pageSize, filters }) => {
+              filterableColumns={filterOptions}
+              fetchQuery={({ pageIndex, pageSize, filters }) => {
                 let dataWorkingOn = data;
                 const filteredOptions = filters?.at(0);
 

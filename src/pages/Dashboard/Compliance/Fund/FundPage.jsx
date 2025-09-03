@@ -3,7 +3,7 @@ import { ServerDataTable } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import { useGetFundById } from "@/react-query/query/Funds/useGetFundById";
 import { useGetFunds } from "@/react-query/query/Funds/useGetFunds";
-import { fundColumns } from "@/schemas/columns/fundColumns";
+import { fundColumns } from "@/components/Table/columns/fundColumns";
 import { Plus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router";

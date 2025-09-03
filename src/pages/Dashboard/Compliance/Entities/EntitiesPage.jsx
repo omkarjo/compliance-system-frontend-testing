@@ -1,8 +1,5 @@
-"use client";
-
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import EntitySheetView from "@/components/Dashboard/sheet/EntitySheetView";
-import TableEntitiesView from "@/components/Dashboard/tables/table-entites";
 import EntitiesSection from "@/components/Entities/EntitiesSection";
 import { ServerDataTable } from "@/components/Table";
 import { Button } from "@/components/ui/button";
@@ -10,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCreateEntity } from "@/react-query/mutations/Entity/useCreateEntity";
 import { useUpdateEntity } from "@/react-query/mutations/Entity/useUpdateEntity";
 import { useGetEntities } from "@/react-query/query/Entities/useGetEntities";
-import { entityColumns } from "@/schemas/columns/entityColumns";
+import { entityColumns } from "@/components/Table/columns/entityColumns";
 import {
   alwaysVisibleFields,
   defaultValues,
@@ -20,7 +17,7 @@ import {
   registrationRequired,
   tanRequired,
 } from "@/schemas/constant/Entity";
-import { entityFormFields } from "@/schemas/form/EntitiesSchema";
+import { entityFormFields } from "@/schemas/feilds/entityFormFields";
 import { EntitySchema } from "@/schemas/zod/EntitiesSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDate } from "date-fns";

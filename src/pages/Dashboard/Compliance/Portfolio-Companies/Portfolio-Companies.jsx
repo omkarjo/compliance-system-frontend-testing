@@ -23,8 +23,8 @@ import { useCreatePortfolioCompany } from "@/react-query/mutations/PortfolioComp
 import { useDeletePortfolioCompany } from "@/react-query/mutations/PortfolioCompanies/useDeletePortfolioCompany";
 import { useGETPortfolioCompanies } from "@/react-query/query/PortfolioCompanies/useGetPortfolioCompanies";
 import { useGetPortfolioCompanyFullData } from "@/react-query/query/PortfolioCompanies/useGetPortfolioCompaniesById";
-import { portfolioCompanyColumns } from "@/schemas/columns/portfolioCompanyColumns";
-import { PortfolioCompanieCreateFeilds } from "@/schemas/form/PortfolioCompanieCreateFeilds";
+import { portfolioCompanyColumns } from "@/components/Table/columns/portfolioCompanyColumns";
+import { PortfolioCompanieCreateFeilds } from "@/schemas/feilds/PortfolioCompanieCreateFeilds";
 import { PortfolioCompanieSchema } from "@/schemas/zod/PortfolioCompanieSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";

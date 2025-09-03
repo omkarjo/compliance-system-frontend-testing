@@ -1,8 +1,7 @@
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
-import SheetTaskViewFM from "@/components/Dashboard/sheet/sheet-task-view-fm";
-import TableTaskViewFM from "@/components/Dashboard/tables/TableTaskViewFM";
+import TableTaskViewUser from "@/components/Task/TableTaskViewUser";
 import { useUpdateTask } from "@/react-query/mutations/task/updateTask";
-import { taskFormFields } from "@/schemas/form/taskSchema";
+import { taskFormFields } from "@/schemas/feilds/taskFeilds";
 import { taskSchema } from "@/schemas/zod/taskSchema";
 import { usePermissionTaskChange } from "@/utils/havePermission";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -237,7 +236,7 @@ export default function TaskDashboardUser() {
         <h1 className="text-2xl font-bold">Task Dashboard</h1>
       </div>
       {/* <hr className="my-4" /> */}
-      <TableTaskViewFM
+      <TableTaskViewUser
         actionType={actionType}
         openView={(data) => {
           setSheetTask({ isOpen: true, data });
@@ -286,12 +285,12 @@ export default function TaskDashboardUser() {
           },
         ]}
       />
-      <SheetTaskViewFM
+      {/* <SheetTaskViewFM
         data={sheetTask.data}
         isOpen={sheetTask.isOpen}
         buttons={subActions}
         onClose={() => setSheetTask({ isOpen: false, data: null })}
-      />
+      /> */}
     </section>
   );
 }

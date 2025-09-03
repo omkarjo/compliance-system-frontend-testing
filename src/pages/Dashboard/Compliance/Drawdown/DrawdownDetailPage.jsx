@@ -1,8 +1,8 @@
 import { InfoCards, InfoCardsSkeleton } from "@/components/Cards/InfoCard";
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import BadgeStatusTask from "@/components/includes/badge-status";
-import { DataTable, SortButton } from "@/components/Table";
 import SheetView from "@/components/Sheet/SheetView";
+import { DataTable, ServerDataTable, SortButton } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { currencyFormatter, formatPayloadForFastAPI } from "@/lib/formatter";
@@ -12,7 +12,7 @@ import { useGetDrawdowns } from "@/react-query/query/drawdown/useGetDrawdowns";
 import { useGetLP } from "@/react-query/query/lp/lpQuery";
 import { useGetPayments } from "@/react-query/query/payment/useGetPayments";
 import { useGetUnitAllotments } from "@/react-query/query/UnitAllotments/useGetUnitAllotments";
-import { manualPaymentSchema } from "@/schemas/form/PaymentSchema";
+import { manualPaymentFormFeilds } from "@/schemas/feilds/manualPaymentFormFeilds";
 import { manualPaymentZodSchema } from "@/schemas/zod/PaymentSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
@@ -531,13 +531,13 @@ export default function DrawdownDetailPage() {
             columns={drawdownTableColumns}
             data={drawdownTableRows}
             isLoading={isLoadingLP}
-            openView={handleViewDrawdownDetails}
+            onRowClick={(row) => handleViewDrawdownDetails(row.original)}
           />
         </TabsContent>
         <TabsContent value="unit-allotments">
-          <DataTable
+          <ServerDataTable
             columns={columnsUnitAllotments}
-            fetchData={(args) => {
+            fetchQuery={(args) => {
               return useGetUnitAllotments({
                 ...args,
                 filters: [{ filterid: "quarter", optionid: quarter }],
@@ -550,7 +550,7 @@ export default function DrawdownDetailPage() {
             columns={paymentTableColumns}
             data={paymentTableRows}
             isLoading={isLoadingPayments}
-            openView={handleViewPaymentDetails}
+            // openView={handleViewPaymentDetails}
           />
         </TabsContent>
       </Tabs>
@@ -566,7 +566,7 @@ export default function DrawdownDetailPage() {
         submitText="Update"
         form={form}
         onSubmit={form.handleSubmit(handleManualPaymentSubmit)}
-        formFields={manualPaymentSchema}
+        formFields={manualPaymentFormFeilds}
         isOpen={!!manualPaymentProps}
         onClose={() => setManualPaymentProps(null)}
       />
