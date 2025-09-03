@@ -1,5 +1,6 @@
-import { z } from "zod";
 import { subSectorData } from "../constant/portfolio";
+import { z } from "zod";
+
 
 export const PortfolioCompanieSchema = z.object({
   startup_brand: z.string().min(1, "Startup Brand is required"),
@@ -43,16 +44,16 @@ export const PortfolioCompanieSchema = z.object({
     )
   ).min(1, "At least one file is required"),
 }).superRefine((data, ctx) => {
-  // Check exactly one sub-sector per category
+  // For each selected sector, at most one sub-sector is allowed, zero is allowed
   for (const category of data.sector) {
     const validSubs = (data.subSector || []).filter(
       sub => subSectorData[category]?.some(s => s.value === sub)
     );
-    if (validSubs.length !== 1) {
+    if (validSubs.length > 1) {
       ctx.addIssue({
         path: ["subSector"],
         code: z.ZodIssueCode.custom,
-        message: `Select exactly one sub-sector for "${category}".`,
+        message: `You can select at most one sub-sector for "${category}".`,
       });
     }
   }
@@ -65,6 +66,17 @@ export const PortfolioCompanieSchema = z.object({
       path: ["subSector"],
       code: z.ZodIssueCode.custom,
       message: "Only select sub-sectors that match your chosen categories.",
+    });
+  }
+  // At least one sub-sector must be selected (already checked by .min(1), this is just for explicit error message)
+  if (!data.subSector || data.subSector.length < 1) {
+    ctx.addIssue({
+      path: ["subSector"],
+      code: z.ZodIssueCode.too_small,
+      type: "array",
+      minimum: 1,
+      inclusive: true,
+      message: "Select at least one sub-sector",
     });
   }
 });

@@ -352,6 +352,7 @@ export default function PortfolioCompaniesPage() {
 
   const subSectorOptions = useMemo(() => {
     if (!sector || sector.length === 0) return [];
+    form.setValue("subSector" , []);
     return sector.flatMap((sec) => subSectorData[sec] || []);
   }, [sector]);
 

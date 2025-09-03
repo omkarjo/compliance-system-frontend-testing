@@ -66,7 +66,7 @@ export const PortfolioCompanieCreateFeilds = [
   {
     name: "amount_invested",
     label: "Amount Invested",
-    type: "number",
+    type: "amount",
     required: true,
     placeholder: "Enter amount invested",
   },
@@ -94,7 +94,7 @@ export const PortfolioCompanieCreateFeilds = [
   {
     name: "latest_valuation",
     label: "Latest Valuation",
-    type: "number",
+    type: "amount",
     required: true,
     placeholder: "Enter latest valuation",
   },
