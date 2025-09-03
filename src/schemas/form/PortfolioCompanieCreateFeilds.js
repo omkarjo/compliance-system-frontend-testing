@@ -33,7 +33,7 @@ export const PortfolioCompanieCreateFeilds = [
     type: "multiSelect",
     required: true,
     placeholder: "Select one sub-sector per chosen sector",
-    max: 1, 
+    max: 2, 
   },
   {
     name: "product_description",

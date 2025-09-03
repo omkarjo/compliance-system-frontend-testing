@@ -147,7 +147,8 @@ const subSectorData = {
 
 const dummyData = {
   startup_brand: "",
-  sector: "",
+  sector: [],
+  subSector: [],
   pan: "",
   isin: "",
   product_description: "",
@@ -305,7 +306,8 @@ export default function PortfolioCompaniesPage() {
 
       const payload = {
         startup_brand: formValues.startup_brand?.trim(),
-        sector: formValues.sector?.trim(),
+        sector: formValues.sector,
+        subSector: formValues.subSector,
         pan: formValues.pan?.trim().toUpperCase(),
         isin: formValues.isin?.trim().toUpperCase(),
         product_description: formValues.product_description?.trim(),
