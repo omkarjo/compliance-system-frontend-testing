@@ -1,18 +1,20 @@
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
-import DrawdownTable from "@/components/Drawndown/DrawdownTable";
 import PreviewDrawdownModal from "@/components/Drawndown/PreviewDrawdownModal";
 import SheetDrawdownView from "@/components/Drawndown/SheetDrawdownView";
+import { ServerDataTable } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import { serializeDates } from "@/lib/formatter";
 import { useGenerateDrawdowns } from "@/react-query/mutations/drawndown/useGenerateDrawdowns";
 import { usePreviewDrawdowns } from "@/react-query/mutations/drawndown/usePreviewDrawdowns";
 import { useGetDrawdownById } from "@/react-query/query/drawdown/useGetDrawdownById";
-import { drawnDownFeilds } from "@/schemas/form/DrawnDownSchema";
+import { useGetDrawdowns } from "@/react-query/query/drawdown/useGetDrawdowns";
+import { drawdownColumns } from "@/components/Table/columns/drawdownColumns";
+import { drawnDownFeilds } from "@/schemas/feilds/drawnDownFeilds";
 import { DrawdownSchema } from "@/schemas/zod/DrawdownSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSearchParams, useNavigate, useLocation } from "react-router";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
 
 export default function DrawdownsPage() {
   const [capitalCallTask, setCapitalCallTask] = useState({ isOpen: false });
@@ -24,6 +26,7 @@ export default function DrawdownsPage() {
   const action = searchParams.get("action");
   const navigate = useNavigate();
   const location = useLocation();
+  const columns = drawdownColumns();
 
   const previewMutation = usePreviewDrawdowns();
   const generateMutation = useGenerateDrawdowns();
@@ -82,8 +85,18 @@ export default function DrawdownsPage() {
 
       {/* Table */}
       <main className="mx-4 flex-1">
-        <DrawdownTable
-          openView={(data) => setSheet({ isOpen: true, data })}
+        <ServerDataTable
+          columns={columns}
+          fetchQuery={(props) =>
+            useGetDrawdowns({ ...props, groupByQuarter: true })
+          }
+          filterableColumns={[]}
+          initialPageSize={10}
+          onRowClick={(row) => {
+            setSheet({ isOpen: true, data: row.original });
+          }}
+          searchPlaceholder="Search Activity..."
+          emptyMessage="No activity logs found"
         />
       </main>
 

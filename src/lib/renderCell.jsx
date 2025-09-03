@@ -1,4 +1,4 @@
-import UserBadge from "@/components/includes/user-badge";
+import UserBadge from "@/components/includes/UserBadge";
 import {
   currencyFormatter,
   getCountryDetails,

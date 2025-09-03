@@ -47,6 +47,7 @@
     "country-data-list": "^1.4.0",
     "date-fns": "^3.6.0",
     "dompurify": "^3.2.6",
+    "eslint-plugin-prettier": "^5.5.4",
     "fuse.js": "^7.1.0",
     "lucide-react": "^0.479.0",
     "motion": "^12.5.0",

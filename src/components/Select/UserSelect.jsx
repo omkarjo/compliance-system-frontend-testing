@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 import { useGetUserByName } from "@/react-query/query/user/userQuery";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import UserBadge from "./user-badge";
+import UserBadge from "../includes/UserBadge";
 
 const UserCommandList = ({
   users,

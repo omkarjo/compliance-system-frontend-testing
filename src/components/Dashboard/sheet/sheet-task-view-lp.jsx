@@ -1,27 +1,21 @@
+import { FormGenerate } from "@/components/Form";
 import BadgeStatusTask from "@/components/includes/badge-status";
-import FormGenerate from "@/components/includes/FormGenrate";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { lpTaskFields } from "@/schemas/form/lpTaskSchema";
+import { lpTaskFields } from "@/schemas/feilds/lpTaskSchema";
 import { lpTaskSchema } from "@/schemas/zod/lpTaskSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  CircleUserRound,
-  DownloadIcon,
-  File,
-  Timer,
-  TriangleAlert,
+    DownloadIcon,
+    File,
+    Timer
 } from "lucide-react";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
@@ -29,7 +23,6 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 const taskDataOrder = ["deadline", "attachments"];
 
-const SHEET_TITLE = "Upload KYC Document";
 const SHEET_DESCRIPTION =
   "We need you to upload the following documents for KYC";
 const LIST = ["Passport", "TAX IDs", "Proof of Address"];

@@ -1,4 +1,4 @@
-import DataTable from "@/components/includes/data-table";
+import { DataTable } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,7 +13,6 @@ import { useGETPortfolioCompanies } from "@/react-query/query/PortfolioCompanies
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 
 export default function PortfolioCompaniesTable({ openView = () => {} }) {
-  const { mutate: deleteCompany, isLoading } = useDeletePortfolioCompany();
 
 
 
@@ -134,24 +133,6 @@ export default function PortfolioCompaniesTable({ openView = () => {} }) {
     },
   ];
 
-  const searchTypeOptions = [
-    {
-      label: "Name",
-      value: "query",
-    },
-    {
-      label: "Sector",
-      value: "sector",
-    },
-    {
-      label: "Product Description",
-      value: "product_description",
-    },
-    {
-      label: "Registered Address",
-      value: "registered_address",
-    },
-  ];
 
 
   const filterOptions = [];

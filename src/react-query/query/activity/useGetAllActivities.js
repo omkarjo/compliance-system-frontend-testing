@@ -19,8 +19,6 @@ const fetchData = async ({ pageIndex, pageSize, sortBy, filters }) => {
     const { logs, total } = response.data;
     return { data: logs || [], totalCount: total || 0 };
   } catch (error) {
-    console.error("Error fetching data:", error);
-
     let message = "Failed to fetch activity logs";
     if (
       error.response?.data?.detail &&
@@ -28,7 +26,6 @@ const fetchData = async ({ pageIndex, pageSize, sortBy, filters }) => {
     ) {
       message = error.response.data.detail;
     }
-
     throw new Error(message);
   }
 };

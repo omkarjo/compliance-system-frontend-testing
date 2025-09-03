@@ -1,10 +1,12 @@
 import DeleteAlertDialog from "@/components/Dashboard/includes/delete-alert-dilog";
-import ViewListUser from "@/components/Dashboard/tables/view-user-fm";
+import { ServerDataTable } from "@/components/Table";
+import { useGetUserByName } from "@/react-query/query/user/userQuery";
+import { userColumns } from "@/components/Table/columns/userColumns";
 import { useAppSelector } from "@/store/hooks";
 import { apiWithAuth } from "@/utils/api";
 import useCheckRoles from "@/utils/check-roles";
 import { useQueryClient } from "@tanstack/react-query";
-import { Trash, ViewIcon } from "lucide-react";
+import { Trash } from "lucide-react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
@@ -108,10 +110,19 @@ export default function UsersDashboard() {
     },
   ];
 
+  const columns = userColumns(actionType);
+
   return (
     <section className="mt-4">
       <main className="mx-4 flex-1">
-        <ViewListUser actionType={actionType} />
+        <ServerDataTable
+          columns={columns}
+          fetchQuery={useGetUserByName}
+          filterableColumns={[]}
+          initialPageSize={10}
+          searchPlaceholder="Search Activity..."
+          emptyMessage="No activity logs found"
+        />
       </main>
       <DeleteAlertDialog
         title={deleteAlertDialog.title}

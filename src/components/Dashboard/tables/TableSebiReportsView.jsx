@@ -1,8 +1,8 @@
-import DataTable from "@/components/includes/data-table";
+import { DataTable, ServerDataTable } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import { useGetSebiReports } from "@/react-query/query/Sebi/useGetSebiReports";
-import { ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
+import { ArrowUpDown } from "lucide-react";
 
 export default function TableSebiReportsView() {
   const columns = [
@@ -29,7 +29,7 @@ export default function TableSebiReportsView() {
       cell: ({ row }) => {
         const date = row.getValue("created_at");
         return (
-          <div className="ps-2 text-left text-sm text-muted-foreground">
+          <div className="text-muted-foreground ps-2 text-left text-sm">
             {date ? format(new Date(date), "dd MMM yyyy") : "-"}
           </div>
         );
@@ -50,16 +50,16 @@ export default function TableSebiReportsView() {
             View Report
           </a>
         ) : (
-          <div className="ps-2 text-left text-muted">Not Uploaded</div>
+          <div className="text-muted ps-2 text-left">Not Uploaded</div>
         );
       },
     },
   ];
 
   return (
-    <DataTable
+    <ServerDataTable
       columns={columns}
-      fetchData={useGetSebiReports}
+      fetchQuery={useGetSebiReports}
       filterOptions={[]}
       initialPageSize={10}
       searchBox

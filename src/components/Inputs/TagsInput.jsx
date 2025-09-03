@@ -211,7 +211,7 @@ export const TagsInput = React.forwardRef(
 
 TagsInput.displayName = "TagsInput";
 
-export const tagsInputFieldGenerator = (field, formField) => (
+const tagsInputFieldGenerator = (field, formField) => (
   <TagsInput
     name={formField?.name || field.name}
     value={field.value || []}
@@ -248,3 +248,5 @@ export const tagsInputFieldGenerator = (field, formField) => (
     className={formField?.inputClassName}
   />
 );
+
+export default TagsInput;

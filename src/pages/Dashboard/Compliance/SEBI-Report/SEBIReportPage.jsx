@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SebiReportSchema } from "@/schemas/zod/SebiReportSchema";
-import { sebiReportFormFields } from "@/schemas/form/SEBIReportSchema";
+import { sebiReportFormFields } from "@/schemas/feilds/sebiReportFormFields";
 import { formatDate } from "date-fns";
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import { toast } from "sonner";

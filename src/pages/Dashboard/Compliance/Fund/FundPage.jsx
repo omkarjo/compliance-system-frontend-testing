@@ -1,10 +1,12 @@
-import TableFundView from "@/components/Dashboard/tables/table-fund-view";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { useCallback, useState, useEffect } from "react";
-import { Link, useNavigate, useLocation, useSearchParams } from "react-router";
 import SheetFundView from "@/components/Fund/SheetFundView";
+import { ServerDataTable } from "@/components/Table";
+import { Button } from "@/components/ui/button";
 import { useGetFundById } from "@/react-query/query/Funds/useGetFundById";
+import { useGetFunds } from "@/react-query/query/Funds/useGetFunds";
+import { fundColumns } from "@/components/Table/columns/fundColumns";
+import { Plus } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 
 export default function FundPage() {
   const navigate = useNavigate();
@@ -15,18 +17,16 @@ export default function FundPage() {
   const action = searchParams.get("action");
 
   const [sheet, setSheet] = useState({ isOpen: false, data: null });
+  const columns = fundColumns();
 
   const { data: fundData, isLoading } = useGetFundById(id, {
     enabled: !!id && action === "view",
   });
 
-  const handleOpenView = useCallback(
-    (fund) => {
-      // Open sheet with fund data
-      setSheet({ isOpen: true, data: fund });
-    },
-    []
-  );
+  const handleOpenView = useCallback((fund) => {
+    // Open sheet with fund data
+    setSheet({ isOpen: true, data: fund });
+  }, []);
 
   // Auto-open from query params
   useEffect(() => {
@@ -55,7 +55,17 @@ export default function FundPage() {
 
       {/* Table */}
       <main className="mx-4 flex-1">
-        <TableFundView openView={handleOpenView} />
+        <ServerDataTable
+          columns={columns}
+          fetchQuery={useGetFunds}
+          filterableColumns={[]}
+          initialPageSize={10}
+          onRowClick={(row) => {
+            handleOpenView(row.original);
+          }}
+          searchPlaceholder="Search Activity..."
+          emptyMessage="No activity logs found"
+        />
       </main>
 
       {/* Fund Sheet */}

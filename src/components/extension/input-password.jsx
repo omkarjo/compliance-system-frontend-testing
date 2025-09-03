@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
 export default function InputPassword({ className, ...rest }) {

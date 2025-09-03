@@ -414,7 +414,7 @@ export const investment_officer_fields = [
   },
 ];
 
-export const combinedFormSchema = [
+export const combinedFormFields = [
   ...fund_Schmema_fields,
   ...fund_bank_details_fields,
   ...fundAIFSchema,
