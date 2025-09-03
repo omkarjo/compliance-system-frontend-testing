@@ -1,5 +1,5 @@
 import InputPassword from "@/components/extension/input-password";
-import { PhoneInput } from "@/components/extension/phone-input";
+import { PhoneInput } from "@/components/Inputs";
 import { Button } from "@/components/ui/button";
 import {
   Card,
