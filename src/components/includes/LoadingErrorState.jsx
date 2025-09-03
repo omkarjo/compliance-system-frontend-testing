@@ -1,7 +1,7 @@
 import { AlertCircle, Hourglass, Inbox } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function LoadingState({ text = "Loading...", className = "" }) {
+export function LoadingState({ text = "Loading...", className = "" }) {
   return (
     <div
       className={cn(

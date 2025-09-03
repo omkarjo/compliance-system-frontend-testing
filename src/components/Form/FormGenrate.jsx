@@ -37,15 +37,14 @@ import { memo, useMemo } from "react";
 import { useFormState } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { CountryDropdown } from "../extension/country-dropdown";
-import { PhoneInput } from "../extension/phone-input";
-import { AmountInput } from "./AmountInput";
-import { AutocompleteInput } from "./AutocompleteInput";
-import EntitySelect from "./EntitySelect";
-import FundSelect from "./fund-select";
-import { MultiSelect } from "./MultiSelect";
-import { TagsInput } from "./tags-input";
-import TaskInputCommand from "./task-select";
-import UserSelect from "./user-select";
+import {
+  AmountInput,
+  AutocompleteInput,
+  MultiSelectInput,
+  PhoneInput,
+  TagsInput,
+} from "../Inputs";
+import { EntitySelect, FundSelect, TaskSelect, UserSelect } from "../Select";
 
 export const FileSvgDraw = memo(({ allowedTypes }) => (
   <div className="flex flex-col items-center justify-center p-4 text-gray-500 dark:text-gray-400">
@@ -93,6 +92,19 @@ const FormGenerate = ({
   const generateField = useMemo(() => {
     const fieldGenerators = {
       text: (field, formField) => (
+        <Input
+          className={cn("focus-visible:ring-0", formField?.className)}
+          placeholder={formField?.placeholder || ""}
+          disabled={
+            isSubmitting ||
+            formField?.disabled ||
+            disabledFields?.includes(field.name)
+          }
+          {...field}
+        />
+      ),
+
+      autocomplete: (field, formField) => (
         <AutocompleteInput
           className={cn("focus-visible:ring-0", formField?.className)}
           placeholder={formField?.placeholder || ""}
@@ -194,7 +206,7 @@ const FormGenerate = ({
         </Select>
       ),
       multiSelect: (field, formField, specialProp) => (
-        <MultiSelect
+        <MultiSelectInput
           field={field}
           formField={formField}
           isSubmitting={isSubmitting}
@@ -368,7 +380,7 @@ const FormGenerate = ({
         />
       ),
       task_select: (field, formField, specialProp) => (
-        <TaskInputCommand
+        <TaskSelect
           name={field.name}
           onValueChange={field.onChange}
           defaultValue={field.value}

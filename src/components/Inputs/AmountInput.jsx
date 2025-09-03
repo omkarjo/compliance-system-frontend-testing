@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { IndianRupee } from "lucide-react";
 import React from "react";
 
-export function AmountInput({
+export default function AmountInput({
   placeholder,
   min,
   max,

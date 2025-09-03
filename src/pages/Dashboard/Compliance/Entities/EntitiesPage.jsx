@@ -4,10 +4,13 @@ import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import EntitySheetView from "@/components/Dashboard/sheet/EntitySheetView";
 import TableEntitiesView from "@/components/Dashboard/tables/table-entites";
 import EntitiesSection from "@/components/Entities/EntitiesSection";
+import { ServerDataTable } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCreateEntity } from "@/react-query/mutations/Entity/useCreateEntity";
 import { useUpdateEntity } from "@/react-query/mutations/Entity/useUpdateEntity";
+import { useGetEntities } from "@/react-query/query/Entities/useGetEntities";
+import { entityColumns } from "@/schemas/columns/entityColumns";
 import {
   alwaysVisibleFields,
   defaultValues,
@@ -43,6 +46,8 @@ export default function EntitiesPage() {
 
   const createEntity = useCreateEntity();
   const updateEntity = useUpdateEntity();
+
+  const columns = entityColumns();
 
   const form = useForm({
     resolver: zodResolver(EntitySchema),
@@ -160,8 +165,16 @@ export default function EntitiesPage() {
       title: "Table",
       value: "table",
       children: (
-        <TableEntitiesView
-          openView={(data) => setViewEntity({ isOpen: true, data })}
+        <ServerDataTable
+          columns={columns}
+          fetchQuery={useGetEntities}
+          filterableColumns={[]}
+          initialPageSize={10}
+          onRowClick={(row) => {
+            setViewEntity({ isOpen: true, data: row.original });
+          }}
+          searchPlaceholder="Search Activity..."
+          emptyMessage="No activity logs found"
         />
       ),
     },

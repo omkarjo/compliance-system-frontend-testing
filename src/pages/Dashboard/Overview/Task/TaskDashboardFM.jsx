@@ -2,7 +2,7 @@ import ViewCalendarTaskAdmin from "@/components/Dashboard/calander/view-calander
 import DeleteAlertDialog from "@/components/Dashboard/includes/delete-alert-dilog";
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import SheetTaskViewFM from "@/components/Dashboard/sheet/sheet-task-view-fm";
-import TableTaskViewFM from "@/components/Dashboard/tables/table-task-view-fm";
+import TableTaskViewFM from "@/components/Dashboard/tables/TableTaskViewFM";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { taskApiPaths } from "@/constant/apiPaths";

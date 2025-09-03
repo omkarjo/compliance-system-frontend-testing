@@ -1,4 +1,5 @@
-import DataTable from "@/components/includes/data-table";
+import { DataTable, SortButton } from "@/components/Table";
+
 import { Button } from "@/components/ui/button";
 import { useGetCurrentUser } from "@/hooks/useGetCurrentUser";
 import { useGetTask } from "@/react-query/query/task/taskQuery";

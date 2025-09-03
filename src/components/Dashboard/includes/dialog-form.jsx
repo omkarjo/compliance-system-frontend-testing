@@ -1,4 +1,4 @@
-import FormGenerate from "@/components/includes/FormGenrate";
+import { FormGenerate } from "@/components/Form";
 import {
   Dialog,
   DialogContent,

@@ -1,11 +1,13 @@
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import SheetLPViewFM from "@/components/Dashboard/sheet/sheet-lp-view-fm";
-import TableLPViewFM from "@/components/Dashboard/tables/table-lp-view-fm";
+import { ServerDataTable } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
 import { useCreateLimitedPartner } from "@/react-query/mutations/LP/useCreateLP";
 import { useUpdateLimitedPartner } from "@/react-query/mutations/LP/useUpdateLimitedPartner";
+import { useGetLP } from "@/react-query/query/lp/lpQuery";
 import { useGetLimitedPartnerById } from "@/react-query/query/lp/useGetLimitedPartnerById";
+import { lpColumns } from "@/schemas/columns/lpColumns";
 import { lpCreateSchema, lpFromFields } from "@/schemas/form/lpSchema";
 import { lpCreateZodSchema, lpSchema } from "@/schemas/zod/lpSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,6 +28,8 @@ export default function LPDashboard() {
   const action = searchParams.get("action");
   const navigate = useNavigate();
   const location = useLocation();
+
+  const columns = lpColumns();
 
   const [sheet, setSheet] = useState({ isOpen: false, data: null });
 
@@ -148,6 +152,7 @@ export default function LPDashboard() {
 
   const classOfShares = editForm.watch("class_of_shares");
 
+
   useEffect(() => {
     if (classOfShares) {
       editForm.setValue("isin", classOfShares);
@@ -177,8 +182,16 @@ export default function LPDashboard() {
         </div>
 
         <main className="mx-4 flex-1">
-          <TableLPViewFM
-            openView={(data) => setSheet({ isOpen: true, data })}
+          <ServerDataTable
+            columns={columns}
+            fetchQuery={useGetLP}
+            filterableColumns={[]}
+            initialPageSize={15}
+            onRowClick={(row) => {
+              setSheet({ isOpen: true, data: row.original });
+            }}
+            searchPlaceholder="Search Activity..."
+            emptyMessage="No activity logs found"
           />
         </main>
       </Tabs>

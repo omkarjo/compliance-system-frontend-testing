@@ -1,5 +1,5 @@
 import { FileInput, FileUploader } from "@/components/extension/file-uploader";
-import DataTable from "@/components/includes/data-table";
+import { DataTable } from "@/components/Table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

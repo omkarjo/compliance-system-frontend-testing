@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { Check, ChevronDown } from "lucide-react";
 import React, { useMemo, useState } from "react";
 
-export function MultiSelect({
+export default function MultiSelectInput({
   field,
   formField,
   isSubmitting,
@@ -24,7 +24,7 @@ export function MultiSelect({
   specialProps,
 }) {
   const [open, setOpen] = useState(false);
-  console.log(specialProps  );
+  console.log(specialProps);
 
   const toggleOption = (val) => {
     const selected = new Set(field.value ?? []);

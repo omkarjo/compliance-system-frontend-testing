@@ -14,7 +14,7 @@ import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import FundEntities from "./FundEntities";
-import LoadingState from "@/components/includes/LoadingErrorState";
+import { LoadingState } from "@/components/includes/LoadingErrorState";
 import Loading from "@/pages/public/Loading";
 
 const FundDetailsPage = () => {

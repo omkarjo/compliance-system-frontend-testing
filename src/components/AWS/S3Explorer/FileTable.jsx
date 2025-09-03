@@ -1,4 +1,4 @@
-import DataTable from "@/components/includes/data-table";
+import { DataTable } from "@/components/Table";
 import { useMemo } from "react";
 import FileTableActions from "./FileTableActions";
 

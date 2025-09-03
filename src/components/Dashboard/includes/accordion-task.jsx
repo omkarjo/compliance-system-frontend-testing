@@ -1,5 +1,5 @@
-import UserBadge from "@/components/includes/user-badge";
-import { Button } from "@/components/ui/button";
+import UserBadge from "@/components/includes/UserBadge";
+ import { Button } from "@/components/ui/button";
 import { getStatusIcon, getStatusStyle } from "@/lib/getStatusStyleIcon";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";

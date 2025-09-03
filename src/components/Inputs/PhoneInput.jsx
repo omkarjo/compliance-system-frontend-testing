@@ -154,4 +154,4 @@ const FlagComponent = ({ country, countryName }) => {
   );
 };
 
-export { PhoneInput };
+export default PhoneInput;

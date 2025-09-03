@@ -1,6 +1,5 @@
 import BadgeStatusTask from "@/components/includes/badge-status";
-import DataTable from "@/components/includes/data-table";
-import SortButton from "@/components/includes/SortButton";
+import { DataTable, SortButton } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import { useGetEntities } from "@/react-query/query/Entities/useGetEntities";
 import { ArrowUpDown } from "lucide-react";

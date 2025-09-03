@@ -1,6 +1,7 @@
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import PortfolioCompaniesTable from "@/components/PortfolioCompany/PortfolioCompaniesTable";
 import SheetPortfolioCompanyView from "@/components/PortfolioCompany/SheetPortfolioCompanyView";
+import { ServerDataTable } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import {
   FormControl,
@@ -19,7 +20,10 @@ import {
 } from "@/components/ui/select";
 import { fastapiDateFormatter, formatDate } from "@/lib/formatter";
 import { useCreatePortfolioCompany } from "@/react-query/mutations/PortfolioCompanies/useCreatePortfolioCompany";
+import { useDeletePortfolioCompany } from "@/react-query/mutations/PortfolioCompanies/useDeletePortfolioCompany";
+import { useGETPortfolioCompanies } from "@/react-query/query/PortfolioCompanies/useGetPortfolioCompanies";
 import { useGetPortfolioCompanyFullData } from "@/react-query/query/PortfolioCompanies/useGetPortfolioCompaniesById";
+import { portfolioCompanyColumns } from "@/schemas/columns/portfolioCompanyColumns";
 import { PortfolioCompanieCreateFeilds } from "@/schemas/form/PortfolioCompanieCreateFeilds";
 import { PortfolioCompanieSchema } from "@/schemas/zod/PortfolioCompanieSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -145,6 +149,27 @@ const subSectorData = {
   ],
 };
 
+
+  const searchTypeOptions = [
+    {
+      label: "Name",
+      value: "query",
+    },
+    {
+      label: "Sector",
+      value: "sector",
+    },
+    {
+      label: "Product Description",
+      value: "product_description",
+    },
+    {
+      label: "Registered Address",
+      value: "registered_address",
+    },
+  ];
+
+
 const dummyData = {
   startup_brand: "",
   sector: "",
@@ -169,6 +194,7 @@ export default function PortfolioCompaniesPage() {
   const [action, setAction] = useState(defaultAction);
   const navigate = useNavigate();
   const location = useLocation();
+  const { mutate: deleteCompany } = useDeletePortfolioCompany();
 
   const isInitialMount = useRef(true);
 
@@ -353,6 +379,8 @@ export default function PortfolioCompaniesPage() {
     return sector.flatMap((sec) => subSectorData[sec] || []);
   }, [sector]);
 
+  const columns = portfolioCompanyColumns(openView, deleteCompany);
+
   return (
     <section>
       <div className="flex items-center justify-between gap-4 px-4 py-2">
@@ -362,9 +390,17 @@ export default function PortfolioCompaniesPage() {
       </div>
 
       <main className="mx-4 flex-1">
-        <PortfolioCompaniesTable
-          openView={openView}
-          openEdit={handleEditOpen}
+        <ServerDataTable
+          columns={columns}
+          fetchQuery={useGETPortfolioCompanies}
+          filterableColumns={[]}
+          initialPageSize={10}
+          searchableColumns={searchTypeOptions}
+          onRowClick={(row) => {
+            openView(row.original);
+          }}
+          searchPlaceholder="Search Activity..."
+          emptyMessage="No activity logs found"
         />
       </main>
 
@@ -377,12 +413,14 @@ export default function PortfolioCompaniesPage() {
         formFields={PortfolioCompanieCreateFeilds}
         isOpen={dialogProps.isOpen}
         onClose={handleDialogClose}
-        specialProps={[{
-          name: "subSector",
-          props: {
-            options: subSectorOptions,
+        specialProps={[
+          {
+            name: "subSector",
+            props: {
+              options: subSectorOptions,
+            },
           },
-        }]}
+        ]}
       >
         <div className="space-y-4">
           <div className="flex items-center justify-between">

@@ -1,9 +1,8 @@
 import { InfoCards, InfoCardsSkeleton } from "@/components/Cards/InfoCard";
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import BadgeStatusTask from "@/components/includes/badge-status";
-import DataTable from "@/components/includes/data-table";
-import SheetView from "@/components/includes/SheetView";
-import SortButton from "@/components/includes/SortButton";
+import { DataTable, SortButton } from "@/components/Table";
+import SheetView from "@/components/Sheet/SheetView";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { currencyFormatter, formatPayloadForFastAPI } from "@/lib/formatter";

@@ -1,4 +1,4 @@
-import DataTable from "@/components/includes/data-table";
+import { DataTable } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import { useGetSebiReports } from "@/react-query/query/Sebi/useGetSebiReports";
 import { ArrowUpDown } from "lucide-react";

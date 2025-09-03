@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-export const AutocompleteInput = ({
+export default function AutocompleteInput({
   value,
   onChange,
   placeholder = "Enter text...",
@@ -10,7 +10,7 @@ export const AutocompleteInput = ({
   disabled = false,
   suggestions = [],
   ...props
-}) => {
+}) {
   const [filtered, setFiltered] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [active, setActive] = useState(-1);
@@ -110,7 +110,7 @@ export const AutocompleteInput = ({
         <div
           ref={suggestionsRef}
           className={cn(
-            "absolute z-50 max-h-48 w-full overflow-y-auto rounded-b-md border border-t-0 shadow-lg bg-white",
+            "absolute z-50 max-h-48 w-full overflow-y-auto rounded-b-md border border-t-0 bg-white shadow-lg",
             className,
           )}
         >
@@ -132,4 +132,4 @@ export const AutocompleteInput = ({
       )}
     </div>
   );
-};
+}

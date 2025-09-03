@@ -1,5 +1,4 @@
-import DataTable from "@/components/includes/data-table";
-import SortButton from "@/components/includes/SortButton";
+import { DataTable, SortButton } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

@@ -1,5 +1,5 @@
 import BadgeStatusTask from "@/components/includes/badge-status";
-import FormGenerate from "@/components/includes/FormGenrate";
+import { FormGenerate } from "@/components/Form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
