@@ -55,7 +55,7 @@ export default function Login() {
           },
         });
 
-        dispatch(setTokenAndFetchUser(response.data.access_token));
+        dispatch(setTokenAndFetchUser(response.data));
 
         toast.success("Login successful");
         // console.log(response.data);

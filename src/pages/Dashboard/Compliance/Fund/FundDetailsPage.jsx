@@ -1,8 +1,8 @@
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
-import EntitiesSection from "@/components/Entities/EntitiesSection";
 import FundDetails from "@/components/Fund/FundDetails";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Loading from "@/pages/public/Loading";
 import { useCreateFundEntity } from "@/react-query/mutations/FundEntity/useCreateFundEntity";
 import { useGetFundById } from "@/react-query/query/Funds/useGetFundById";
 import { useGetFundEntitiesByFundId } from "@/react-query/query/Funds/useGetFundEntitiesByFundId";
@@ -10,12 +10,10 @@ import { fundEntityLinkFields } from "@/schemas/feilds/fundFormFields";
 import { fundEntityLinkSchema } from "@/schemas/zod/fundSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import FundEntities from "./FundEntities";
-import { LoadingState } from "@/components/includes/LoadingErrorState";
-import Loading from "@/pages/public/Loading";
 
 const FundDetailsPage = () => {
   const { id } = useParams();

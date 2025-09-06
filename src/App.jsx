@@ -15,7 +15,7 @@ function App() {
         >
           <AppRoutes />
         </BrowserRouter>
-        <Toaster richColors   />
+        <Toaster richColors />
       </QueryClientProvider>
     </Provider>
   );

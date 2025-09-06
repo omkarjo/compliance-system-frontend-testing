@@ -1,6 +1,5 @@
 import { AppSidebar } from "@/components/Dashboard/app-sidebar";
 import DashboardBreadcrumb from "@/components/Dashboard/includes/breadcrumb";
-import { AuthButtons } from "@/components/includes/AuthButtons";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -16,14 +15,13 @@ import {
   BookOpen,
   Bot,
   Building,
-  ClipboardCheck,
   GalleryVerticalEnd,
   GitCompare,
   History,
   IndianRupee,
   SquareTerminal,
   User,
-  UserCircle,
+  UserCircle
 } from "lucide-react";
 import { Navigate, Outlet } from "react-router-dom";
 

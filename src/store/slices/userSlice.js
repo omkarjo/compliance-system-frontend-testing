@@ -1,4 +1,4 @@
-  import { authApiPaths } from "@/constant/apiPaths";
+import { authApiPaths } from "@/constant/apiPaths";
 import api from "@/utils/api";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
@@ -7,9 +7,14 @@ const user = localStorage.getItem("user")
   ? JSON.parse(localStorage.getItem("user"))
   : null;
 
+const aws_credentials = localStorage.getItem("aws_credentials")
+  ? JSON.parse(localStorage.getItem("aws_credentials"))
+  : null;
+
 const initialState = {
   user: user,
   token: token,
+  aws_credentials: aws_credentials,
   isAuthenticated: token ? true : false,
   loading: false,
   error: null,
@@ -40,11 +45,14 @@ export const logoutUser = createAsyncThunk("user/logoutUser", async () => {
 
 export const setTokenAndFetchUser = createAsyncThunk(
   "user/setTokenAndFetchUser",
-  async (token, thunkAPI) => {
-    localStorage.setItem("accessToken", token);
-    thunkAPI.dispatch(userSlice.actions.setToken(token));
+  async ({ access_token, aws_credentials }, thunkAPI) => {
+    localStorage.setItem("accessToken", access_token);
+    localStorage.setItem("aws_credentials", JSON.stringify(aws_credentials));
+    thunkAPI.dispatch(
+      userSlice.actions.setToken({ access_token, aws_credentials }),
+    );
     await thunkAPI.dispatch(fetchUser());
-    return token;
+    return { access_token, aws_credentials };
   },
 );
 
@@ -53,7 +61,8 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setToken: (state, action) => {
-      state.token = action.payload;
+      state.token = action.payload.access_token;
+      state.aws_credentials = action.payload.aws_credentials;
     },
   },
   extraReducers: (builder) => {
@@ -71,6 +80,8 @@ const userSlice = createSlice({
         state.error = action.payload;
         state.isAuthenticated = false;
         state.user = null;
+        state.token = null;
+        state.aws_credentials = null;
       })
       .addCase(logoutUser.pending, (state) => {
         state.loading = true;
@@ -79,12 +90,15 @@ const userSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = false;
         state.user = null;
+        state.token = null;
+        state.aws_credentials = null;
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         state.isAuthenticated = false;
         state.user = null;
+        state.aws_credentials = null;
       })
       .addCase(setTokenAndFetchUser.pending, (state) => {
         state.loading = true;
@@ -97,6 +111,8 @@ const userSlice = createSlice({
         state.error = action.payload;
         state.isAuthenticated = false;
         state.user = null;
+        state.token = null;
+        state.aws_credentials = null;
       });
   },
 });

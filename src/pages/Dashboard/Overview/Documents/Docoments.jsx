@@ -1,123 +1,139 @@
-import S3FileExplorer from "@/components/AWS/S3Explorer/S3FileExplorer";
-import DeleteAlertDialog from "@/components/Dashboard/includes/delete-alert-dilog";
-import { AuthWrapper } from "@/components/includes/AuthWrapper";
-import { documentApiPaths } from "@/constant/apiPaths";
-import { apiWithAuth } from "@/utils/api";
-import useCheckRoles from "@/utils/check-roles";
-import { useQueryClient } from "@tanstack/react-query";
-import { Trash, ViewIcon } from "lucide-react";
-import { useCallback, useState } from "react";
-import { toast } from "sonner";
+import { getS3Columns } from "@/components/Table/columns/s3TableColumns";
+import { DataTable } from "@/components/Table/DataTable";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { getBreadcrumbSegments } from "@/lib/S3Utils";
+import ErrorPage from "@/pages/public/ErrorPage";
+import { useS3Files } from "@/react-query/query/S3/useS3Files";
+import { useAppSelector } from "@/store/hooks";
+import { ArrowLeftIcon, RefreshCw } from "lucide-react";
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-export default function ActivityLog() {
-  const haveAdminPermission = useCheckRoles([
-    "Fund Manager",
-    "Compliance Officer",
-  ]);
+export default function S3Browser() {
+  const { isAuthenticated, aws_credentials } = useAppSelector((state) => state.user);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const queryClient = useQueryClient();
+  const [folder, setFolder] = React.useState("");
+  const [searchValue, setSearchValue] = React.useState("");
 
-  const [deleteAlertDialog, setDeleteAlertDialog] = useState({
-    isOpen: false,
-    document_id: "",
-    title: "",
-    description: "",
-    onDelete: null,
+  React.useEffect(() => {
+    let urlFolder = decodeURIComponent(location.pathname.replace(/^\/dashboard\/documents\/*/, ""));
+    if (urlFolder && !urlFolder.endsWith("/")) urlFolder += "/";
+    setFolder(urlFolder);
+  }, [location.pathname]);
+
+  const { data, isLoading, error, isRefreshing, lastUpdated, refresh } = useS3Files({
+    folder,
+    search: searchValue,
   });
 
-  const handleDeleteAlertDialogClose = useCallback((isOpen) => {
-    setDeleteAlertDialog((prev) => ({
-      ...prev,
-      isOpen,
-      onDelete: null,
-    }));
-  }, []);
+  const bucket_name = aws_credentials?.bucket_name || "";
+  const region = aws_credentials?.region || "";
 
-  const handleDeleteDocument = useCallback(async (document_id) => {
-    toast.loading("Deleting document...", { id: "delete-document-toast" });
+  if (!isAuthenticated || !aws_credentials) {
+    return <ErrorPage title="Unauthorized" message="You must be logged in to view this page." />;
+  }
 
-    try {
-      await apiWithAuth.delete(
-        `${documentApiPaths.deleteDocumentPrefix}${document_id}`,
-      );
+  if (error) {
+    return <ErrorPage title="Failed to fetch S3 files" message={typeof error === "string" ? error : error?.message || "Unknown error"} />;
+  }
 
-      toast.success("Document deleted successfully", {
-        id: "delete-document-toast",
-      });
-      queryClient.invalidateQueries("documents-query");
-    } catch (error) {
-      toast.error("Failed to delete document", {
-        id: "delete-document-toast",
-        description: error?.response?.data?.message || "An error occurred",
-      });
-    }
-  }, []);
-
-  const handleDeleteDocumentOpen = useCallback(
-    (data) => {
-      if (!haveAdminPermission) {
-        setDeleteAlertDialog({
-          isOpen: true,
-          title: `Cannot delete document “${data.name}”`,
-          description: `You do not have permission to delete the document “${data.name}”.`,
-          onDelete: null,
-          document_id: data.document_id,
-        });
-        return;
-      }
-
-      setDeleteAlertDialog({
-        isOpen: true,
-        title: `Are you absolutely sure you want to delete the “${data.name}” document?`,
-        description:
-          "This action cannot be undone. This will permanently delete the document.",
-        onDelete: () => {
-          handleDeleteDocument(data.document_id);
-          handleDeleteAlertDialogClose(false);
-        },
-        document_id: data.document_id,
-      });
+  const columns = getS3Columns({
+    bucket_name,
+    region,
+    onFolderClick: (folderKey) => {
+      setSearchValue("");
+      setFolder(folderKey);
+      let urlPath = folderKey.endsWith("/") ? folderKey.slice(0, -1) : folderKey;
+      navigate(`/dashboard/documents/${urlPath}`);
     },
-    [haveAdminPermission, handleDeleteDocument, handleDeleteAlertDialogClose],
-  );
+  });
 
-  const actionType = [
-    {
-      title: "View",
-      className: "",
-      icon: <ViewIcon />,
-      onClick: (data) => {
-        if (!data.drive_link) {
-          toast.error("No Link Found");
-          return;
-        }
-        window.open(data.drive_link, "_blank");
-      },
-    },
-    {
-      title: "Delete",
-      className: "text-red-500",
-      icon: <Trash className="text-red-500" />,
-      onClick: (data) => {
-        handleDeleteDocumentOpen(data);
-      },
-    },
-  ];
+  const breadcrumbSegments = getBreadcrumbSegments(folder);
+
+  function handleBreadcrumbClick(path) {
+    setSearchValue("");
+    setFolder(path);
+    let urlPath = path.endsWith("/") ? path.slice(0, -1) : path;
+    navigate(`/dashboard/documents/${urlPath}`);
+  }
+
+  function handleGoUp() {
+    if (!folder) return;
+    const split = folder.split("/").filter(Boolean);
+    const parent = split.length > 1 ? split.slice(0, -1).join("/") + "/" : "";
+    setSearchValue("");
+    setFolder(parent);
+    let urlPath = parent.endsWith("/") ? parent.slice(0, -1) : parent;
+    navigate(urlPath ? `/dashboard/documents/${urlPath}` : "/dashboard/documents");
+  }
 
   return (
-    <AuthWrapper>
-      <section>
-        <main className="mx-4 flex-1">
-          <S3FileExplorer />
-        </main>
-        <DeleteAlertDialog
-          title={deleteAlertDialog.title}
-          description={deleteAlertDialog.description}
-          isOpen={deleteAlertDialog.isOpen}
-          onClose={handleDeleteAlertDialogClose}
-          onDelete={deleteAlertDialog.onDelete}
+    <section>
+      <main className="mx-4 flex-1">
+        <div className="mb-4 flex items-center justify-between">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Button variant="link" onClick={() => handleBreadcrumbClick("")} className="px-0 text-blue-600">
+                    Root
+                  </Button>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              {breadcrumbSegments.map((seg) => (
+                <React.Fragment key={seg.path}>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink asChild>
+                      <Button variant="link" onClick={() => handleBreadcrumbClick(seg.path)} className="px-0 text-blue-600">
+                        {seg.name}
+                      </Button>
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                </React.Fragment>
+              ))}
+            </BreadcrumbList>
+          </Breadcrumb>
+          {folder && (
+            <Button variant="ghost" size="sm" onClick={handleGoUp} className="flex items-center gap-2">
+              <ArrowLeftIcon size={16} />
+              Up
+            </Button>
+          )}
+        </div>
+        <div className="mb-4 flex items-center justify-between">
+          <div className="text-muted-foreground text-xs">
+            Last updated: {lastUpdated ? new Date(lastUpdated).toLocaleString() : "Never"}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={refresh}
+            disabled={isRefreshing}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw size={16} className={isRefreshing ? "animate-spin" : ""} />
+            {isRefreshing ? "Refreshing..." : "Refresh"}
+          </Button>
+        </div>
+        <DataTable
+          columns={columns}
+          data={data || []}
+          emptyMessage="No files or folders found."
+          globalFilter={searchValue}
+          onGlobalFilterChange={setSearchValue}
+          showGlobalSearch={true}
         />
-      </section>
-    </AuthWrapper>
+      </main>
+    </section>
   );
 }

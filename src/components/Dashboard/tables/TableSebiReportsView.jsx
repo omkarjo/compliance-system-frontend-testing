@@ -1,4 +1,4 @@
-import { DataTable, ServerDataTable } from "@/components/Table";
+import { ServerDataTable } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import { useGetSebiReports } from "@/react-query/query/Sebi/useGetSebiReports";
 import { format } from "date-fns";

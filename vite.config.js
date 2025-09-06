@@ -15,7 +15,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         target:
-          process.env.NODE_ENV === "development"
+          process.env.NODE_ENV !== "development"
             ? "http://localhost:8000/" // Local FastAPI server
             : "https://ajvc-compliance-system.com/",
         changeOrigin: true,

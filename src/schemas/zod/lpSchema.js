@@ -44,10 +44,9 @@ export const lpSchema = z.object({
   isin: z.string().min(1, "ISIN is required"),
   type: z.enum(["individual", "corporate", "partnership", "trust"]),
   citizenship: z.enum(["resident", "nro", "nre", "non-resident"]),
-  geography: z.string().min(1, "Geography is required"),
   emaildrawdowns: z
     .array(z.string().email("Invalid email address"))
-    .min(1, { message: "At least one email is required" }),
+    .optional()
 });
 
 export const lpCreateZodSchema = z.object({
