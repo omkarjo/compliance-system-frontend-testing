@@ -21,3 +21,24 @@ export const manualPaymentFormFeilds = [
         required: false,
     },
 ];
+
+
+export const uploadStatementField = [
+  {
+    name: "bank_statement",
+    label: "Bank Statement",
+    description: "Upload the bank statement file (PDF only).",
+    type: "file",
+    placeholder: "",
+    required: true,
+    dropZoneConfig: {
+      useFsAccessApi: false,
+      accept: {
+        "application/pdf": [".pdf"],
+      },
+      maxFiles: 1,
+      maxSize: 1024 * 1024 * 10, // 10 MB max size (adjust as needed)
+      multiple: false,
+    },
+  },
+];

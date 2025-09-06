@@ -1,5 +1,10 @@
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { z } from "zod";
+import { CLASS_OF_SHARES, ENTITY_TYPES, GENDER_OPTIONS } from "../feilds/lpFromFields";
+
+const gender_Options = Object.values(GENDER_OPTIONS)
+const class_Options = Object.values(CLASS_OF_SHARES);
+const entity_Types = Object.values(ENTITY_TYPES);
 
 z.setErrorMap((issue, ctx) => {
   if (issue.code === z.ZodIssueCode.invalid_enum_value) {
@@ -18,7 +23,7 @@ z.setErrorMap((issue, ctx) => {
 });
 export const lpSchema = z.object({
   lp_name: z.string().min(1, "Name is required"),
-  gender: z.enum(["male", "female", "others"]),
+  gender: z.enum(gender_Options),
   dob: z.date().refine((date) => date <= new Date(), {
     message: "Date of birth must be in the past",
   }),
@@ -40,9 +45,9 @@ export const lpSchema = z.object({
   date_of_agreement: z.date(),
   dpid: z.string().min(1, "Dpid is required"),
   client_id: z.string().min(1, "Client ID is required"),
-  class_of_shares: z.enum(["INF1C8N22014", "INF1C8N22022"]),
+  class_of_shares: z.enum(class_Options),
   isin: z.string().min(1, "ISIN is required"),
-  type: z.enum(["individual", "corporate", "partnership", "trust"]),
+  type: z.enum(entity_Types),
   citizenship: z.enum(["resident", "nro", "nre", "non-resident"]),
   emaildrawdowns: z
     .array(z.string().email("Invalid email address"))

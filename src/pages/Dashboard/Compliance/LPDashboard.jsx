@@ -1,16 +1,21 @@
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
 import SheetLPViewFM from "@/components/Dashboard/sheet/sheet-lp-view-fm";
 import { ServerDataTable } from "@/components/Table";
+import { lpColumns } from "@/components/Table/columns/lpColumns";
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
 import { useCreateLimitedPartner } from "@/react-query/mutations/LP/useCreateLP";
 import { useUpdateLimitedPartner } from "@/react-query/mutations/LP/useUpdateLimitedPartner";
 import { useGetLP } from "@/react-query/query/lp/lpQuery";
 import { useGetLimitedPartnerById } from "@/react-query/query/lp/useGetLimitedPartnerById";
-import { lpColumns } from "@/components/Table/columns/lpColumns";
-import { lpCreateFeilds, lpFromFields } from "@/schemas/feilds/lpFromFields";
+import {
+  CLASS_ISIN_MAP,
+  lpCreateFeilds,
+  lpFromFields,
+} from "@/schemas/feilds/lpFromFields";
 import { lpCreateZodSchema, lpSchema } from "@/schemas/zod/lpSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Fuse from "fuse.js";
 import { Plus, Upload } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -21,6 +26,36 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { toast } from "sonner";
+
+export function getMissingRequiredFields(lpFromFields, lpData) {
+  return lpFromFields.filter(
+    (field) =>
+      field.required && field.name && lpData && lpData[field.name] === null,
+  );
+}
+
+export function normalizeEnumFields(lpFromFields, lpData) {
+  const newLpData = { ...lpData };
+  lpFromFields.forEach((field) => {
+    if (
+      field.type === "select" &&
+      field.options &&
+      field.name &&
+      lpData[field.name]
+    ) {
+      const value = lpData[field.name];
+      const fuse = new Fuse(field.options, {
+        keys: ["label", "value"],
+        threshold: 0.3,
+      });
+      const results = fuse.search(String(value));
+      if (results.length > 0) {
+        newLpData[field.name] = results[0].item.value;
+      }
+    }
+  });
+  return newLpData;
+}
 
 export default function LPDashboard() {
   const [searchParams] = useSearchParams();
@@ -61,12 +96,24 @@ export default function LPDashboard() {
   useEffect(() => {
     if (isLoadingLpData) return;
     if (lpData && id) {
+      const normalizedLpData = normalizeEnumFields(lpFromFields, lpData);
+
       if (action === "view") {
-        setSheet({ isOpen: true, data: lpData });
+        setSheet({ isOpen: true, data: normalizedLpData });
       } else if (action === "edit") {
-        setEditDialog({ isOpen: true, id, data: lpData });
+        const missingFields = getMissingRequiredFields(
+          lpFromFields,
+          normalizedLpData,
+        );
+
+        setEditDialog({
+          isOpen: true,
+          id,
+          data: normalizedLpData,
+          fields: missingFields.length ? missingFields : lpFromFields,
+        });
       }
-      navigate(location.pathname, { replace: true });
+      // navigate(location.pathname, { replace: true });
     }
   }, [id, action, lpData, isLoadingLpData]);
 
@@ -152,10 +199,9 @@ export default function LPDashboard() {
 
   const classOfShares = editForm.watch("class_of_shares");
 
-
   useEffect(() => {
     if (classOfShares) {
-      editForm.setValue("isin", classOfShares);
+      editForm.setValue("isin", CLASS_ISIN_MAP[classOfShares] || "");
     }
   }, [editForm, classOfShares]);
 
@@ -202,7 +248,7 @@ export default function LPDashboard() {
         submitText={"Update"}
         form={editForm}
         onSubmit={editForm.handleSubmit(onSubmitEdit)}
-        formFields={lpFromFields}
+        formFields={editDialog.fields || lpFromFields}
         isOpen={editDialog.isOpen}
         onClose={() => setEditDialog({ isOpen: false, id: null, data: null })}
       />

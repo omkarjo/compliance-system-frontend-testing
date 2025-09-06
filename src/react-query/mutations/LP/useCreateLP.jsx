@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 
 function showToastWithView(id) {
-  const url = `/dashboard/limited-partners?id=${id}&action=view`;
+  const url = `/dashboard/limited-partners?id=${id}&action=edit`;
 
   toast("Limited Partner created", {
     description: "Click the button below to view the LP.",

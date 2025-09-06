@@ -5,6 +5,29 @@ const validateEmail = (email) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
+export const GENDER_OPTIONS = {
+  Male: "Male",
+  Female: "Female",
+  Others: "Others",
+};
+
+export const CLASS_OF_SHARES = {
+  Class_A: "Class A Units",
+  Class_B: "Class B Units",
+};
+
+export const CLASS_ISIN_MAP = {
+  [CLASS_OF_SHARES.Class_A]: "INF1C8N22014",
+  [CLASS_OF_SHARES.Class_B]: "INF1C8N22022",
+};
+
+export const ENTITY_TYPES = {
+  Individual: "individual",
+  Corporate: "corporate",
+  Partnership: "partnership",
+  Trust: "trust",
+};
+
 export const lpFromFields = [
   {
     name: "lp_name",
@@ -20,9 +43,9 @@ export const lpFromFields = [
     placeholder: "Select Gender",
     required: true,
     options: [
-      { label: "Male", value: "male" },
-      { label: "Female", value: "female" },
-      { label: "Others", value: "others" },
+      { label: GENDER_OPTIONS.Male, value: GENDER_OPTIONS.Male },
+      { label: GENDER_OPTIONS.Female, value: GENDER_OPTIONS.Female },
+      { label: GENDER_OPTIONS.Others, value: GENDER_OPTIONS.Others },
     ],
   },
   {
@@ -116,8 +139,8 @@ export const lpFromFields = [
     placeholder: "Please select class of share",
     required: true,
     options: [
-      { label: "Class A", value: "INF1C8N22014" },
-      { label: "Class B", value: "INF1C8N22022" },
+      { label: CLASS_OF_SHARES.Class_A, value: CLASS_OF_SHARES.Class_A },
+      { label: CLASS_OF_SHARES.Class_B, value: CLASS_OF_SHARES.Class_B },
     ],
   },
   {
@@ -135,10 +158,10 @@ export const lpFromFields = [
     placeholder: "Please select entity type",
     required: true,
     options: [
-      { label: "Individual", value: "individual" },
-      { label: "Corporate", value: "corporate" },
-      { label: "Partnership", value: "partnership" },
-      { label: "Trust", value: "trust" },
+      { label: ENTITY_TYPES.Individual, value: ENTITY_TYPES.Individual },
+      { label: ENTITY_TYPES.Corporate, value: ENTITY_TYPES.Corporate },
+      { label: ENTITY_TYPES.Partnership, value: ENTITY_TYPES.Partnership },
+      { label: ENTITY_TYPES.Trust, value: ENTITY_TYPES.Trust },
     ],
   },
   // "{
@@ -166,7 +189,6 @@ export const lpFromFields = [
     validateTag: validateEmail,
   },
 ];
-
 
 export const lpCreateFeilds = [
   {

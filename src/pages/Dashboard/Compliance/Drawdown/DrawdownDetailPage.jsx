@@ -1,80 +1,43 @@
 import { InfoCards, InfoCardsSkeleton } from "@/components/Cards/InfoCard";
 import DialogForm from "@/components/Dashboard/includes/dialog-form";
-import BadgeStatusTask from "@/components/includes/badge-status";
+import { drawdownSheetSchema } from "@/components/Sheet/schemas/drawdownSheetSchema";
+import { paymentSheetSchema } from "@/components/Sheet/schemas/paymentSheetSchema";
 import SheetView from "@/components/Sheet/SheetView";
-import { DataTable, ServerDataTable, SortButton } from "@/components/Table";
+import { DataTable, ServerDataTable } from "@/components/Table";
+import { drawdownTableColumns } from "@/components/Table/columns/drawdownSubTable/drawdownTableColumns";
+import { paymentTableColumns } from "@/components/Table/columns/drawdownSubTable/paymentTableColumns";
+import { unitAllotmentTableColumns } from "@/components/Table/columns/drawdownSubTable/unitAllotmentTableColumns";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { currencyFormatter, formatPayloadForFastAPI } from "@/lib/formatter";
+import { formatPayloadForFastAPI } from "@/lib/formatter";
 import { useManualRecordPayment } from "@/react-query/mutations/Payments/useManualRecordPayment";
+import { useUploadBankStatement } from "@/react-query/mutations/Payments/useUploadBankStatement";
 import { useGenerateUnitAllotments } from "@/react-query/mutations/UnitAllotment/useGenerateUnitAllotments";
 import { useGetDrawdowns } from "@/react-query/query/drawdown/useGetDrawdowns";
 import { useGetLP } from "@/react-query/query/lp/lpQuery";
 import { useGetPayments } from "@/react-query/query/payment/useGetPayments";
 import { useGetUnitAllotments } from "@/react-query/query/UnitAllotments/useGetUnitAllotments";
-import { manualPaymentFormFeilds } from "@/schemas/feilds/manualPaymentFormFeilds";
-import { manualPaymentZodSchema } from "@/schemas/zod/PaymentSchema";
+import {
+  manualPaymentFormFeilds,
+  uploadStatementField,
+} from "@/schemas/feilds/PaymentFeilds";
+import {
+  manualPaymentZodSchema,
+  uploadStatementSchema,
+} from "@/schemas/zod/PaymentSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
-
-const statusKeyType = {
-  "Drawdown Payment Pending": "Pending",
-  "Drawdown Pending": "Pending",
-  Active: "Completed",
-  "Over-payment": "Error",
-  Shortfall: "Error",
-};
-
-const drawdownSchema = [
-  { key: "drawdown_quarter", label: "Quarter", type: "text" },
-  { key: "notice_date", label: "Notice Date", type: "date" },
-  { key: "drawdown_due_date", label: "Due Date", type: "date" },
-  { key: "drawdown_percentage", label: "Percentage", type: "text" },
-  { key: "committed_amt", label: "Committed Amount", type: "currency" },
-  { key: "drawdown_amount", label: "Drawdown Amount", type: "currency" },
-  { key: "amount_called_up", label: "Amount Called Up", type: "currency" },
-  {
-    key: "remaining_commitment",
-    label: "Remaining Commitment",
-    type: "currency",
-  },
-  {
-    key: "forecast_next_quarter",
-    label: "Forecast Next Quarter",
-    type: "currency",
-  },
-  { key: "status", label: "Status", type: "badge" },
-  {
-    key: "payment_received_date",
-    label: "Payment Received Date",
-    type: "date",
-  },
-  { key: "amt_accepted", label: "Amount Accepted", type: "currency" },
-  { key: "allotted_units", label: "Allotted Units", type: "number" },
-  { key: "nav_value", label: "NAV Value", type: "currency" },
-  { key: "date_of_allotment", label: "Date of Allotment", type: "date" },
-  { key: "mgmt_fees", label: "Management Fees", type: "currency" },
-  { key: "stamp_duty", label: "Stamp Duty", type: "currency" },
-  { key: "reference_number", label: "Reference Number", type: "text" },
-  { key: "drawdown_count", label: "No Of LPs", type: "number" },
-  { key: "notes", label: "Notes", type: "textarea" },
-];
-
-const paymentSchema = [
-  { key: "lp_name", label: "Limited Partner", type: "text" },
-  { key: "amount_due", label: "Amount Due", type: "currency" },
-  { key: "paid_amount", label: "Paid Amount", type: "currency" },
-  { key: "payment_date", label: "Payment Date", type: "date" },
-  { key: "status", label: "Status", type: "badge" },
-];
+import { mapDrawdownToCards } from "./mapDrawdownToCards";
 
 export default function DrawdownDetailPage() {
   const { quarter } = useParams();
 
-  const { mutate: manualRecordPayment, isLoading } = useManualRecordPayment();
+  const { mutate: manualRecordPayment } = useManualRecordPayment();
+  const { mutate: uploadBankStatement, isLoading: isUploading } =
+    useUploadBankStatement();
 
   const { data: drawdownsResp, isLoading: isLoadingDrawdown } = useGetDrawdowns(
     {
@@ -106,9 +69,14 @@ export default function DrawdownDetailPage() {
 
   const [sheetProps, setSheetProps] = React.useState(null);
   const [manualPaymentProps, setManualPaymentProps] = React.useState(null);
+  const [uploadStatementProps, setUploadStatementProps] = React.useState(null);
 
   const form = useForm({
     resolver: zodResolver(manualPaymentZodSchema),
+  });
+
+  const uploadStatementForm = useForm({
+    resolver: zodResolver(uploadStatementSchema),
   });
 
   const handleManualPaymentFormOpen = (data) => {
@@ -116,6 +84,15 @@ export default function DrawdownDetailPage() {
     setManualPaymentProps({
       title: "Manual Payment",
       description: "Enter the payment details below:",
+      data: data,
+    });
+  };
+
+  const handleUploadStatementFormOpen = (data) => {
+    setSheetProps(null);
+    setUploadStatementProps({
+      title: "Upload Bank Statement",
+      description: "Upload the bank statement file below:",
       data: data,
     });
   };
@@ -137,9 +114,43 @@ export default function DrawdownDetailPage() {
     );
   };
 
+  const handleUploadStatementSubmit = (data) => {
+    if (!uploadStatementProps?.data?.fund_id) {
+      toast.error("Fund ID is missing. Cannot upload bank statement.");
+      return;
+    }
+
+    if (!data.bank_statement || data.bank_statement.length === 0) {
+      toast.error("Please select a bank statement file to upload.");
+      return;
+    }
+
+    const file = data.bank_statement[0];
+
+    if (file.type !== "application/pdf") {
+      toast.error("Invalid file type. Please upload a PDF file.");
+      return;
+    }
+
+    uploadBankStatement(
+      {
+        fund_id: uploadStatementProps.data.fund_id,
+        bank_statement: file,
+      },
+      {
+        onSuccess: () => {
+          setUploadStatementProps(null);
+          uploadStatementForm.reset();
+        },
+      },
+    );
+  };
+
+  const drawdownsheetschema = drawdownSheetSchema();
+
   const handleViewDrawdownDetails = (data) => {
     setSheetProps({
-      schema: drawdownSchema,
+      schema: drawdownsheetschema,
       title: "Drawdown Details",
       data: data,
       buttons: [
@@ -153,6 +164,7 @@ export default function DrawdownDetailPage() {
     });
   };
 
+  const paymentSchema = paymentSheetSchema();
   const handleViewPaymentDetails = (data) => {
     setSheetProps({
       schema: paymentSchema,
@@ -182,68 +194,6 @@ export default function DrawdownDetailPage() {
     };
   });
 
-  const drawdownTableColumns = [
-    {
-      accessorKey: "lp_name",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Limited Partners
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2 ps-2">
-          {row.getValue("lp_name")}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "drawdown_amount",
-      header: ({ column }) => (
-        <SortButton column={column} className="ms-auto justify-end">
-          Drawdown Amount
-        </SortButton>
-      ),
-      cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("drawdown_amount"));
-        const formatted = amount ? currencyFormatter(amount, "INR") : "-";
-        return <div className="text-right">{formatted}</div>;
-      },
-    },
-    {
-      accessorKey: "remaining_commitment",
-      header: ({ column }) => (
-        <SortButton column={column} className="ms-auto justify-end">
-          Remaining Drawdown
-        </SortButton>
-      ),
-      cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("remaining_commitment"));
-        const formatted = amount ? currencyFormatter(amount, "INR") : "-";
-        return <div className="text-right">{formatted}</div>;
-      },
-    },
-    {
-      accessorKey: "status",
-      header: ({ column }) => (
-        <SortButton column={column} className="ms-auto justify-end">
-          Drawdown Status
-        </SortButton>
-      ),
-      cell: ({ row }) => {
-        const status = row.getValue("status");
-        const type = statusKeyType[status] || "Pending";
-        return (
-          <div className="flex justify-end">
-            <BadgeStatusTask text={status} type={type} />
-          </div>
-        );
-      },
-    },
-  ];
-
   const paymentTableRows =
     paymentsResp?.data?.map((payment) => {
       const lp = lpData?.data?.find((l) => l.lp_id === payment.lp_id);
@@ -252,170 +202,6 @@ export default function DrawdownDetailPage() {
         lp_name: lp ? lp.lp_name : payment.lp_name || "-",
       };
     }) || [];
-
-  const paymentTableColumns = [
-    {
-      accessorKey: "lp_name",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Limited Partners
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2 ps-2">
-          {row.getValue("lp_name")}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "amount_due",
-      header: ({ column }) => (
-        <SortButton column={column} className="ms-auto justify-end">
-          Amount Due
-        </SortButton>
-      ),
-      cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("amount_due"));
-        const formatted = amount ? currencyFormatter(amount, "INR") : "-";
-        return <div className="text-right">{formatted}</div>;
-      },
-    },
-    {
-      accessorKey: "paid_amount",
-      header: ({ column }) => (
-        <SortButton column={column} className="ms-auto justify-end">
-          Paid Amount
-        </SortButton>
-      ),
-      cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("paid_amount"));
-        const formatted = amount ? currencyFormatter(amount, "INR") : "-";
-        return <div className="text-right">{formatted}</div>;
-      },
-    },
-    {
-      accessorKey: "payment_date",
-      header: ({ column }) => (
-        <SortButton column={column} className="ms-auto justify-end">
-          Payment Date
-        </SortButton>
-      ),
-      cell: ({ row }) => (
-        <div className="text-right">{row.getValue("payment_date")}</div>
-      ),
-    },
-    {
-      accessorKey: "status",
-      header: ({ column }) => (
-        <SortButton column={column} className="ms-auto justify-end">
-          Payment Status
-        </SortButton>
-      ),
-      cell: ({ row }) => {
-        const status = row.getValue("status");
-        const type = statusKeyType[status] || "Pending";
-        return (
-          <div className="flex justify-end">
-            <BadgeStatusTask text={status} type={type} />
-          </div>
-        );
-      },
-    },
-  ];
-
-  const columnsUnitAllotments = [
-    {
-      accessorKey: "first_holder_name",
-      header: "First Holder Name",
-      cell: ({ row }) => (
-        <div className="truncate">{row.getValue("first_holder_name")}</div>
-      ),
-    },
-    {
-      accessorKey: "depository",
-      header: "Depository",
-      cell: ({ row }) => <div>{row.getValue("depository")}</div>,
-    },
-    {
-      accessorKey: "allotted_units",
-      header: "Allotted Units",
-      cell: ({ row }) => <div>{row.getValue("allotted_units")}</div>,
-    },
-    {
-      accessorKey: "date_of_allotment",
-      header: "Date of Allotment",
-      cell: ({ row }) => {
-        const date = row.getValue("date_of_allotment");
-        return <div>{date ? new Date(date).toLocaleDateString() : "-"}</div>;
-      },
-    },
-    {
-      accessorKey: "committed_amt",
-      header: "Committed Amount",
-      cell: ({ row }) => {
-        const amt = parseFloat(row.getValue("committed_amt"));
-        return (
-          <div className="text-right">{currencyFormatter(amt, "INR")}</div>
-        );
-      },
-    },
-    {
-      accessorKey: "drawdown_amount",
-      header: "Drawdown Amount",
-      cell: ({ row }) => {
-        const amt = parseFloat(row.getValue("drawdown_amount"));
-        return (
-          <div className="text-right">{currencyFormatter(amt, "INR")}</div>
-        );
-      },
-    },
-    {
-      accessorKey: "mgmt_fees",
-      header: "Mgmt Fees",
-      cell: ({ row }) => {
-        const amt = parseFloat(row.getValue("mgmt_fees"));
-        return (
-          <div className="text-right">{currencyFormatter(amt, "INR")}</div>
-        );
-      },
-    },
-    {
-      accessorKey: "amt_accepted",
-      header: "Amount Accepted",
-      cell: ({ row }) => {
-        const amt = parseFloat(row.getValue("amt_accepted"));
-        return (
-          <div className="text-right">{currencyFormatter(amt, "INR")}</div>
-        );
-      },
-    },
-    {
-      accessorKey: "stamp_duty",
-      header: "Stamp Duty",
-      cell: ({ row }) => {
-        const amt = parseFloat(row.getValue("stamp_duty"));
-        return (
-          <div className="text-right">{currencyFormatter(amt, "INR")}</div>
-        );
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => {
-        const status = row.getValue("status");
-        const type = statusKeyType[status] || "Pending";
-        return (
-          <div className="flex justify-end">
-            <BadgeStatusTask text={status} type={type} />
-          </div>
-        );
-      },
-    },
-  ];
 
   const { mutate: generateUnitAllotments, isLoading: isGenerating } =
     useGenerateUnitAllotments();
@@ -426,86 +212,33 @@ export default function DrawdownDetailPage() {
     }
   };
 
-  function mapDrawdownToCards(rows) {
-    if (!rows || rows.length === 0) return [];
-    const first = rows[0];
-    let expectedDrawdown = 0;
-    let totalDrawdownTillDate = 0;
-    let totalDrawdownPercent = 0;
-
-    rows.forEach((row) => {
-      expectedDrawdown += parseFloat(row.drawdown_amount || 0);
-      totalDrawdownTillDate += parseFloat(row.amount_called_up || 0);
-      totalDrawdownPercent += parseFloat(row.drawdown_percentage || 0);
-    });
-
-    return [
-      {
-        label: "Notice Date",
-        value: first.notice_date
-          ? new Date(first.notice_date).toLocaleDateString("en-IN", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })
-          : "-",
-      },
-      {
-        label: "Due Date",
-        value: first.drawdown_due_date
-          ? new Date(first.drawdown_due_date).toLocaleDateString("en-IN", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })
-          : "-",
-      },
-      {
-        label: "Percentage Drawdown",
-        value: first.drawdown_percentage
-          ? `${first.drawdown_percentage}%`
-          : "-",
-      },
-      {
-        label: "Expected Drawdown",
-        value: expectedDrawdown
-          ? currencyFormatter(expectedDrawdown, "INR")
-          : "-",
-      },
-      {
-        label: "Forecasted Drawdown",
-        value: first.forecast_next_quarter
-          ? `${first.forecast_next_quarter}%`
-          : "-",
-      },
-      {
-        label: "Next Drawdown Date",
-        value: first.forecast_next_quarter_period
-          ? first.forecast_next_quarter_period
-          : "-",
-      },
-      {
-        label: "Total Drawdown Till Date",
-        value: totalDrawdownTillDate
-          ? currencyFormatter(totalDrawdownTillDate, "INR")
-          : "-",
-      },
-      {
-        label: "Total Drawdown (%)",
-        value: `${totalDrawdownPercent}%`,
-      },
-    ];
-  }
-
   return (
     <section className="p-6">
-      <div className="mb-4 flex items-center">
+      <div className="mb-4 flex flex-wrap items-center gap-4">
         <Button
-          variant=""
+          variant="secondary"
           onClick={handleGenerateUnitAllotments}
           isLoading={isGenerating}
         >
           Generate Unit Allotments
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={() =>
+            handleUploadStatementFormOpen(
+              drawdownRows.length > 0 ? drawdownRows[0] : {},
+            )
+          }
+          isLoading={isUploading}
+        >
+          Upload Bank Statements
+        </Button>
+        <Button
+          variant="secondary"
+          // onClick={handleGenerateUnitAllotments}
+          // isLoading={isGenerating}
+        >
+          Generate Invi Filing
         </Button>
       </div>
       <div className="mb-4">
@@ -528,7 +261,7 @@ export default function DrawdownDetailPage() {
         </div>
         <TabsContent value="drawdown">
           <DataTable
-            columns={drawdownTableColumns}
+            columns={drawdownTableColumns()}
             data={drawdownTableRows}
             isLoading={isLoadingLP}
             onRowClick={(row) => handleViewDrawdownDetails(row.original)}
@@ -536,7 +269,7 @@ export default function DrawdownDetailPage() {
         </TabsContent>
         <TabsContent value="unit-allotments">
           <ServerDataTable
-            columns={columnsUnitAllotments}
+            columns={unitAllotmentTableColumns()}
             fetchQuery={(args) => {
               return useGetUnitAllotments({
                 ...args,
@@ -547,10 +280,10 @@ export default function DrawdownDetailPage() {
         </TabsContent>
         <TabsContent value="payments">
           <DataTable
-            columns={paymentTableColumns}
+            columns={paymentTableColumns()}
             data={paymentTableRows}
             isLoading={isLoadingPayments}
-            // openView={handleViewPaymentDetails}
+            openView={handleViewPaymentDetails}
           />
         </TabsContent>
       </Tabs>
@@ -569,6 +302,17 @@ export default function DrawdownDetailPage() {
         formFields={manualPaymentFormFeilds}
         isOpen={!!manualPaymentProps}
         onClose={() => setManualPaymentProps(null)}
+      />
+
+      <DialogForm
+        title={uploadStatementProps?.title}
+        description={uploadStatementProps?.description}
+        submitText="Upload"
+        form={uploadStatementForm}
+        onSubmit={uploadStatementForm.handleSubmit(handleUploadStatementSubmit)}
+        formFields={uploadStatementField}
+        isOpen={!!uploadStatementProps}
+        onClose={() => setUploadStatementProps(null)}
       />
     </section>
   );

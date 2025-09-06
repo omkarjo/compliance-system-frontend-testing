@@ -8,18 +8,26 @@ import { File } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const renderCell = (key, label, type, icon, data) => {
-  if (!data) return null;
-  const value = data[key];
-  if (!value && value !== false) return null;
-
-  if (type === "file" && !value.length) return null;
-
   const renderLabel = () => (
     <td className="mb-4 flex items-center gap-2 text-gray-500">
       {/* {icon && icon} */}
       {label}:
     </td>
   );
+
+  if (!data) return null;
+  const value = data[key];
+  if (!value && value !== false)
+    return (
+      <tr key={key}>
+        <td className="mb-4 flex items-center gap-2 text-gray-500">
+          {renderLabel()}
+        </td>
+        <td className="pb-4">--</td>
+      </tr>
+    );
+
+  if (type === "file" && !value.length) return null;
 
   switch (type) {
     case "date":
