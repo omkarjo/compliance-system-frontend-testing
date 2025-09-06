@@ -16,6 +16,8 @@ export function DocumentViewer({ viewUrl, fileType }) {
     );
   }
 
+  console.log("Rendering DocumentViewer for type:", fileType);
+
   switch (fileType) {
     case "image":
     case "jpg":
@@ -27,6 +29,7 @@ export function DocumentViewer({ viewUrl, fileType }) {
       return <PDFViewer viewUrl={viewUrl} />;
     case "xlsx":
     case "xls":
+    case "excel":
       return <ExcelViewer viewUrl={viewUrl} />;
     case "csv":
       return <CSVViewer viewUrl={viewUrl} />;

@@ -57,33 +57,38 @@ export function DocumentDialog({
       <DialogTrigger asChild>
         {trigger || <Button variant="primary">View</Button>}
       </DialogTrigger>
-      <DialogContent className="w-full max-w-3xl md:max-w-4xl">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-        </DialogHeader>
-        <div className="p-4">
-          {loading ? (
-            <LoadingState text="Loading document..." />
-          ) : (
-            <>
-              <div className="max-h-[70vh] overflow-auto">
-                <DocumentViewer viewUrl={docUrl} fileType={resolvedType} />
-              </div>
-              {docUrl && (
-                <div className="mt-4 flex justify-end">
-                  <Button
-                    onClick={() =>
-                      downloadFile({ url: docUrl, filename: title, title })
-                    }
-                    variant={"secondary"}
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    Download
-                  </Button>
+      <DialogContent className="w-full max-w-4xl md:max-w-5xl max-h-[80vh] overflow-hidden">
+        <div className="flex flex-col h-full">
+          <div className="px-6 pt-6">
+            <DialogHeader>
+              <DialogTitle>{title}</DialogTitle>
+            </DialogHeader>
+          </div>
+
+          <div className="p-4 flex-1 overflow-auto min-w-0">
+            {loading ? (
+              <LoadingState text="Loading document..." />
+            ) : (
+              <>
+                <div className="w-full min-w-0">
+                  <DocumentViewer viewUrl={docUrl} fileType={resolvedType} />
                 </div>
-              )}
-            </>
-          )}
+                {docUrl && (
+                  <div className="mt-4 flex justify-end">
+                    <Button
+                      onClick={() =>
+                        downloadFile({ url: docUrl, filename: title, title })
+                      }
+                      variant={"secondary"}
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Download
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

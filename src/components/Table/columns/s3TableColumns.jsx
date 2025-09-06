@@ -51,7 +51,6 @@ export function getS3Columns({ bucket_name, region, onFolderClick }) {
         const key = row.getValue("Key");
         const type = getS3Type(key);
         const fileName = getFileName(key);
-        const fileType = detectFileType(key);
 
         if (type === "folder") {
           return (
@@ -80,7 +79,6 @@ export function getS3Columns({ bucket_name, region, onFolderClick }) {
               <DocumentDialog
                 s3Key={key}
                 s3Bucket={bucket_name}
-                fileType={fileType !== "other" ? fileType : undefined}
                 trigger={
                   <span
                     id={`preview-dialog-${key}`}
@@ -151,7 +149,6 @@ export function getS3Columns({ bucket_name, region, onFolderClick }) {
         const type = getS3Type(key);
         if (type !== "file") return null;
         const fileName = getFileName(key);
-        const fileType = detectFileType(key);
         return (
           <div className="flex gap-2">
             <Button
@@ -168,7 +165,6 @@ export function getS3Columns({ bucket_name, region, onFolderClick }) {
             <DocumentDialog
               s3Key={key}
               s3Bucket={bucket_name}
-              fileType={fileType !== "other" ? fileType : undefined}
               trigger={
                 <span
                   id={`preview-dialog-action-${key}`}
