@@ -1,4 +1,4 @@
-import { DataTableColumnHeader } from "@/components/Table/DataTableColumnHeader";
+import SortButton from "@/components/Table/SortButton";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -20,28 +20,28 @@ export function userColumns(actionType = []) {
     {
       accessorKey: "UserName",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Name" />
+        <SortButton column={column}>Name</SortButton>
       ),
       cell: ({ row }) => (
-        <div className="ms-4 text-left">{row.getValue("UserName")}</div>
+        <div className="ms-4 text-left text-foreground">{row.getValue("UserName")}</div>
       ),
     },
     {
       accessorKey: "email",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Email" />
+        <SortButton column={column}>Email</SortButton>
       ),
       cell: ({ row }) => (
-        <div className="text-left text-gray-600">{row.getValue("email")}</div>
+        <div className="text-left text-foreground">{row.getValue("email")}</div>
       ),
     },
     {
       accessorKey: "role",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Role" />
+        <SortButton column={column}>Role</SortButton>
       ),
       cell: ({ row }) => (
-        <div className="text-left text-xs text-gray-500 uppercase">
+        <div className="text-left text-xs text-muted-foreground uppercase">
           {row.getValue("role")}
         </div>
       ),

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spacing Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-8">
+    <div class="bg-gray-100 p-4">
+        <h2 class="text-lg font-bold mb-4">Tailwind Spacing Test</h2>
+        
+        <div class="bg-blue-200 p-2 mb-2">Breadcrumb Area</div>
+        
+        <!-- mt-5 = 20px -->
+        <div class="mt-5 bg-green-200 p-2 mb-2">Create Task Button Area (mt-5)</div>
+        
+        <!-- mb-5 = 20px -->
+        <div class="mb-5 bg-yellow-200 p-2">Button/Tabs Container (mb-5)</div>
+        
+        <!-- space-y-5 = 20px -->
+        <div class="space-y-5">
+            <div class="bg-purple-200 p-2">Search Toolbar</div>
+            <div class="bg-orange-200 p-2">Data Table</div>
+        </div>
+    </div>
+    
+    <script>
+        // Measure spacing programmatically
+        function measureSpacing() {
+            console.log("Tailwind CSS spacing values:");
+            console.log("mt-5 (margin-top): 1.25rem = 20px");
+            console.log("mb-5 (margin-bottom): 1.25rem = 20px");
+            console.log("space-y-5 (gap between children): 1.25rem = 20px");
+            
+            // You can measure actual computed styles here
+            const elements = document.querySelectorAll('[class*="mt-5"], [class*="mb-5"], [class*="space-y-5"]');
+            elements.forEach((el, index) => {
+                const styles = window.getComputedStyle(el);
+                console.log(`Element ${index}:`, {
+                    marginTop: styles.marginTop,
+                    marginBottom: styles.marginBottom,
+                    className: el.className
+                });
+            });
+        }
+        
+        // Run measurement after DOM loads
+        window.addEventListener('load', measureSpacing);
+    </script>
+</body>
+</html>

@@ -31,6 +31,7 @@ import { ListFilter, User, X } from "lucide-react";
 import * as React from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import AnimateChangeInHeight from "./AnimateChangeInHeight";
+import UserSelect from "@/components/Select/UserSelect";
 
 /**
  * @param {{
@@ -43,9 +44,11 @@ import AnimateChangeInHeight from "./AnimateChangeInHeight";
  *     relation?: string[],
  *     options?: Array<{id: string, label: string, icon?: React.ReactNode}>,
  *   }>,
+ *   inline?: boolean, // Show filter chips inline
+ *   buttonOnly?: boolean, // Show only the filter button
  * }} props
  */
-const FiltersTable = ({ table, filterOptions }) => {
+const FiltersTable = ({ table, filterOptions, inline = false, buttonOnly = false }) => {
   // Use table state for filters
   const [open, setOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(null);
@@ -86,7 +89,7 @@ const FiltersTable = ({ table, filterOptions }) => {
   const handleOptionSelect = useCallback(
     (option) => {
       if (!selectedFilter) return;
-      clearAllFilters();
+      // Don't clear all filters - allow stacking
       setFilters((prev) => [
         ...prev,
         {
@@ -98,13 +101,13 @@ const FiltersTable = ({ table, filterOptions }) => {
       setCommandInput("");
       setOpen(false);
     },
-    [selectedFilter, setFilters, clearAllFilters],
+    [selectedFilter, setFilters],
   );
 
   const handleUserSelect = useCallback(
     (userData) => {
       if (!selectedFilter || !userData) return;
-      clearAllFilters();
+      // Don't clear all filters - allow stacking
       setFilters((prev) => [
         ...prev,
         {
@@ -116,15 +119,15 @@ const FiltersTable = ({ table, filterOptions }) => {
       setOpen(false);
       setSelectedFilter(null);
     },
-    [selectedFilter, setFilters, clearAllFilters],
+    [selectedFilter, setFilters],
   );
 
   const handleDateRangeSelect = useCallback(
     (range) => {
       if (!range?.from || !range?.to || !selectedFilter) return;
-      clearAllFilters();
+      // Remove any existing date filters first, then add new ones
       setFilters((prev) => [
-        ...prev,
+        ...prev.filter(f => f.filterid !== "start_date" && f.filterid !== "end_date"),
         {
           filterid: "start_date",
           optionid: range.from.toLocaleDateString("en-CA"),
@@ -138,7 +141,7 @@ const FiltersTable = ({ table, filterOptions }) => {
       setSelectedFilter(null);
       setDateRange(null);
     },
-    [selectedFilter, setFilters, clearAllFilters],
+    [selectedFilter, setFilters],
   );
 
   const handleRelationChange = useCallback((filterId, relation) => {
@@ -233,8 +236,12 @@ const FiltersTable = ({ table, filterOptions }) => {
     if (selectedFilter?.type === "user_select") {
       return (
         <div className="p-2">
-          {/* Implement or import your user selection component */}
-          {/* <UserSelect isFilter={true} returnFullObject={true} onValueChange={handleUserSelect} /> */}
+          <UserSelect 
+            isFilter={true} 
+            returnFullObject={true} 
+            onValueChange={handleUserSelect}
+            buttonText="Select user"
+          />
         </div>
       );
     }
@@ -295,21 +302,102 @@ const FiltersTable = ({ table, filterOptions }) => {
 
   // Get rendered filter chips from table state
   const filterChips = useMemo(() => {
-    return filters.map((filterObj, idx) => {
+    // Group date filters together
+    const dateFilters = filters.filter(f => f.filterid === "start_date" || f.filterid === "end_date");
+    const otherFilters = filters.filter(f => f.filterid !== "start_date" && f.filterid !== "end_date");
+    
+    const chips = [];
+    
+    // Handle date range filter specially
+    if (dateFilters.length > 0) {
+      const startDate = dateFilters.find(f => f.filterid === "start_date");
+      const endDate = dateFilters.find(f => f.filterid === "end_date");
+      const dateRangeFilterDef = filterOptions.find(opt => opt.type === "date_range");
+      
+      if (dateRangeFilterDef && (startDate || endDate)) {
+        chips.push(
+          <div key="date-range" className={cn(
+            "flex items-center gap-[1px] text-xs",
+            inline && "bg-accent rounded-full"
+          )}>
+            <div className={cn(
+              "flex shrink-0 items-center gap-1 px-2 py-0.5",
+              inline 
+                ? "bg-accent text-accent-foreground rounded-l-full h-6" 
+                : "bg-muted rounded-l py-1"
+            )}>
+              {dateRangeFilterDef.icon
+                ? React.cloneElement(dateRangeFilterDef.icon, { className: "size-3" })
+                : <User className="size-3" />}
+              <span className="text-xs font-medium">{dateRangeFilterDef.name}</span>
+            </div>
+            <div className={cn(
+              "flex shrink-0 items-center gap-1 px-2 py-0.5 text-xs",
+              inline 
+                ? "bg-accent text-accent-foreground h-6" 
+                : "bg-muted text-muted-foreground rounded-none py-1"
+            )}>
+              <span className="text-xs">
+                {startDate && endDate 
+                  ? `${startDate.optionid} - ${endDate.optionid}`
+                  : startDate 
+                    ? `From ${startDate.optionid}` 
+                    : `Until ${endDate.optionid}`
+                }
+              </span>
+            </div>
+            <button
+              onClick={() => removeFilter({ filterid: "start_date" })}
+              className={cn(
+                "shrink-0 transition flex items-center justify-center",
+                inline 
+                  ? "bg-accent hover:bg-accent/80 text-muted-foreground hover:text-accent-foreground w-5 h-6 rounded-r-full" 
+                  : "bg-muted text-muted-foreground hover:text-primary hover:bg-muted/50 h-6 w-6 rounded-l-none rounded-r-sm"
+              )}
+            >
+              <X className="size-3" />
+            </button>
+          </div>
+        );
+      }
+    }
+    
+    // Handle other filters
+    otherFilters.forEach((filterObj, idx) => {
       const filterDef = filterOptions.find(opt => opt.id === filterObj.filterid);
       const optionDef = filterDef?.options?.find(opt => opt.id === filterObj.optionid);
-      return (
-        <div key={idx} className="flex items-center gap-[1px] text-xs">
-          <div className="bg-muted flex shrink-0 items-center gap-1.5 rounded-l px-1.5 py-1">
+      
+      // Handle cases where filter definition is not found
+      if (!filterDef) {
+        console.warn(`Filter definition not found for filterid: ${filterObj.filterid}`);
+        return;
+      }
+      
+      chips.push(
+        <div key={`filter-${idx}`} className={cn(
+          "flex items-center gap-[1px] text-xs",
+          inline && "bg-accent rounded-full"
+        )}>
+          <div className={cn(
+            "flex shrink-0 items-center gap-1 px-2 py-0.5",
+            inline 
+              ? "bg-accent text-accent-foreground rounded-l-full h-6" 
+              : "bg-muted rounded-l py-1"
+          )}>
             {filterDef?.icon
-              ? React.cloneElement(filterDef.icon, { className: "size-3.5" })
-              : <User className="size-3.5" />}
-            {filterDef?.name}
+              ? React.cloneElement(filterDef.icon, { className: "size-3" })
+              : <User className="size-3" />}
+            <span className="text-xs font-medium">{filterDef?.name}</span>
           </div>
 
           {filterDef?.relation?.length > 1 && (
             <DropdownMenu>
-              <DropdownMenuTrigger className="bg-muted hover:bg-muted/50 text-muted-foreground hover:text-primary shrink-0 px-1.5 py-1 transition">
+              <DropdownMenuTrigger className={cn(
+                "shrink-0 px-1.5 py-1 transition text-xs",
+                inline 
+                  ? "bg-accent text-muted-foreground hover:bg-accent/80" 
+                  : "bg-muted hover:bg-muted/50 text-muted-foreground hover:text-primary"
+              )}>
                 {selectedRelation[filterDef.id] || filterDef.relation[0]}
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-fit min-w-fit">
@@ -325,28 +413,85 @@ const FiltersTable = ({ table, filterOptions }) => {
             </DropdownMenu>
           )}
 
-          <div className="bg-muted text-muted-foreground flex shrink-0 items-center gap-1.5 rounded-none px-1.5 py-1">
+          <div className={cn(
+            "flex shrink-0 items-center gap-1 px-2 py-0.5 text-xs",
+            inline 
+              ? "bg-accent text-accent-foreground h-6" 
+              : "bg-muted text-muted-foreground rounded-none py-1"
+          )}>
             {optionDef?.icon
               ? React.cloneElement(optionDef.icon, {
-                  className: "size-3.5",
+                  className: "size-3",
                 })
               : null}
-            {optionDef?.label || filterObj.optionid}
+            <span className="text-xs">{optionDef?.label || filterObj.optionid}</span>
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
             onClick={() => removeFilter(filterObj)}
-            className="bg-muted text-muted-foreground hover:text-primary hover:bg-muted/50 h-6 w-6 shrink-0 rounded-l-none rounded-r-sm transition"
+            className={cn(
+              "shrink-0 transition flex items-center justify-center",
+              inline 
+                ? "bg-accent hover:bg-accent/80 text-muted-foreground hover:text-accent-foreground w-5 h-6 rounded-r-full" 
+                : "bg-muted text-muted-foreground hover:text-primary hover:bg-muted/50 h-6 w-6 rounded-l-none rounded-r-sm"
+            )}
           >
             <X className="size-3" />
-          </Button>
+          </button>
         </div>
       );
     });
-  }, [filters, filterOptions, selectedRelation, handleRelationChange, removeFilter]);
+    
+    return chips;
+  }, [filters, filterOptions, selectedRelation, handleRelationChange, removeFilter, inline]);
 
+  // If inline mode, only show filter chips
+  if (inline) {
+    return (
+      <div className="flex flex-wrap items-center gap-1">
+        {filterChips}
+        {filters.length > 0 && (
+          <button
+            onClick={clearAllFilters}
+            className="text-muted-foreground hover:text-foreground transition-colors text-xs ml-1"
+            title="Clear all filters"
+          >
+            Clear
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  // If buttonOnly mode, only show the filter button (no chips)
+  if (buttonOnly) {
+    return (
+      <Popover open={open} onOpenChange={popoverCloseHandler}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="ghost"
+            role="combobox"
+            aria-expanded={open}
+            size="sm"
+            className={cn(
+              "group flex h-7 px-2 items-center gap-1 rounded-md text-xs transition-colors hover:bg-accent",
+              filters.length > 0 && "bg-primary/10 text-primary hover:bg-primary/20"
+            )}
+          >
+            <ListFilter className="size-3.5 shrink-0 transition-all" />
+            {filters.length > 0 ? `${filters.length}` : "Filter"}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[280px] p-0" align="end">
+          <AnimateChangeInHeight>
+            <Command>{renderFilterContent}</Command>
+          </AnimateChangeInHeight>
+        </PopoverContent>
+      </Popover>
+    );
+  }
+
+  // Default mode (original layout)
   return (
     <div className="flex justify-end gap-2">
       <div className="flex flex-wrap gap-2">

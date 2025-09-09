@@ -1,4 +1,4 @@
-import FundForm from "@/components/Dashboard/includes/FundForm";
+import FundForm from "@/components/layout/dashboard/includes/FundForm";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCreateFund } from "@/react-query/mutations/Funds/useCreateFund";
@@ -91,7 +91,7 @@ export default function FundCreatePage() {
           <h1 className="text-xl font-semibold md:text-2xl">Add New Fund</h1>
         </div>
       </div>
-      <main className="mx-4 flex-1 rounded-lg border bg-white p-4 shadow-md">
+      <main className="mx-4 flex-1 rounded-lg border bg-card p-4 shadow-md">
         <FundForm
           onSubmit={handleSubmit}
           initialValues={initialValues}

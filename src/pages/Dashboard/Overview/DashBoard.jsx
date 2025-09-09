@@ -1,19 +1,15 @@
-import DashboardLatestTask from "@/components/Dashboard/includes/DashboardLatestTask";
-import CardStats from "@/components/includes/card-stats";
-import TaskOverviewChart from "@/components/includes/task-overview-chart";
+import DashboardLatestTask from "@/components/layout/dashboard/includes/DashboardLatestTask";
+import CardStats from "@/components/common/includes/card-stats.jsx";
+import TaskOverviewChart from "@/components/common/includes/task-overview-chart.jsx";
 import { useGetOverviewStats } from "@/react-query/query/overview/useOverviewQuery";
 
 const overviewStatsValues = [
-  { title: "Total", color: "text-black", key: "total_tasks" },
-  { title: "Completed", color: "text-green-500", key: "completed_tasks" },
-  { title: "Overdue", color: "text-red-500", key: "overdue_tasks" },
-  { title: "Open", color: "text-yellow-500", key: "open_tasks" },
-  { title: "Pending", color: "text-blue-500", key: "pending_tasks" },
-  {
-    title: "Required Review",
-    color: "text-orange-500",
-    key: "review_required_tasks",
-  },
+  { title: "Total", color: "text-foreground", key: "total_tasks" },
+  { title: "Completed", color: "text-green-600 dark:text-green-400", key: "completed_tasks" },
+  { title: "Overdue", color: "text-red-600 dark:text-red-400", key: "overdue_tasks" },
+  { title: "Open", color: "text-yellow-600 dark:text-yellow-400", key: "open_tasks" },
+  { title: "Pending", color: "text-slate-600 dark:text-slate-400", key: "pending_tasks" },
+  { title: "Required Review", color: "text-orange-600 dark:text-orange-400", key: "review_required_tasks"},
 ];
 
 export default function DashBoard() {

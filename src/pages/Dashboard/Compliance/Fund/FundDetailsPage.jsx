@@ -1,5 +1,5 @@
-import DialogForm from "@/components/Dashboard/includes/dialog-form";
-import FundDetails from "@/components/Fund/FundDetails";
+import DialogForm from "@/components/layout/dashboard/includes/dialog-form";
+import FundDetails from "@/components/business/funds/FundDetails";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Loading from "@/pages/public/Loading";

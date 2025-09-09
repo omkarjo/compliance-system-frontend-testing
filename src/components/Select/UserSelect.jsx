@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 import { useGetUserByName } from "@/react-query/query/user/userQuery";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import UserBadge from "../includes/UserBadge";
+import UserBadge from "@/components/common/includes/UserBadge";
 
 const UserCommandList = ({
   users,
@@ -46,7 +46,6 @@ const UserCommandList = ({
           >
             <UserBadge
               name={user.label}
-              email={user.email}
               avatar={user.avatar}
             />
             <Check
@@ -153,7 +152,7 @@ export default function UserSelect({
             aria-expanded={open}
             aria-controls={commandId}
             className={cn(
-              "w-full justify-between text-left font-normal",
+              "w-full justify-between text-left font-normal bg-transparent hover:bg-accent hover:text-accent-foreground dark:bg-transparent",
               !selectedValue && "text-muted-foreground",
               className,
             )}

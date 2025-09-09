@@ -10,7 +10,7 @@ import ErrorPage from "@/pages/public/ErrorPage";
 export function DocumentViewer({ viewUrl, fileType }) {
   if (!viewUrl || !fileType) {
     return (
-      <div className="flex items-center justify-center h-48 bg-gray-50">
+      <div className="flex items-center justify-center h-48 bg-muted text-muted-foreground">
         No document to display.
       </div>
     );

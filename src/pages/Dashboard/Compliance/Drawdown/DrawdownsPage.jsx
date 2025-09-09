@@ -1,6 +1,6 @@
-import DialogForm from "@/components/Dashboard/includes/dialog-form";
-import PreviewDrawdownModal from "@/components/Drawndown/PreviewDrawdownModal";
-import SheetDrawdownView from "@/components/Drawndown/SheetDrawdownView";
+import DialogForm from "@/components/layout/dashboard/includes/dialog-form";
+import PreviewDrawdownModal from "@/components/business/drawdowns/Drawndown/PreviewDrawdownModal";
+import SheetDrawdownView from "@/components/business/drawdowns/Drawndown/SheetDrawdownView";
 import { ServerDataTable } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import { serializeDates } from "@/lib/formatter";

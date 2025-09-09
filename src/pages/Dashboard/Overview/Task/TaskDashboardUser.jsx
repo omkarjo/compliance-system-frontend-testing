@@ -1,5 +1,5 @@
-import DialogForm from "@/components/Dashboard/includes/dialog-form";
-import TableTaskViewUser from "@/components/Task/TableTaskViewUser";
+import DialogForm from "@/components/layout/dashboard/includes/dialog-form";
+import TableTaskViewUser from "@/components/business/tasks/TableTaskViewUser";
 import { useUpdateTask } from "@/react-query/mutations/task/updateTask";
 import { taskFormFields } from "@/schemas/feilds/taskFeilds";
 import { taskSchema } from "@/schemas/zod/taskSchema";

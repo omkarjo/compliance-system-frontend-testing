@@ -1,7 +1,8 @@
-import { AppSidebar } from "@/components/Dashboard/app-sidebar";
-import DashboardBreadcrumb from "@/components/Dashboard/includes/breadcrumb";
+import { AppSidebar } from "@/components/layout/dashboard/app-sidebar";
+import DashboardBreadcrumb from "@/components/layout/dashboard/includes/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import {
   SidebarInset,
   SidebarProvider,
@@ -10,19 +11,7 @@ import {
 import { ADMIN_ROLES } from "@/constant/roles";
 import { useAppSelector } from "@/store/hooks";
 import useCheckRoles from "@/utils/check-roles";
-import {
-  Banknote,
-  BookOpen,
-  Bot,
-  Building,
-  GalleryVerticalEnd,
-  GitCompare,
-  History,
-  IndianRupee,
-  SquareTerminal,
-  User,
-  UserCircle
-} from "lucide-react";
+import { NavigationIcons } from "@/components/icons";
 import { Navigate, Outlet } from "react-router-dom";
 
 const PATH_PREFIX = "/dashboard";
@@ -34,37 +23,44 @@ export default function DashboardLayout() {
     {
       title: "Compliance",
       url: PATH_PREFIX,
-      breadcrumbText: "Dashboard",
+      breadcrumbText: "Compliance",
+      isSection: true,
       items: [
         {
           title: "Limited Partners",
           url: PATH_PREFIX + "/limited-partners",
-          icon: User,
+          icon: NavigationIcons.LimitedPartners,
+          breadcrumbText: "Limited Partners",
         },
         {
           title: "Portfolio Companies",
           url: PATH_PREFIX + "/portfolio-companies",
-          icon: Building,
+          icon: NavigationIcons.PortfolioCompanies,
+          breadcrumbText: "Portfolio Companies",
         },
         {
           title: "Drawdowns",
           url: PATH_PREFIX + "/drawdowns",
-          icon: IndianRupee,
+          icon: NavigationIcons.Drawdowns,
+          breadcrumbText: "Drawdowns",
         },
         // {
         //   title: "SEBI Reports",
         //   url: PATH_PREFIX + "/sebi-reports",
         //   icon: ClipboardCheck,
+        //   breadcrumbText: "SEBI Reports",
         // },
         {
           title: "Fund Details",
           url: PATH_PREFIX + "/funds-details",
-          icon: Banknote,
+          icon: NavigationIcons.FundDetails,
+          breadcrumbText: "Fund Details",
         },
         {
-          title: "Entitys",
+          title: "Entities",
           url: PATH_PREFIX + "/entities",
-          icon: GalleryVerticalEnd,
+          icon: NavigationIcons.Entities,
+          breadcrumbText: "Entities",
         },
       ],
       // hiddenIcon: true,
@@ -75,12 +71,14 @@ export default function DashboardLayout() {
     {
       title: "Admin",
       url: PATH_PREFIX,
-      breadcrumbText: "Dashboard",
+      breadcrumbText: "Admin",
+      isSection: true,
       items: [
         {
           title: "Users Dashboard",
           url: PATH_PREFIX + "/users",
-          icon: UserCircle,
+          icon: NavigationIcons.Users,
+          breadcrumbText: "Users",
         },
       ],
     },
@@ -89,29 +87,34 @@ export default function DashboardLayout() {
   const menu = [
     {
       title: "Overview",
-      breadcrumbText: "Dashboard",
+      breadcrumbText: "Overview",
       url: PATH_PREFIX,
+      isSection: true,
       items: [
         {
           title: "Dashboard",
           url: PATH_PREFIX,
-          icon: SquareTerminal,
+          icon: NavigationIcons.Dashboard,
           isIndex: true,
+          breadcrumbText: "Dashboard",
         },
         {
           title: "Processes",
           url: PATH_PREFIX + "/processes",
-          icon: GitCompare,
+          icon: NavigationIcons.Processes,
+          breadcrumbText: "Processes",
         },
         {
           title: "Tasks",
           url: PATH_PREFIX + "/task",
-          icon: Bot,
+          icon: NavigationIcons.Tasks,
+          breadcrumbText: "Tasks",
         },
         {
           title: "Documents",
           url: PATH_PREFIX + "/documents",
-          icon: BookOpen,
+          icon: NavigationIcons.Documents,
+          breadcrumbText: "Documents",
         },
         ...(isFundManger
           ? [
@@ -119,7 +122,7 @@ export default function DashboardLayout() {
                 title: "Activity Log",
                 url: PATH_PREFIX + "/activity-log",
                 breadcrumbText: "Activity Log",
-                icon: History,
+                icon: NavigationIcons.ActivityLog,
               },
             ]
           : []),
@@ -138,14 +141,15 @@ export default function DashboardLayout() {
     <SidebarProvider>
       <AppSidebar menu={menu} user={user} />
       <SidebarInset className="max-w-full overflow-x-auto">
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+        <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <DashboardBreadcrumb menu={menu} prefix={PATH_PREFIX} />
-            <Button variant="" asChild className="ml-auto">
-            {/* <AuthButtons className="ml-auto" /> */}
-            </Button>
+          </div>
+          <div className="flex items-center gap-2 px-4">
+            <ThemeToggle />
+            {/* <AuthButtons /> */}
           </div>
         </header>
 

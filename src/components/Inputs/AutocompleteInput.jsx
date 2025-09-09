@@ -110,7 +110,7 @@ export default function AutocompleteInput({
         <div
           ref={suggestionsRef}
           className={cn(
-            "absolute z-50 max-h-48 w-full overflow-y-auto rounded-b-md border border-t-0 bg-white shadow-lg",
+            "absolute z-50 max-h-48 w-full overflow-y-auto rounded-b-md border border-t-0 bg-popover border-border shadow-lg",
             className,
           )}
         >
