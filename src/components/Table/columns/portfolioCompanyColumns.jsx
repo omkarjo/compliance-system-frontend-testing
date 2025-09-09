@@ -5,10 +5,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import SortButton from "@/components/Table/SortButton";
 import { currencyFormatter } from "@/lib/formatter";
 import { cn } from "@/lib/utils";
-import { Eye, MoreHorizontal, Trash2 } from "lucide-react";
+import { ArrowUpDown, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 
 /**
  * Returns column definitions for the Portfolio Companies Table, with shadcn Button and Lucide icons.
@@ -40,10 +39,17 @@ export function portfolioCompanyColumns(openView, deleteCompany) {
     {
       accessorKey: "startup_brand",
       header: ({ column }) => (
-        <SortButton column={column}>Name</SortButton>
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="text-left"
+        >
+          Name
+          <ArrowUpDown size={16} />
+        </Button>
       ),
       cell: ({ row }) => (
-        <div className="max-w-42 truncate ps-2 text-left text-foreground md:max-w-52 lg:max-w-64">
+        <div className="max-w-42 truncate ps-2 text-left md:max-w-52 lg:max-w-64">
           {row.getValue("startup_brand")}
         </div>
       ),
@@ -51,23 +57,28 @@ export function portfolioCompanyColumns(openView, deleteCompany) {
     {
       accessorKey: "funding",
       header: ({ column }) => (
-        <SortButton column={column} className="ms-auto justify-end">Funding</SortButton>
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="text-left"
+        >
+          Funding
+          <ArrowUpDown size={16} />
+        </Button>
       ),
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("funding"));
         const formatted = amount ? currencyFormatter(amount, "INR") : "-";
-        return <div className="me-4 text-right text-foreground md:me-6">{formatted}</div>;
+        return <div className="me-4 text-right md:me-6">{formatted}</div>;
       },
     },
     {
       accessorKey: "created_at",
-      header: ({ column }) => (
-        <SortButton column={column}>Date of Funding</SortButton>
-      ),
+      header: "Date of Funding",
       cell: ({ row }) => {
         const date = row.getValue("created_at");
         return (
-          <div className="max-w-42 truncate ps-2 text-left text-foreground md:max-w-52 lg:max-w-64">
+          <div className="max-w-42 truncate ps-2 text-left md:max-w-52 lg:max-w-64">
             {date ? new Date(date).toLocaleDateString("en-IN") : "-"}
           </div>
         );
@@ -75,13 +86,11 @@ export function portfolioCompanyColumns(openView, deleteCompany) {
     },
     {
       accessorKey: "last_evaluation",
-      header: ({ column }) => (
-        <SortButton column={column}>Last Evaluation</SortButton>
-      ),
+      header: "Last Evaluation",
       cell: ({ row }) => {
         const evalValue = row.getValue("last_evaluation");
         return (
-          <div className="max-w-42 truncate ps-2 text-left text-foreground md:max-w-52 lg:max-w-64">
+          <div className="max-w-42 truncate ps-2 text-left md:max-w-52 lg:max-w-64">
             {evalValue || "-"}
           </div>
         );

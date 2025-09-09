@@ -47,15 +47,15 @@ import {
 import { EntitySelect, FundSelect, TaskSelect, UserSelect } from "../Select";
 
 export const FileSvgDraw = memo(({ allowedTypes }) => (
-  <div className="flex flex-col items-center justify-center p-4 text-muted-foreground">
-    <div className="my-1 flex size-9 items-center justify-center rounded-md bg-muted">
-      <Upload size={16} className="text-muted-foreground" />
+  <div className="flex flex-col items-center justify-center p-4 text-gray-500 dark:text-gray-400">
+    <div className="my-1 flex size-9 items-center justify-center rounded-md bg-gray-100">
+      <Upload size={16} className="text-gray-600" />
     </div>
-    <p className="my-0.5 mb-1 text-sm text-muted-foreground">
+    <p className="my-0.5 mb-1 text-sm text-gray-500 dark:text-gray-400">
       Drag and drop your files here
     </p>
     {allowedTypes?.length > 0 && (
-      <p className="text-xs text-muted-foreground">
+      <p className="text-xs text-gray-500 dark:text-gray-400">
         Allowed file types: {allowedTypes.join(", ")}
       </p>
     )}
@@ -93,7 +93,7 @@ const FormGenerate = ({
     const fieldGenerators = {
       text: (field, formField) => (
         <Input
-          className={cn(formField?.className)}
+          className={cn("focus-visible:ring-0", formField?.className)}
           placeholder={formField?.placeholder || ""}
           disabled={
             isSubmitting ||
@@ -106,7 +106,7 @@ const FormGenerate = ({
 
       autocomplete: (field, formField) => (
         <AutocompleteInput
-          className={cn(formField?.className)}
+          className={cn("focus-visible:ring-0", formField?.className)}
           placeholder={formField?.placeholder || ""}
           disabled={
             isSubmitting ||
@@ -119,7 +119,7 @@ const FormGenerate = ({
       ),
       textarea: (field, formField) => (
         <Textarea
-          className={cn(formField?.className)}
+          className={cn("focus-visible:ring-0", formField?.className)}
           placeholder={formField?.placeholder || ""}
           disabled={
             isSubmitting ||
@@ -132,7 +132,7 @@ const FormGenerate = ({
       email: (field, formField) => (
         <Input
           type="email"
-          className={cn(formField?.className)}
+          className={cn("focus-visible:ring-0", formField?.className)}
           placeholder={formField?.placeholder || ""}
           disabled={
             isSubmitting ||
@@ -149,7 +149,7 @@ const FormGenerate = ({
           min={formField?.min}
           max={formField?.max}
           className={cn(
-            "no-spinners",
+            "no-spinners focus-visible:ring-0",
             formField?.className,
           )}
           disabled={
@@ -171,7 +171,7 @@ const FormGenerate = ({
           min={formField?.min}
           max={formField?.max}
           className={cn(
-            "no-spinners",
+            "no-spinners focus-visible:ring-0",
             formField?.className,
           )}
           disabled={
@@ -228,7 +228,7 @@ const FormGenerate = ({
                 data-testid={formField.name}
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal bg-transparent hover:bg-accent hover:text-accent-foreground dark:bg-transparent",
+                  "w-full justify-start text-left font-normal",
                   !selectedDate && "text-muted-foreground",
                 )}
                 disabled={isSubmitting}
@@ -321,7 +321,7 @@ const FormGenerate = ({
         </FileUploader>
       ),
       checkbox: (field, formField) => (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1">
           <Checkbox
             id={field.name}
             name={field.name}
@@ -335,7 +335,7 @@ const FormGenerate = ({
           />
           <label
             htmlFor={field.name}
-            className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="space-y-1 font-sans text-sm leading-none font-semibold"
           >
             {formField.placeholder}
           </label>

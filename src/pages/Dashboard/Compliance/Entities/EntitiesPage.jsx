@@ -1,6 +1,6 @@
-import DialogForm from "@/components/layout/dashboard/includes/dialog-form";
-import EntitySheetView from "@/components/business/entities/EntitySheetView";
-import EntitiesSection from "@/components/business/entities/EntitiesSection";
+import DialogForm from "@/components/Dashboard/includes/dialog-form";
+import EntitySheetView from "@/components/Dashboard/sheet/EntitySheetView";
+import EntitiesSection from "@/components/Entities/EntitiesSection";
 import { ServerDataTable } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

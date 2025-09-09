@@ -1,5 +1,5 @@
-import StateChangeSelector from "@/components/layout/dashboard/includes/state-change-selector";
-import UserBadge from "@/components/common/includes/UserBadge";
+import StateChangeSelector from "@/components/Dashboard/includes/state-change-selector";
+import UserBadge from "@/components/includes/UserBadge";
 import SortButton from "@/components/Table/SortButton";
 
 /**
@@ -24,7 +24,7 @@ export function taskColumns(havePermission, actionType = []) {
         <span className="ms-4 flex items-center">{"Category"}</span>
       ),
       cell: ({ row }) => (
-        <div className="ms-4 text-left text-foreground">
+        <div className="ms-4 text-left uppercase">
           {row.getValue("category")}
         </div>
       ),
@@ -33,7 +33,7 @@ export function taskColumns(havePermission, actionType = []) {
       accessorKey: "description",
       header: "Title",
       cell: ({ row }) => (
-        <div className="max-w-42 truncate text-left text-foreground md:max-w-52 lg:max-w-64">
+        <div className="max-w-42 truncate text-left md:max-w-52 lg:max-w-64">
           {row.getValue("description")}
         </div>
       ),
@@ -50,7 +50,7 @@ export function taskColumns(havePermission, actionType = []) {
         const formatted = dueDate
           ? new Date(dueDate).toLocaleDateString("EN-IN")
           : "No Due Date";
-        return <div className="ps-4 text-left text-foreground">{formatted}</div>;
+        return <div className="ps-4 text-left font-medium">{formatted}</div>;
       },
     },
     {
@@ -88,7 +88,7 @@ export function taskColumns(havePermission, actionType = []) {
               <button
                 key={index}
                 type="button"
-                className={`hover:bg-muted rounded px-2 py-1 text-xs text-muted-foreground transition ${action.className ?? ""}`}
+                className={`hover:bg-muted rounded px-2 py-1 text-xs transition ${action.className ?? ""}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   action.onClick(data);

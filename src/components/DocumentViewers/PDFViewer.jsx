@@ -2,7 +2,7 @@ import React from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import ErrorPage from "@/pages/public/ErrorPage";
-import { LoadingState } from "@/components/common/includes/LoadingErrorState";
+import { LoadingState } from "../includes/LoadingErrorState";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -13,8 +13,8 @@ export function PDFViewer({ viewUrl }) {
   const [numPages, setNumPages] = React.useState(null);
 
   return (
-    <div className="flex flex-col items-center w-full h-full bg-muted overflow-auto">
-      <div className="w-full max-w-4xl p-4">
+    <div className="flex items-center justify-center bg-gray-50 p-2">
+      <div className="flex-1">
         <Document
           file={viewUrl}
           loading={<LoadingState text="Loading PDF..." />}
@@ -25,17 +25,9 @@ export function PDFViewer({ viewUrl }) {
             />
           }
           onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-          className="flex flex-col items-center"
         >
           {Array.from({ length: numPages || 1 }, (_, i) => (
-            <div key={i + 1} className="mb-4 shadow-lg">
-              <Page 
-                pageNumber={i + 1} 
-                width={Math.min(window.innerWidth * 0.8, 800)}
-                renderTextLayer={false}
-                renderAnnotationLayer={false}
-              />
-            </div>
+            <Page key={i + 1} pageNumber={i + 1} width={600} />
           ))}
         </Document>
       </div>

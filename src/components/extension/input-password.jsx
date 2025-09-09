@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
+import { Input } from "../ui/input";
 
 export default function InputPassword({ className, ...rest }) {
   const [showPassword, setShowPassword] = useState(false);

@@ -28,7 +28,7 @@ export function XMLViewer({ viewUrl }) {
   if (!xml) return <div>No XML data found.</div>;
 
   return (
-    <pre className="bg-muted max-h-[70vh] overflow-auto p-2 border rounded whitespace-pre-wrap text-xs text-foreground">
+    <pre className="bg-gray-50 max-h-[70vh] overflow-auto p-2 border rounded whitespace-pre-wrap text-xs">
       {xml}
     </pre>
   );

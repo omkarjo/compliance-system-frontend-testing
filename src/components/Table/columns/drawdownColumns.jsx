@@ -1,5 +1,7 @@
-import StatusLozenge from "@/components/common/includes/StatusLozenge";
-import SortButton from "@/components/Table/SortButton";
+import BadgeStatusTask from "@/components/includes/badge-status";
+import { Button } from "@/components/ui/button";
+import { SortButton } from "@/components/Table";
+import { ArrowUpDown } from "lucide-react";
 import { currencyFormatter } from "@/lib/formatter";
 
 /**
@@ -17,21 +19,25 @@ export function drawdownColumns() {
     {
       accessorKey: "drawdown_quarter",
       header: ({ column }) => (
-        <SortButton column={column}>Quarter</SortButton>
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Quarter
+          <ArrowUpDown size={16} />
+        </Button>
       ),
       cell: ({ row }) => (
-        <div className="ps-2 text-foreground">{row.getValue("drawdown_quarter")}</div>
+        <div className="ps-2">{row.getValue("drawdown_quarter")}</div>
       ),
     },
     {
       accessorKey: "notice_date",
-      header: ({ column }) => (
-        <SortButton column={column}>Notice Date</SortButton>
-      ),
+      header: "Notice Date",
       cell: ({ row }) => {
         const date = row.getValue("notice_date");
         return (
-          <div className="ps-2 text-foreground">
+          <div className="ps-2">
             {date ? new Date(date).toLocaleDateString("en-IN") : "-"}
           </div>
         );
@@ -39,24 +45,20 @@ export function drawdownColumns() {
     },
     {
       accessorKey: "status",
-      header: ({ column }) => (
-        <SortButton column={column}>Drawdown Status</SortButton>
-      ),
+      header: "Drawdown Status",
       cell: ({ row }) => {
         const status = row.getValue("status");
         const type = statusKeyType[status] || "Pending";
-        return <StatusLozenge status={status} />;
+        return <BadgeStatusTask text={status} type={type} />;
       },
     },
     {
       accessorKey: "invi_filling",
-      header: ({ column }) => (
-        <SortButton column={column}>Invi Filling</SortButton>
-      ),
+      header: "Invi Filling",
       cell: ({ row }) => {
         const status = row.getValue("invi_filling") || "NA";
         const type = statusKeyType[status] || "Pending";
-        return <StatusLozenge status={status} />;
+        return <BadgeStatusTask text={status} type={type} />;
       },
     },
     {
@@ -69,7 +71,7 @@ export function drawdownColumns() {
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("drawdown_amount"));
         const formatted = amount ? currencyFormatter(amount, "INR") : "-";
-        return <div className="text-right text-foreground">{formatted}</div>;
+        return <div className="text-right">{formatted}</div>;
       },
     },
     {
@@ -82,7 +84,7 @@ export function drawdownColumns() {
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("remaining_commitment"));
         const formatted = amount ? currencyFormatter(amount, "INR") : "-";
-        return <div className="text-right text-foreground">{formatted}</div>;
+        return <div className="text-right">{formatted}</div>;
       },
     },
   ];

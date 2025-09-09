@@ -1,5 +1,5 @@
-import DialogForm from "@/components/layout/dashboard/includes/dialog-form";
-import TableSebiReportsView from "@/components/layout/dashboard/tables/TableSebiReportsView";
+import DialogForm from "@/components/Dashboard/includes/dialog-form";
+import TableSebiReportsView from "@/components/Dashboard/tables/TableSebiReportsView";
 import { Button } from "@/components/ui/button";
 import { sebiReportFormFields } from "@/schemas/feilds/sebiReportFormFields";
 import { SebiReportSchema } from "@/schemas/zod/SebiReportSchema";

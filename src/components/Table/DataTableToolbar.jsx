@@ -59,68 +59,45 @@ export function DataTableToolbar({
     table.setGlobalFilter("");
   }, [searchType, table]);
 
-  // Get current filters from table state
-  const filters = table.getState().columnFilters || [];
-
   return (
-    <div className="space-y-4 py-4">
-      {/* Main Search Container - Full Width */}
-      <div className="relative">
-        <div className="flex h-9 w-full items-center rounded-lg border bg-background shadow-sm transition-all duration-300 focus-within:ring-2 focus-within:ring-ring hover:shadow-md">
-          {/* Search Type Selector - Only if multiple searchable columns */}
-          {showGlobalSearch && searchableColumns.length > 1 && (
-            <>
-              <Select value={searchType} onValueChange={setSearchType}>
-                <SelectTrigger className="h-9 w-auto border-none bg-transparent focus:ring-0 focus:outline-none">
-                  <SelectValue placeholder="Search type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {searchableColumns.map((option) => (
-                    <SelectItem key={option.id} value={option.id}>
-                      {option.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <div className="mx-2 h-5 w-px bg-border" />
-            </>
-          )}
-
-          {/* Filter Tags Container */}
-          <div className="flex flex-1 flex-wrap items-center gap-1 px-3 py-1">
-            {/* Display existing filter chips inline */}
-            <FiltersTable 
-              table={table} 
-              filterOptions={filterableColumns}
-              inline={true}
+    <div className="flex items-center justify-between gap-4 py-4">
+      <div className="flex-1">
+        {showGlobalSearch && searchableColumns.length > 0 ? (
+          <div className="flex max-w-xl items-center rounded-lg border bg-white shadow-sm transition-all duration-300 focus-within:ring-2 focus-within:ring-blue-300">
+            <Select value={searchType} onValueChange={setSearchType}>
+              <SelectTrigger className="h-10 border-none bg-transparent focus:ring-0 focus:outline-none">
+                <SelectValue placeholder="Search type" />
+              </SelectTrigger>
+              <SelectContent>
+                {searchableColumns.map((option) => (
+                  <SelectItem key={option.id} value={option.id}>
+                    {option.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="mx-2 h-6 w-px bg-gray-300" />
+            <Input
+              placeholder={searchPlaceholder}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              className="flex-1 border-none shadow-none focus:outline-none focus-visible:ring-0"
             />
-            
-            {/* Search Input */}
-            {showGlobalSearch && (
-              <Input
-                placeholder={searchPlaceholder}
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                className="flex-1 min-w-[200px] border-none bg-transparent p-0 shadow-none focus:outline-none focus-visible:ring-0 placeholder:text-muted-foreground text-foreground h-7"
-              />
-            )}
           </div>
-
-          {/* Integrated Action Buttons */}
-          <div className="flex items-center gap-1 px-2">
-            {/* Filter Button - Only show if not showing inline */}
-            {Array.isArray(filterableColumns) && filterableColumns.length > 0 && (
-              <FiltersTable 
-                table={table} 
-                filterOptions={filterableColumns}
-                buttonOnly={true}
-              />
-            )}
-            
-            {/* View Options */}
-            {children}
-          </div>
-        </div>
+        ) : (
+          <Input
+            placeholder={searchPlaceholder}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            className="max-w-xl transition-all duration-300 focus:ring-2 focus:ring-blue-300"
+          />
+        )}
+      </div>
+      <div className="flex items-center justify-end gap-4">
+        {Array.isArray(filterableColumns) && filterableColumns.length > 0 && (
+          <FiltersTable table={table} filterOptions={filterableColumns} />
+        )}
+        {children}
       </div>
     </div>
   );

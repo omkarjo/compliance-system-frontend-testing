@@ -1,6 +1,6 @@
-import DialogForm from "@/components/layout/dashboard/includes/dialog-form";
-import PortfolioCompaniesTable from "@/components/business/portfolio-companies/PortfolioCompaniesTable";
-import SheetPortfolioCompanyView from "@/components/business/portfolio-companies/SheetPortfolioCompanyView";
+import DialogForm from "@/components/Dashboard/includes/dialog-form";
+import PortfolioCompaniesTable from "@/components/PortfolioCompany/PortfolioCompaniesTable";
+import SheetPortfolioCompanyView from "@/components/PortfolioCompany/SheetPortfolioCompanyView";
 import { ServerDataTable } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import {

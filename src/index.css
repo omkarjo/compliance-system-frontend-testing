@@ -5,184 +5,74 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Atlassian Neutral Colors */
-  --atlassian-neutral-0: #FFFFFF;
-  --atlassian-neutral-100: #F7F8F9;
-  --atlassian-neutral-200: #F1F2F4;
-  --atlassian-neutral-300: #DCDFE4;
-  --atlassian-neutral-400: #B3B9C4;
-  --atlassian-neutral-500: #8590A2;
-  --atlassian-neutral-600: #758195;
-  --atlassian-neutral-700: #626F86;
-  --atlassian-neutral-800: #44546F;
-  --atlassian-neutral-900: #2C333A;
-  --atlassian-neutral-1000: #1D2125;
-
-  /* Atlassian Blue Colors */
-  --atlassian-blue-100: #E9F2FF;
-  --atlassian-blue-200: #CCE0FF;
-  --atlassian-blue-300: #85B8FF;
-  --atlassian-blue-400: #579DFF;
-  --atlassian-blue-500: #388BFF;
-  --atlassian-blue-600: #1D7AFC;
-  --atlassian-blue-700: #0C66E4;
-  --atlassian-blue-800: #1868DB;
-  --atlassian-blue-900: #09326C;
-
-  /* Atlassian Semantic Colors */
-  --atlassian-green-100: #DCFFF1;
-  --atlassian-green-200: #BAF3DB;
-  --atlassian-green-300: #7EE2B8;
-  --atlassian-green-400: #4BCE97;
-  --atlassian-green-500: #2ABB7F;
-  --atlassian-green-600: #22A06B;
-  --atlassian-green-700: #1F845A;
-  --atlassian-green-800: #216E4E;
-  --atlassian-green-900: #164B35;
-
-  --atlassian-yellow-100: #FFF7D6;
-  --atlassian-yellow-200: #F8E6A0;
-  --atlassian-yellow-300: #F5CD47;
-  --atlassian-yellow-400: #E2B203;
-  --atlassian-yellow-500: #CF9F02;
-  --atlassian-yellow-600: #B38600;
-  --atlassian-yellow-700: #946F00;
-  --atlassian-yellow-800: #7F5F01;
-  --atlassian-yellow-900: #533F04;
-
-  --atlassian-red-100: #FFEDEB;
-  --atlassian-red-200: #FFD2CC;
-  --atlassian-red-300: #FF9C8F;
-  --atlassian-red-400: #F87168;
-  --atlassian-red-500: #EF5C48;
-  --atlassian-red-600: #E34935;
-  --atlassian-red-700: #CA3521;
-  --atlassian-red-800: #AE2E24;
-  --atlassian-red-900: #5D1F1A;
-
-  /* Semantic Design System Colors using Atlassian Design System */
-  --background: var(--atlassian-neutral-0);
-  --foreground: var(--atlassian-neutral-1000);
-  --card: var(--atlassian-neutral-0);
-  --card-foreground: var(--atlassian-neutral-1000);
-  --popover: var(--atlassian-neutral-0);
-  --popover-foreground: var(--atlassian-neutral-1000);
-  --primary: var(--atlassian-blue-700);
-  --primary-foreground: var(--atlassian-neutral-0);
-  --secondary: var(--atlassian-blue-500);
-  --secondary-foreground: var(--atlassian-neutral-0);
-  --muted: var(--atlassian-neutral-100);
-  --muted-foreground: var(--atlassian-neutral-700);
-  --accent: var(--atlassian-blue-300);
-  --accent-foreground: var(--atlassian-neutral-1000);
-  --destructive: var(--atlassian-red-600);
-  --destructive-foreground: var(--atlassian-neutral-0);
-  --border: var(--atlassian-neutral-300);
-  --input: var(--atlassian-neutral-100);
-  --ring: var(--atlassian-blue-700);
-  --chart-1: var(--atlassian-blue-700);
-  --chart-2: var(--atlassian-blue-500);
-  --chart-3: var(--atlassian-green-500);
-  --chart-4: var(--atlassian-yellow-500);
-  --chart-5: var(--atlassian-red-500);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
-  --sidebar: var(--atlassian-neutral-0);
-  --sidebar-foreground: var(--atlassian-neutral-1000);
-  --sidebar-primary: var(--atlassian-blue-700);
-  --sidebar-primary-foreground: var(--atlassian-neutral-0);
-  --sidebar-accent: var(--atlassian-neutral-200);
-  --sidebar-accent-foreground: var(--atlassian-neutral-900);
-  --sidebar-border: var(--atlassian-neutral-300);
-  --sidebar-ring: var(--primary);
-
-  /* Atlassian Semantic Colors */
-  --atlassian-success: var(--atlassian-green-600);
-  --atlassian-warning: var(--atlassian-yellow-600);
-  --atlassian-error: var(--atlassian-red-600);
-  --atlassian-info: var(--atlassian-blue-600);
-  --atlassian-link: var(--atlassian-blue-700);
-
-  /* Status Colors using Atlassian Design System */
-  --status-open-bg: var(--atlassian-blue-100);
-  --status-open-text: var(--atlassian-blue-800);
-  --status-open-border: var(--atlassian-blue-300);
-  --status-pending-bg: var(--atlassian-neutral-200);
-  --status-pending-text: var(--atlassian-neutral-900);
-  --status-pending-border: var(--atlassian-neutral-400);
-  --status-review-bg: var(--atlassian-yellow-100);
-  --status-review-text: var(--atlassian-yellow-800);
-  --status-review-border: var(--atlassian-yellow-300);
-  --status-completed-bg: var(--atlassian-green-100);
-  --status-completed-text: var(--atlassian-green-800);
-  --status-completed-border: var(--atlassian-green-300);
-  --status-overdue-bg: var(--atlassian-red-100);
-  --status-overdue-text: var(--atlassian-red-800);
-  --status-overdue-border: var(--atlassian-red-300);
-  --status-blocked-bg: var(--atlassian-red-100);
-  --status-blocked-text: var(--atlassian-red-800);
-  --status-blocked-border: var(--atlassian-red-300);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
-  --background: var(--atlassian-neutral-1000);
-  --foreground: var(--atlassian-neutral-200);
-  --card: var(--atlassian-neutral-900);
-  --card-foreground: var(--atlassian-neutral-200);
-  --popover: var(--atlassian-neutral-900);
-  --popover-foreground: var(--atlassian-neutral-200);
-  --primary: var(--atlassian-blue-400);
-  --primary-foreground: var(--atlassian-neutral-1000);
-  --secondary: var(--atlassian-blue-300);
-  --secondary-foreground: var(--atlassian-neutral-1000);
-  --muted: var(--atlassian-neutral-800);
-  --muted-foreground: var(--atlassian-neutral-400);
-  --accent: var(--atlassian-blue-300);
-  --accent-foreground: var(--atlassian-neutral-1000);
-  --destructive: var(--atlassian-red-400);
-  --destructive-foreground: var(--atlassian-neutral-1000);
-  --border: var(--atlassian-neutral-700);
-  --input: var(--atlassian-neutral-800);
-  --ring: var(--atlassian-blue-400);
-  --chart-1: var(--atlassian-blue-400);
-  --chart-2: var(--atlassian-blue-300);
-  --chart-3: var(--atlassian-green-400);
-  --chart-4: var(--atlassian-yellow-400);
-  --chart-5: var(--atlassian-red-400);
-  --sidebar: var(--atlassian-neutral-1000);
-  --sidebar-foreground: var(--atlassian-neutral-200);
-  --sidebar-primary: var(--atlassian-blue-400);
-  --sidebar-primary-foreground: var(--atlassian-neutral-1000);
-  --sidebar-accent: var(--atlassian-neutral-800);
-  --sidebar-accent-foreground: var(--atlassian-neutral-300);
-  --sidebar-border: var(--atlassian-neutral-700);
-  --sidebar-ring: var(--primary);
-
-  /* Atlassian Semantic Colors - Dark Mode */
-  --atlassian-success: var(--atlassian-green-400);
-  --atlassian-warning: var(--atlassian-yellow-400);
-  --atlassian-error: var(--atlassian-red-400);
-  --atlassian-info: var(--atlassian-blue-400);
-  --atlassian-link: var(--atlassian-blue-300);
-
-  /* Dark Mode Status Colors - Atlassian Design System */
-  --status-open-bg: var(--atlassian-blue-900);
-  --status-open-text: var(--atlassian-blue-300);
-  --status-open-border: var(--atlassian-blue-600);
-  --status-pending-bg: var(--atlassian-neutral-800);
-  --status-pending-text: var(--atlassian-neutral-300);
-  --status-pending-border: var(--atlassian-neutral-600);
-  --status-review-bg: var(--atlassian-yellow-900);
-  --status-review-text: var(--atlassian-yellow-300);
-  --status-review-border: var(--atlassian-yellow-600);
-  --status-completed-bg: var(--atlassian-green-900);
-  --status-completed-text: var(--atlassian-green-300);
-  --status-completed-border: var(--atlassian-green-600);
-  --status-overdue-bg: var(--atlassian-red-900);
-  --status-overdue-text: var(--atlassian-red-300);
-  --status-overdue-border: var(--atlassian-red-600);
-  --status-blocked-bg: var(--atlassian-red-900);
-  --status-blocked-text: var(--atlassian-red-300);
-  --status-blocked-border: var(--atlassian-red-600);
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
 }
 
 @theme inline {
@@ -240,439 +130,6 @@
   }
 }
 
-/* Unified Status Classes */
-.status-open {
-  background-color: var(--status-open-bg);
-  color: var(--status-open-text);
-  border-color: var(--status-open-border);
-}
-
-.status-pending {
-  background-color: var(--status-pending-bg);
-  color: var(--status-pending-text);
-  border-color: var(--status-pending-border);
-}
-
-.status-review {
-  background-color: var(--status-review-bg);
-  color: var(--status-review-text);
-  border-color: var(--status-review-border);
-}
-
-.status-completed {
-  background-color: var(--status-completed-bg);
-  color: var(--status-completed-text);
-  border-color: var(--status-completed-border);
-}
-
-.status-overdue {
-  background-color: var(--status-overdue-bg);
-  color: var(--status-overdue-text);
-  border-color: var(--status-overdue-border);
-}
-
-.status-blocked {
-  background-color: var(--status-blocked-bg);
-  color: var(--status-blocked-text);
-  border-color: var(--status-blocked-border);
-}
-
-/* Unified Card Classes */
-.card-base {
-  background-color: var(--card);
-  color: var(--card-foreground);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-}
-
-.card-info {
-  background-color: var(--card);
-  color: var(--card-foreground);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  padding: 1rem;
-  min-width: 228px;
-  display: flex;
-  flex-direction: column;
-}
-
-.card-stats {
-  background-color: var(--card);
-  color: var(--card-foreground);
-  border: 1px solid var(--border);
-  border-radius: 0.375rem;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  aspect-ratio: 16 / 9;
-  min-width: fit-content;
-  padding: 1rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Apple-Inspired Typography System */
-
-/* Large Titles - For hero sections and primary headings */
-.text-large-title {
-  font-size: 2.125rem; /* 34px */
-  line-height: 2.5rem; /* 40px */
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--foreground);
-}
-
-/* Title 1 - For page titles and section headers */
-.text-title-1 {
-  font-size: 1.75rem; /* 28px */
-  line-height: 2.125rem; /* 34px */
-  font-weight: 700;
-  letter-spacing: -0.015em;
-  color: var(--foreground);
-}
-
-/* Title 2 - For subsection headers */
-.text-title-2 {
-  font-size: 1.375rem; /* 22px */
-  line-height: 1.75rem; /* 28px */
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--foreground);
-}
-
-/* Title 3 - For smaller headers */
-.text-title-3 {
-  font-size: 1.125rem; /* 18px */
-  line-height: 1.5rem; /* 24px */
-  font-weight: 600;
-  letter-spacing: -0.005em;
-  color: var(--foreground);
-}
-
-/* Headline - For card titles and emphasized text */
-.text-headline {
-  font-size: 1rem; /* 16px */
-  line-height: 1.375rem; /* 22px */
-  font-weight: 600;
-  color: var(--foreground);
-}
-
-/* Body - For primary body text */
-.text-body {
-  font-size: 1rem; /* 16px */
-  line-height: 1.5rem; /* 24px */
-  font-weight: 400;
-  color: var(--foreground);
-}
-
-/* Subheadline - For secondary information */
-.text-subheadline {
-  font-size: 0.9375rem; /* 15px */
-  line-height: 1.25rem; /* 20px */
-  font-weight: 500;
-  color: var(--foreground);
-}
-
-/* Footnote - For supporting information */
-.text-footnote {
-  font-size: 0.8125rem; /* 13px */
-  line-height: 1.125rem; /* 18px */
-  font-weight: 400;
-  color: var(--muted-foreground);
-}
-
-/* Caption 1 - For labels and metadata */
-.text-caption-1 {
-  font-size: 0.75rem; /* 12px */
-  line-height: 1rem; /* 16px */
-  font-weight: 500;
-  color: var(--muted-foreground);
-}
-
-/* Caption 2 - For smallest text */
-.text-caption-2 {
-  font-size: 0.6875rem; /* 11px */
-  line-height: 0.875rem; /* 14px */
-  font-weight: 400;
-  color: var(--muted-foreground);
-}
-
-/* Semantic Text Colors - Apple inspired */
-.text-primary {
-  color: var(--primary);
-}
-
-.text-secondary {
-  color: var(--secondary);
-}
-
-.text-success {
-  color: var(--atlassian-success);
-}
-
-.text-warning {
-  color: var(--atlassian-warning);
-}
-
-.text-error {
-  color: var(--atlassian-error);
-}
-
-.text-accent {
-  color: var(--accent);
-}
-
-/* Legacy Typography - For backwards compatibility */
-.text-muted-sm {
-  font-size: 0.75rem;
-  line-height: 1rem;
-  color: var(--muted-foreground);
-}
-
-.text-label {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-weight: 500;
-  color: var(--foreground);
-}
-
-.text-value {
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-  font-weight: 600;
-}
-
-/* Apple-Inspired Layout & Spacing System */
-
-/* Apple's 8-point grid system */
-.spacing-xs { gap: 0.25rem; }    /* 4px */
-.spacing-sm { gap: 0.5rem; }     /* 8px */
-.spacing-md { gap: 0.75rem; }    /* 12px */
-.spacing-lg { gap: 1rem; }       /* 16px */
-.spacing-xl { gap: 1.5rem; }     /* 24px */
-.spacing-2xl { gap: 2rem; }      /* 32px */
-.spacing-3xl { gap: 3rem; }      /* 48px */
-
-/* Container system */
-.container-page {
-  width: 100%;
-  padding: 1.5rem;
-  max-width: 100%;
-}
-
-.container-section {
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.container-card {
-  padding: 1rem;
-  border-radius: 0.75rem;
-  background-color: var(--card);
-  border: 1px solid var(--border);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-/* Apple-style flex utilities */
-.flex-between {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.flex-start {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
-.flex-column {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.flex-column-sm {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.flex-column-lg {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-/* Apple-inspired grid layouts */
-.grid-auto {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-.grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.grid-3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-}
-
-.grid-4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-}
-
-/* Responsive grid adjustments */
-@media (max-width: 768px) {
-  .grid-2, .grid-3, .grid-4 {
-    grid-template-columns: 1fr;
-  }
-  
-  .container-page {
-    padding: 1rem;
-  }
-}
-
-/* Apple-style content organization */
-.stack-sm > * + * { margin-top: 0.5rem; }
-.stack-md > * + * { margin-top: 0.75rem; }
-.stack-lg > * + * { margin-top: 1rem; }
-.stack-xl > * + * { margin-top: 1.5rem; }
-
-/* Legacy layout utilities for backward compatibility */
-.container-page > * + * {
-  margin-top: 1rem;
-}
-
-/* Apple-Inspired Interactive States */
-
-/* Base transitions - Apple's signature smooth animations */
-.transition-apple {
-  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.transition-apple-fast {
-  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* Button states */
-.button-primary {
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-weight: 500;
-  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.button-primary:hover {
-  background-color: color-mix(in srgb, var(--primary) 90%, black);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.button-primary:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.button-secondary {
-  background-color: var(--muted);
-  color: var(--foreground);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-weight: 500;
-  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.button-secondary:hover {
-  background-color: color-mix(in srgb, var(--muted) 80%, black);
-  border-color: var(--primary);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-}
-
-/* Focus states - Apple style */
-.focus-ring:focus {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-  border-radius: 0.375rem;
-}
-
-.focus-ring-subtle:focus {
-  outline: 2px solid color-mix(in srgb, var(--primary) 60%, transparent);
-  outline-offset: 2px;
-  border-radius: 0.375rem;
-}
-
-/* Hover effects */
-.hover-lift {
-  transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-.hover-accent {
-  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.hover-accent:hover {
-  background-color: color-mix(in srgb, var(--accent) 10%, transparent);
-  color: var(--accent-foreground);
-  border-radius: 0.375rem;
-}
-
-/* Apple-style selection states */
-.selection-highlight {
-  background-color: color-mix(in srgb, var(--primary) 20%, transparent);
-  border-radius: 0.375rem;
-  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.selection-highlight:hover {
-  background-color: color-mix(in srgb, var(--primary) 30%, transparent);
-}
-
-/* Document Viewer Base */
-.document-viewer-base {
-  width: 100%;
-  height: 100%;
-  background-color: var(--background);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
-
-.document-viewer-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 12rem;
-  background-color: var(--muted);
-  color: var(--muted-foreground);
-}
-
 
 
 input[type=number]::-webkit-inner-spin-button,
@@ -683,7 +140,6 @@ input[type=number]::-webkit-outer-spin-button {
 
 /* Hide spinner controls in Firefox */
 input[type=number] {
-  appearance: textfield;
   -moz-appearance: textfield;
 }
 

@@ -1,6 +1,6 @@
 import EntityCard, {
   EntityCardSkeleton,
-} from "@/components/business/entities/EntityCard";
+} from "@/components/Entities/EntityCard";
 import React from "react";
 
 const ITEMS_PER_PAGE = 6;
