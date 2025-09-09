@@ -1,4 +1,4 @@
-import SortButton from "@/components/Table/SortButton";
+import { DataTableColumnHeader } from "@/components/Table/DataTableColumnHeader";
 
 /**
  * Returns column definitions for the Entity Table using DataTableColumnHeader.
@@ -9,10 +9,10 @@ export function entityColumns() {
     {
       accessorKey: "entity_name",
       header: ({ column }) => (
-        <SortButton column={column}>Name</SortButton>
+        <DataTableColumnHeader column={column} title="Name" />
       ),
       cell: ({ row }) => (
-        <div className="truncate ps-2 text-left text-foreground">
+        <div className="truncate ps-2 text-left">
           {row.getValue("entity_name") || "-"}
         </div>
       ),
@@ -20,10 +20,10 @@ export function entityColumns() {
     {
       accessorKey: "entity_type",
       header: ({ column }) => (
-        <SortButton column={column}>Type</SortButton>
+        <DataTableColumnHeader column={column} title="Type" />
       ),
       cell: ({ row }) => (
-        <div className="truncate ps-2 text-left text-foreground capitalize">
+        <div className="truncate ps-2 text-left capitalize">
           {row.getValue("entity_type") || "-"}
         </div>
       ),
@@ -31,10 +31,10 @@ export function entityColumns() {
     {
       accessorKey: "entity_email",
       header: ({ column }) => (
-        <SortButton column={column}>Email</SortButton>
+        <DataTableColumnHeader column={column} title="Email" />
       ),
       cell: ({ row }) => (
-        <div className="truncate ps-2 text-left text-foreground">
+        <div className="truncate ps-2 text-left">
           {row.getValue("entity_email") || "-"}
         </div>
       ),
@@ -42,10 +42,10 @@ export function entityColumns() {
     {
       accessorKey: "entity_telephone",
       header: ({ column }) => (
-        <SortButton column={column}>Phone</SortButton>
+        <DataTableColumnHeader column={column} title="Phone" />
       ),
       cell: ({ row }) => (
-        <div className="truncate ps-2 text-left text-foreground">
+        <div className="truncate ps-2 text-left">
           {row.getValue("entity_telephone") || "-"}
         </div>
       ),
@@ -53,10 +53,10 @@ export function entityColumns() {
     {
       accessorKey: "entity_pan",
       header: ({ column }) => (
-        <SortButton column={column}>PAN</SortButton>
+        <DataTableColumnHeader column={column} title="PAN" />
       ),
       cell: ({ row }) => (
-        <div className="truncate ps-2 text-left text-foreground uppercase">
+        <div className="truncate ps-2 text-left uppercase">
           {row.getValue("entity_pan") || "-"}
         </div>
       ),
@@ -64,10 +64,10 @@ export function entityColumns() {
     {
       accessorKey: "entity_link",
       header: ({ column }) => (
-        <SortButton column={column}>Link Fund</SortButton>
+        <DataTableColumnHeader column={column} title="Link Fund" />
       ),
       cell: ({ row }) => (
-        <div className="truncate ps-2 text-left text-foreground">
+        <div className="truncate ps-2 text-left">
           {row.getValue("entity_link") || "-"}
         </div>
       ),

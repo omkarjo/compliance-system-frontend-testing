@@ -88,7 +88,7 @@ export default function LPBulkUpload() {
               "flex items-center justify-center rounded-md border-2 border-red-500",
           )}
         >
-          <span className="max-w-36 truncate text-sm text-foreground">
+          <span className="max-w-36 truncate text-sm text-gray-700">
             {value || "-"}
           </span>
         </div>
@@ -108,17 +108,17 @@ export default function LPBulkUpload() {
         {
           id: "Not Uploaded",
           label: "Not Uploaded",
-          icon: <XCircle className="text-muted-foreground" />,
+          icon: <XCircle className="text-yellow-400" />,
         },
         {
           id: "Success",
           label: "Success",
-          icon: <CheckCircle className="text-green-500" />,
+          icon: <CheckCircle className="text-green-400" />,
         },
         {
           id: "Failed",
           label: "Failed",
-          icon: <XCircle className="text-red-500" />,
+          icon: <XCircle className="text-red-400" />,
         },
       ],
     },
@@ -144,7 +144,7 @@ export default function LPBulkUpload() {
                     value === "Success" && "bg-green-500 text-white",
                     value === "Failed" && "bg-red-500 text-white",
                     value === "Pending" && "bg-yellow-500 text-white",
-                    value === "Not Uploaded" && "bg-muted text-muted-foreground",
+                    value === "Not Uploaded" && "bg-gray-500 text-white",
                   )}
                 >
                   {value ?? "Not Uploaded"}
@@ -368,10 +368,10 @@ export default function LPBulkUpload() {
                 </CardHeader> */}
                   <CardContent className={"grid grid-cols-2 gap-4 px-4"}>
                     <div className="flex flex-col gap-2">
-                      <span className="text-sm font-semibold text-muted-foreground">
+                      <span className="text-sm font-semibold text-gray-500">
                         Total Records
                       </span>
-                      <span className="text-lg font-semibold text-foreground">
+                      <span className="text-lg font-semibold text-gray-700">
                         {handleValidation?.total} 
                       </span>
                     </div>
@@ -398,38 +398,38 @@ export default function LPBulkUpload() {
                     className={"grid gap-4 md:grid-cols-2 lg:grid-cols-3"}
                   >
                     <div className="flex flex-col gap-2">
-                      <span className="text-sm font-semibold text-muted-foreground">
+                      <span className="text-sm font-semibold text-gray-500">
                         <Database
                           className="inline-block text-yellow-500"
                           size={16}
                         />
                         Not Uploaded
                       </span>
-                      <span className="text-lg font-semibold text-foreground">
+                      <span className="text-lg font-semibold text-gray-700">
                         {uploadStatus.not_uploaded}
                       </span>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <span className="text-sm font-semibold text-muted-foreground">
+                      <span className="text-sm font-semibold text-gray-500">
                         <CheckCircle
                           className="inline-block text-green-500"
                           size={16}
                         />{" "}
                         Success
                       </span>
-                      <span className="text-lg font-semibold text-foreground">
+                      <span className="text-lg font-semibold text-gray-700">
                         {uploadStatus.success}
                       </span>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <span className="text-sm font-semibold text-muted-foreground">
+                      <span className="text-sm font-semibold text-gray-500">
                         <XCircle
                           className="inline-block text-red-500"
                           size={16}
                         />{" "}
                         Failed
                       </span>
-                      <span className="text-lg font-semibold text-foreground">
+                      <span className="text-lg font-semibold text-gray-700">
                         {uploadStatus.failed}
                       </span>
                     </div>
@@ -499,16 +499,16 @@ export default function LPBulkUpload() {
               "bg-background relative h-full max-h-64 rounded-lg p-2",
             )}
           >
-            <FileInput className="flex min-h-58 items-center justify-center rounded-lg outline-2 outline-muted-foreground/50 outline-dashed">
+            <FileInput className="flex min-h-58 items-center justify-center rounded-lg outline-2 outline-gray-400 outline-dashed">
               <div className="flex flex-col items-center justify-center gap-2 pt-3 pb-4">
-                <div className="mb-1 rounded-md bg-muted p-4">
-                  <Upload className="size-6 text-muted-foreground" />
+                <div className="mb-1 rounded-md bg-gray-100 p-4">
+                  <Upload className="size-6 text-gray-500" />
                 </div>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-gray-500">
                   Drag and drop your JSON file here or{" "}
-                  <span className="text-primary underline">browse</span>
+                  <span className="text-blue-500 underline">browse</span>
                 </span>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-gray-500">
                   Supported file type: CSV
                 </span>
               </div>

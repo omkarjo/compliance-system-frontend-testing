@@ -303,7 +303,7 @@ export const FileInput = forwardRef(
                 ? "border-green-500"
                 : dropzoneState.isDragReject || isFileTooBig
                   ? "border-red-500"
-                  : "border-input"
+                  : "border-gray-300"
             }`,
             className,
           )}

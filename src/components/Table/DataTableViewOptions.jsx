@@ -31,10 +31,10 @@ export function DataTableViewOptions({ table, isFetching }) {
             role="combobox"
             size="sm"
             className={cn(
-              "group flex h-7 px-2 items-center gap-1 rounded-md text-xs transition-colors hover:bg-accent",
+              "group flex h-6 items-center gap-1.5 rounded-sm text-xs transition",
             )}
           >
-            <SlidersHorizontal className="size-3.5 shrink-0 transition-all" />
+            <SlidersHorizontal className="text-muted-foreground group-hover:text-primary size-4 shrink-0 transition-all" />
             View
           </Button>
         </DropdownMenuTrigger>
@@ -50,7 +50,7 @@ export function DataTableViewOptions({ table, isFetching }) {
             .map((column) => (
               <DropdownMenuCheckboxItem
                 key={column.id}
-                className="capitalize hover:!bg-accent focus:!bg-accent hover:!text-accent-foreground focus:!text-accent-foreground"
+                className="capitalize"
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >

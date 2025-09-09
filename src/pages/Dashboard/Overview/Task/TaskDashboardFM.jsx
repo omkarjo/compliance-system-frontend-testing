@@ -1,8 +1,8 @@
-import ViewCalendarTaskAdmin from "@/components/layout/dashboard/calander/view-calander-task-admin";
-import DeleteAlertDialog from "@/components/layout/dashboard/includes/delete-alert-dilog";
-import DialogForm from "@/components/layout/dashboard/includes/dialog-form";
-import SheetTaskViewFM from "@/components/business/tasks/SheetTaskViewFM";
-import TableTaskViewFM from "@/components/business/tasks/TableTaskViewFM";
+import ViewCalendarTaskAdmin from "@/components/Dashboard/calander/view-calander-task-admin";
+import DeleteAlertDialog from "@/components/Dashboard/includes/delete-alert-dilog";
+import DialogForm from "@/components/Dashboard/includes/dialog-form";
+import SheetTaskViewFM from "@/components/Dashboard/sheet/sheet-task-view-fm";
+import TableTaskViewFM from "@/components/Task/TableTaskViewFM";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { taskApiPaths } from "@/constant/apiPaths";
@@ -415,7 +415,7 @@ export default function TaskDashboardFundManager() {
               <span className="max-md:hidden">Create Task</span>
             </Button>
           </div>
-          <div>
+          <div className="px-4 py-2">
             <TabsList className={"flex gap-2"}>
               {tabs.map((tab) => (
                 <TabsTrigger

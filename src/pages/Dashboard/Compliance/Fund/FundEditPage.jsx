@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import FundForm from "@/components/layout/dashboard/includes/FundForm";
+import FundForm from "@/components/Dashboard/includes/FundForm";
 import Loading from "@/pages/public/Loading";
 import ErrorPage from "@/pages/public/ErrorPage";
 import { useGetFundById } from "@/react-query/query/Funds/useGetFundById";
@@ -47,7 +47,7 @@ export default function FundEditPage() {
       <div className="mb-4 flex items-center justify-between gap-4">
         <h1 className="text-xl font-semibold md:text-2xl">Edit Fund Details</h1>
       </div>
-      <main className="mx-4 flex-1 rounded-lg border bg-card p-4 shadow-md">
+      <main className="mx-4 flex-1 rounded-lg border bg-white p-4 shadow-md">
         <FundForm onSubmit={handleSubmit} initialValues={data} />
       </main>
     </section>

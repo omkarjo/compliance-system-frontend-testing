@@ -1,18 +1,18 @@
-export function ImageViewer({ viewUrl }) {
+export function ImageViewer({ viewUrl, fileType }) {
   if (!viewUrl) {
     return (
-      <div className="flex h-48 items-center justify-center bg-muted text-muted-foreground">
+      <div className="flex h-48 items-center justify-center bg-gray-50">
         No image to display.
       </div>
     );
   }
 
   return (
-    <div className="flex h-full w-full items-center justify-center bg-muted p-4">
+    <div className="flex max-h-[70vh] items-center justify-center bg-gray-50 p-2">
       <img
         src={viewUrl}
         alt="Document Preview"
-        className="max-h-full max-w-full rounded border shadow-lg"
+        className="max-h-[65vh] max-w-full rounded border"
         style={{ objectFit: "contain" }}
       />
     </div>

@@ -31,7 +31,7 @@ export function CSVViewer({ viewUrl }) {
 
   return (
     <div className="overflow-auto max-h-[70vh]">
-      <table className="min-w-full bg-card border">
+      <table className="min-w-full bg-white border">
         <tbody>
           {rows.map((row, i) => (
             <tr key={i}>

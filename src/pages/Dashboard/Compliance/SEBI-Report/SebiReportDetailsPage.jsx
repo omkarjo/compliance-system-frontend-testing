@@ -1,4 +1,4 @@
-import FundSebiDetails from "@/components/business/reports/FundSebiDetails.jsx";
+import FundSebiDetails from "@/components/Sebi/FundSebiDetails";
 
 const data = {
   aifName: "AJVC Fund",

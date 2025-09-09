@@ -11,34 +11,6 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  build: {
-    chunkSizeWarningLimit: 1000,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          // Vendor chunks
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
-          'query-vendor': ['@tanstack/react-query'],
-          'redux-vendor': ['@reduxjs/toolkit', 'react-redux'],
-          'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
-          
-          // Large components
-          'pdf-viewer': ['pdfjs-dist'],
-          'chart-lib': ['recharts'],
-          'table-lib': ['@tanstack/react-table'],
-          'date-lib': ['date-fns'],
-          
-          // Business logic chunks
-          'dashboard-core': [
-            './src/pages/Dashboard/Overview/DashBoard.jsx',
-            './src/components/business/tasks',
-            './src/components/business/funds'
-          ]
-        }
-      }
-    }
-  },
   server: {
     proxy: {
       "/api": {

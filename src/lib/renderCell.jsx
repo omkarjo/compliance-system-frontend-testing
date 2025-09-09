@@ -1,4 +1,4 @@
-import UserBadge from "@/components/common/includes/UserBadge";
+import UserBadge from "@/components/includes/UserBadge";
 import {
   currencyFormatter,
   getCountryDetails,
@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 
 export const renderCell = (key, label, type, icon, data) => {
   const renderLabel = () => (
-    <td className="mb-4 flex items-center gap-2 text-muted-foreground">
+    <td className="mb-4 flex items-center gap-2 text-gray-500">
       {/* {icon && icon} */}
       {label}:
     </td>
@@ -20,10 +20,10 @@ export const renderCell = (key, label, type, icon, data) => {
   if (!value && value !== false)
     return (
       <tr key={key}>
-        <td className="mb-4 flex items-center gap-2 text-muted-foreground">
+        <td className="mb-4 flex items-center gap-2 text-gray-500">
           {renderLabel()}
         </td>
-        <td className="pb-4 text-foreground">--</td>
+        <td className="pb-4">--</td>
       </tr>
     );
 
@@ -34,7 +34,7 @@ export const renderCell = (key, label, type, icon, data) => {
       return (
         <tr key={key}>
           {renderLabel()}
-          <td className="pb-4 text-foreground">
+          <td className="pb-4">
             {new Date(value).toLocaleDateString("EN-IN")}
           </td>
         </tr>
@@ -44,7 +44,7 @@ export const renderCell = (key, label, type, icon, data) => {
       return (
         <tr key={key}>
           {renderLabel()}
-          <td className="pb-4 text-foreground">{currencyFormatter(value)}</td>
+          <td className="pb-4">{currencyFormatter(value)}</td>
         </tr>
       );
 
@@ -62,8 +62,8 @@ export const renderCell = (key, label, type, icon, data) => {
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  <File size={20} className="text-muted-foreground" />
-                  <span className="text-primary hover:underline">
+                  <File size={20} className="text-gray-500" />
+                  <span className="text-blue-600/60 hover:underline">
                     {file.name}
                   </span>
                 </Link>
@@ -81,9 +81,9 @@ export const renderCell = (key, label, type, icon, data) => {
             <span className="flex items-center gap-2">
               {/* {phoneFlag} */}
               {formatted ? (
-                <span className="text-sm font-medium text-foreground">{formatted}</span>
+                <span className="text-sm font-medium">{formatted}</span>
               ) : (
-                <span className="text-destructive">{value}</span>
+                <span className="text-red-500">{value}</span>
               )}
             </span>
           </td>
@@ -99,9 +99,9 @@ export const renderCell = (key, label, type, icon, data) => {
             <span className="flex items-center gap-2">
               {/* {countryFlag} */}
               {name ? (
-                <span className="text-sm font-medium text-foreground">{name}</span>
+                <span className="text-sm font-medium">{name}</span>
               ) : (
-                <span className="text-destructive">{value}</span>
+                <span className="text-red-500">{value}</span>
               )}
             </span>
           </td>
@@ -114,7 +114,7 @@ export const renderCell = (key, label, type, icon, data) => {
         <tr key={key}>
           {renderLabel()}
           <td className="pb-4">
-            <span className="text-sm text-foreground break-words whitespace-pre-line">
+            <span className="text-sm break-words whitespace-pre-line">
               {/* {typeof value === "string"
                 ? value
                     .split(/(.{20})/)
@@ -131,7 +131,7 @@ export const renderCell = (key, label, type, icon, data) => {
       return (
         <tr key={key}>
           {renderLabel()}
-          <td className="pb-4 text-foreground">{value ? "Yes" : "No"}</td>
+          <td className="pb-4">{value ? "Yes" : "No"}</td>
         </tr>
       );
 
@@ -150,7 +150,7 @@ export const renderCell = (key, label, type, icon, data) => {
         <tr key={key}>
           {renderLabel()}
           <td className="pb-4">
-            <Link to={`#`} className="text-primary hover:underline">
+            <Link to={`#`} className="text-blue-600/60 hover:underline">
               {value}
             </Link>
           </td>
@@ -161,7 +161,7 @@ export const renderCell = (key, label, type, icon, data) => {
       return (
         <tr key={key}>
           {renderLabel()}
-          <td className="max-w-1/2 pb-4 text-foreground break-words">{value}</td>
+          <td className="max-w-1/2 pb-4 break-words">{value}</td>
         </tr>
       );
   }
