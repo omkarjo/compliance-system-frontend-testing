@@ -1,7 +1,6 @@
 import { DocumentDialog } from "@/components/DocumentViewers/DocumentDialog";
 import { downloadFile } from "@/components/DocumentViewers/documentDownload";
-import { detectFileType } from "@/components/DocumentViewers/documentUtils";
-import { DataTableColumnHeader } from "@/components/Table/DataTableColumnHeader";
+import SortButton from "@/components/Table/SortButton";
 import { Button } from "@/components/ui/button";
 import { formatBytes } from "@/lib/formatter";
 import { getFileName } from "@/lib/S3Utils";
@@ -38,12 +37,14 @@ function DownloadButton({ s3Bucket, s3Key, fileName }) {
   );
 }
 
-export function getS3Columns({ bucket_name, region, onFolderClick }) {
+export function getS3Columns({ bucket_name, onFolderClick }) {
   return [
     {
       accessorKey: "Key",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Name" className={"ms-3"} />
+        <span className="ms-4 flex items-center">
+          <SortButton column={column}>Name</SortButton>
+        </span>
       ),
       enableSorting: true,
       sortDescFirst: false,
@@ -54,44 +55,41 @@ export function getS3Columns({ bucket_name, region, onFolderClick }) {
 
         if (type === "folder") {
           return (
-            <Button
-              variant="link"
-              onClick={() => onFolderClick(key)}
-              className="flex items-center gap-2 px-0 text-blue-600"
-            >
-              <FolderIcon size={16} />
-              {fileName}
-            </Button>
+            <div className="ms-4 flex items-center gap-2">
+              <Button
+                variant="link"
+                onClick={() => onFolderClick(key)}
+                className="flex items-center gap-2 px-0 text-base font-normal text-foreground hover:underline"
+              >
+                <FolderIcon size={16} />
+                {fileName}
+              </Button>
+            </div>
           );
         }
 
         if (type === "file") {
           return (
-            <Button
-              variant="link"
-              className="flex items-center gap-2 px-0 text-blue-600"
-              onClick={() =>
-                document.getElementById(`preview-dialog-${key}`)?.click()
-              }
-            >
-              <FileIcon size={16} />
-              {fileName}
+            <div className="ms-4 flex items-center gap-2">
               <DocumentDialog
                 s3Key={key}
                 s3Bucket={bucket_name}
-                trigger={
-                  <span
-                    id={`preview-dialog-${key}`}
-                    style={{ display: "none" }}
-                  />
-                }
                 title={fileName}
+                trigger={
+                  <Button
+                    variant="link"
+                    className="flex items-center gap-2 px-0 text-base font-normal text-foreground hover:underline"
+                  >
+                    <FileIcon size={16} />
+                    {fileName}
+                  </Button>
+                }
               />
-            </Button>
+            </div>
           );
         }
 
-        return fileName;
+        return <div className="ms-4 text-left text-sm text-foreground">{fileName}</div>;
       },
       sortingFn: (rowA, rowB) => {
         // Folders first, then lexicographic
@@ -104,12 +102,13 @@ export function getS3Columns({ bucket_name, region, onFolderClick }) {
     {
       accessorKey: "LastModified",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Last Modified" />
+        <SortButton column={column}>Last Modified</SortButton>
       ),
       enableSorting: true,
       cell: ({ row }) => {
         const ts = row.getValue("LastModified");
-        return ts && ts !== "-" ? new Date(ts).toLocaleString() : "-";
+        const formatted = ts && ts !== "-" ? new Date(ts).toLocaleString() : "-";
+        return <div className="text-left text-sm text-muted-foreground">{formatted}</div>;
       },
       sortingFn: (rowA, rowB) => {
         const a = new Date(rowA.original.LastModified || 0).getTime();
@@ -120,14 +119,15 @@ export function getS3Columns({ bucket_name, region, onFolderClick }) {
     {
       accessorKey: "Size",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Size" />
+        <SortButton column={column}>Size</SortButton>
       ),
       enableSorting: true,
       cell: ({ row }) => {
         const type = getS3Type(row.getValue("Key"));
-        if (type === "folder") return "-";
+        if (type === "folder") return <div className="text-left text-sm text-muted-foreground">-</div>;
         const size = row.getValue("Size");
-        return size > 0 ? formatBytes(size) : "-";
+        const formatted = size > 0 ? formatBytes(size) : "-";
+        return <div className="text-left text-sm text-foreground">{formatted}</div>;
       },
       sortingFn: (rowA, rowB) => {
         const a =
@@ -142,7 +142,9 @@ export function getS3Columns({ bucket_name, region, onFolderClick }) {
       },
     },
     {
-      header: "Action",
+      header: () => (
+        <span className="flex items-center">Action</span>
+      ),
       id: "action",
       cell: ({ row }) => {
         const key = row.getValue("Key");
@@ -151,27 +153,20 @@ export function getS3Columns({ bucket_name, region, onFolderClick }) {
         const fileName = getFileName(key);
         return (
           <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Preview"
-              onClick={() =>
-                document.getElementById(`preview-dialog-action-${key}`)?.click()
-              }
-            >
-              <EyeIcon className="h-4 w-4" />
-              <span className="sr-only">Preview</span>
-            </Button>
             <DocumentDialog
               s3Key={key}
               s3Bucket={bucket_name}
-              trigger={
-                <span
-                  id={`preview-dialog-action-${key}`}
-                  style={{ display: "none" }}
-                />
-              }
               title={fileName}
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Preview"
+                >
+                  <EyeIcon className="h-4 w-4" />
+                  <span className="sr-only">Preview</span>
+                </Button>
+              }
             />
             <DownloadButton
               s3Bucket={bucket_name}

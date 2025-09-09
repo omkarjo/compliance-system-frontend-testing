@@ -158,7 +158,7 @@ export function DataTable({
   ]);
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-5">
       {showToolbar && (
         <DataTableToolbar
           table={table}
@@ -174,7 +174,7 @@ export function DataTable({
         </DataTableToolbar>
       )}
 
-      <div className="rounded-md border bg-white dark:bg-gray-950">
+      <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

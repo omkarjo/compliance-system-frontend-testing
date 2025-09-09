@@ -50,9 +50,9 @@ export default function AmountInput({
   };
 
   return (
-    <div className="focus-within:ring-primary flex items-center gap-2 rounded-md border bg-white px-2 focus-within:ring-1">
-      <div className="border-r pr-2">
-        <IndianRupee className="h-4 w-4 text-gray-400" />
+    <div className="focus-within:ring-primary flex items-center gap-2 rounded-md border border-input bg-transparent px-2 focus-within:ring-1">
+      <div className="border-r border-border pr-2">
+        <IndianRupee className="h-4 w-4 text-muted-foreground" />
       </div>
       <Input
         type="text"
@@ -61,7 +61,7 @@ export default function AmountInput({
         min={min}
         max={max}
         className={cn(
-          "no-spinners border-0 px-0 focus-visible:ring-0",
+          "no-spinners border-0 px-0",
           className,
         )}
         // disabled={disabled}

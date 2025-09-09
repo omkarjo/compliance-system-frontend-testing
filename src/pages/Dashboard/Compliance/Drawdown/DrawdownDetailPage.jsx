@@ -1,5 +1,5 @@
 import { InfoCards, InfoCardsSkeleton } from "@/components/Cards/InfoCard";
-import DialogForm from "@/components/Dashboard/includes/dialog-form";
+import DialogForm from "@/components/layout/dashboard/includes/dialog-form";
 import { drawdownSheetSchema } from "@/components/Sheet/schemas/drawdownSheetSchema";
 import { paymentSheetSchema } from "@/components/Sheet/schemas/paymentSheetSchema";
 import SheetView from "@/components/Sheet/SheetView";

@@ -1,4 +1,4 @@
-import { DataTableColumnHeader } from "@/components/Table/DataTableColumnHeader";
+import SortButton from "@/components/Table/SortButton";
 import {
   Tooltip,
   TooltipContent,
@@ -16,10 +16,10 @@ export function activityColumns() {
     {
       accessorKey: "activity",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Activity" />
+        <SortButton column={column}>Activity</SortButton>
       ),
       cell: ({ row }) => (
-        <div className="ms-4 text-left uppercase">
+        <div className="ms-4 text-left text-foreground uppercase">
           {row.getValue("activity")}
         </div>
       ),
@@ -27,7 +27,7 @@ export function activityColumns() {
     {
       accessorKey: "details",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Details" />
+        <SortButton column={column}>Details</SortButton>
       ),
       cell: ({ row }) => (
         <TooltipProvider delayDuration={100}>
@@ -45,13 +45,13 @@ export function activityColumns() {
     {
       accessorKey: "timestamp",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Timestamp" />
+        <SortButton column={column}>Timestamp</SortButton>
       ),
       cell: ({ row }) => {
         const timestamp = row.getValue("timestamp");
         const date = new Date(timestamp);
         return (
-          <div className="text-left text-xs text-gray-500">
+          <div className="text-left text-xs text-muted-foreground">
             {timestamp
               ? `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
               : "Invalid Date"}
@@ -62,12 +62,12 @@ export function activityColumns() {
     {
       accessorKey: "user_name",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="User" />
+        <SortButton column={column}>User</SortButton>
       ),
       cell: ({ row }) => {
         const userName = row.getValue("user_name");
         return (
-          <div className="flex w-24 items-center truncate text-left md:w-28 lg:w-32">
+          <div className="flex w-24 items-center truncate text-left text-foreground md:w-28 lg:w-32">
             {userName}
           </div>
         );

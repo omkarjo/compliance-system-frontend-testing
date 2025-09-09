@@ -1,7 +1,8 @@
 import { ADMIN_ROLES, ALL_ROLES } from "@/constant/roles";
 import ProtectRoutes from "@/pages/Auth/ProtectRoutes";
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { PageLoader } from "@/utils/lazyImports.jsx";
 
 const DashboardLayout = lazy(() => import("@/layouts/DashboardLayout"));
 const AuthLayout = lazy(() => import("@/layouts/AuthLayout"));
@@ -83,17 +84,17 @@ const PortfolioCompaniesDetails = lazy(
 
 const AppRoutes = () => {
   return (
-    // <Suspense fallback={<Loading />}>
-    <Routes>
-      <Route path="/">
-        <Route index element={<Navigate to="/dashboard" />} />
-        <Route path="dashboard" element={<DashboardLayout />}>
-          <Route element={<ProtectRoutes redirect="/login" />}>
-            <Route index element={<DashBoard />} />
-            <Route path="documents/*" element={<Docoments />} />
-            <Route path="activity-log" element={<ActivityLog />} />
-            <Route path="task" element={<TaskPage />} />
-          </Route>
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        <Route path="/">
+          <Route index element={<Navigate to="/dashboard" />} />
+          <Route path="dashboard" element={<DashboardLayout />}>
+            <Route element={<ProtectRoutes redirect="/login" />}>
+              <Route index element={<DashBoard />} />
+              <Route path="documents/*" element={<Docoments />} />
+              <Route path="activity-log" element={<ActivityLog />} />
+              <Route path="task" element={<TaskPage />} />
+            </Route>
           <Route
             element={
               <ProtectRoutes allowedRoles={ADMIN_ROLES} redirect="/dashboard" />
@@ -149,8 +150,8 @@ const AppRoutes = () => {
           <Route path="register" element={<Register />} />
         </Route>
       </Route>
-    </Routes>
-    // </Suspense>
+      </Routes>
+    </Suspense>
   );
 };
 

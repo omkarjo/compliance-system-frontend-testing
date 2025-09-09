@@ -48,7 +48,7 @@ export default function MultiSelectInput({
         <Button
           variant="outline"
           role="combobox"
-          className="w-full justify-between"
+          className="w-full justify-between text-left font-normal bg-transparent hover:bg-accent hover:text-accent-foreground dark:bg-transparent"
           disabled={
             isSubmitting ||
             formField?.disabled ||

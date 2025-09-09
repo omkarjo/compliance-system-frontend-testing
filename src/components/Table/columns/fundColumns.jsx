@@ -1,7 +1,5 @@
-import BadgeStatusTask from "@/components/includes/badge-status";
-import { Button } from "@/components/ui/button";
-import { SortButton } from "@/components/Table";
-import { ArrowUpDown } from "lucide-react";
+import StatusLozenge from "@/components/common/includes/StatusLozenge";
+import SortButton from "@/components/Table/SortButton";
 import { currencyFormatter } from "@/lib/formatter";
 
 /**
@@ -19,28 +17,24 @@ export function fundColumns() {
     {
       accessorKey: "scheme_name",
       header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Scheme Name
-          <ArrowUpDown size={16} />
-        </Button>
+        <SortButton column={column}>Scheme Name</SortButton>
       ),
       cell: ({ row }) => (
-        <div className="max-w-42 truncate ps-2 text-left md:max-w-52 lg:max-w-64">
+        <div className="max-w-42 truncate ps-2 text-left text-foreground md:max-w-52 lg:max-w-64">
           {row.getValue("scheme_name")}
         </div>
       ),
     },
     {
       accessorKey: "date_launch_of_scheme",
-      header: "Date of Launch",
+      header: ({ column }) => (
+        <SortButton column={column}>Date of Launch</SortButton>
+      ),
       cell: ({ row }) => {
         const date = row.getValue("date_launch_of_scheme");
         // only date not time
         return (
-          <div className="max-w-42 truncate ps-2 text-left md:max-w-52 lg:max-w-64">
+          <div className="max-w-42 truncate ps-2 text-left text-foreground md:max-w-52 lg:max-w-64">
             {date ? new Date(date).toLocaleDateString("en-IN") : "-"}
           </div>
         );
@@ -48,11 +42,13 @@ export function fundColumns() {
     },
     {
       accessorKey: "scheme_status",
-      header: "Scheme Type",
+      header: ({ column }) => (
+        <SortButton column={column}>Scheme Type</SortButton>
+      ),
       cell: ({ row }) => {
         const status = row.getValue("scheme_status");
         const type = statusKeyType[status] || "Pending";
-        return <BadgeStatusTask text={status} type={type} />;
+        return <StatusLozenge status={status} />;
       },
     },
     {
@@ -65,7 +61,7 @@ export function fundColumns() {
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("target_fund_size"));
         const formatted = amount ? currencyFormatter(amount, "INR") : "-";
-        return <div className="me-4 text-right md:me-6">{formatted}</div>;
+        return <div className="me-4 text-right text-foreground md:me-6">{formatted}</div>;
       },
     },
     {
@@ -78,7 +74,7 @@ export function fundColumns() {
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("total_received"));
         const formatted = amount ? currencyFormatter(amount, "INR") : "-";
-        return <div className="me-4 text-right md:me-6">{formatted}</div>;
+        return <div className="me-4 text-right text-foreground md:me-6">{formatted}</div>;
       },
     },
   ];

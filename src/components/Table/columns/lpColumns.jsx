@@ -1,9 +1,9 @@
-import { DataTableColumnHeader } from "@/components/Table/DataTableColumnHeader";
-import BadgeStatusTask from "@/components/includes/badge-status";
+import SortButton from "@/components/Table/SortButton";
+import StatusLozenge from "@/components/common/includes/StatusLozenge";
 import { currencyFormatter } from "@/lib/formatter";
 
 /**
- * Returns column definitions for the LP Table, using DataTableColumnHeader.
+ * Returns column definitions for the LP Table, using SortButton.
  * @returns {Array}
  */
 export function lpColumns() {
@@ -17,10 +17,10 @@ export function lpColumns() {
     {
       accessorKey: "lp_name",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Name" />
+        <SortButton column={column}>Name</SortButton>
       ),
       cell: ({ row }) => (
-        <div className="max-w-42 truncate ps-2 text-left md:max-w-52 lg:max-w-64">
+        <div className="max-w-42 truncate ps-2 text-left text-foreground md:max-w-52 lg:max-w-64">
           {row.getValue("lp_name")}
         </div>
       ),
@@ -28,12 +28,12 @@ export function lpColumns() {
     {
       accessorKey: "email",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Email" />
+        <SortButton column={column}>Email</SortButton>
       ),
       cell: ({ row }) => {
         const email = row.getValue("email");
         return (
-          <div className="max-w-42 truncate ps-2 text-left md:max-w-52 lg:max-w-64">
+          <div className="max-w-42 truncate ps-2 text-left text-foreground md:max-w-52 lg:max-w-64">
             {email}
           </div>
         );
@@ -42,34 +42,34 @@ export function lpColumns() {
     {
       accessorKey: "status",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Status" />
+        <SortButton column={column}>Status</SortButton>
       ),
       cell: ({ row }) => {
         const status = row.getValue("status");
         const type = statusKeyType[status] || "Pending";
-        return <BadgeStatusTask text={status} type={type} />;
+        return <StatusLozenge status={status} />;
       },
     },
     {
       accessorKey: "commitment_amount",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Commitment Amount" />
+        <SortButton column={column} className="ms-auto justify-end">Commitment Amount</SortButton>
       ),
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("commitment_amount"));
         const formatted = currencyFormatter(amount, "INR");
-        return <div className="me-4 text-right md:me-6">{formatted}</div>;
+        return <div className="me-4 text-right text-foreground md:me-6">{formatted}</div>;
       },
     },
     {
       accessorKey: "remaining_drawdown",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Remaining Drawdown" />
+        <SortButton column={column} className="ms-auto justify-end">Remaining Drawdown</SortButton>
       ),
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("remaining_drawdown"));
         const formatted = amount ? currencyFormatter(amount, "INR") : "-";
-        return <div className="me-4 text-right md:me-6">{formatted}</div>;
+        return <div className="me-4 text-right text-foreground md:me-6">{formatted}</div>;
       },
     },
   ];

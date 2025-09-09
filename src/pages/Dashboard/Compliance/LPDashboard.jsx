@@ -1,5 +1,5 @@
-import DialogForm from "@/components/Dashboard/includes/dialog-form";
-import SheetLPViewFM from "@/components/Dashboard/sheet/sheet-lp-view-fm";
+import DialogForm from "@/components/layout/dashboard/includes/dialog-form";
+import SheetLPViewFM from "@/components/layout/dashboard/sheet/sheet-lp-view-fm";
 import { ServerDataTable } from "@/components/Table";
 import { lpColumns } from "@/components/Table/columns/lpColumns";
 import { Button } from "@/components/ui/button";

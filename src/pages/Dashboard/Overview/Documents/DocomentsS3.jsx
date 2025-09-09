@@ -1,5 +1,5 @@
-import DeleteAlertDialog from "@/components/Dashboard/includes/delete-alert-dilog";
-import ViewListDocument from "@/components/Dashboard/tables/view-list-docoments";
+import DeleteAlertDialog from "@/components/layout/dashboard/includes/delete-alert-dilog";
+import ViewListDocument from "@/components/layout/dashboard/tables/view-list-docoments";
 import { documentApiPaths } from "@/constant/apiPaths";
 import { apiWithAuth } from "@/utils/api";
 import useCheckRoles from "@/utils/check-roles";

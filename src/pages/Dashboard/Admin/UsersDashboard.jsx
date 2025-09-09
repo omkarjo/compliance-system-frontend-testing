@@ -1,4 +1,4 @@
-import DeleteAlertDialog from "@/components/Dashboard/includes/delete-alert-dilog";
+import DeleteAlertDialog from "@/components/layout/dashboard/includes/delete-alert-dilog";
 import { ServerDataTable } from "@/components/Table";
 import { useGetUserByName } from "@/react-query/query/user/userQuery";
 import { userColumns } from "@/components/Table/columns/userColumns";

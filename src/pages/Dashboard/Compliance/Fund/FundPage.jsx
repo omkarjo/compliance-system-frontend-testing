@@ -1,4 +1,4 @@
-import SheetFundView from "@/components/Fund/SheetFundView";
+import SheetFundView from "@/components/business/funds/SheetFundView";
 import { ServerDataTable } from "@/components/Table";
 import { Button } from "@/components/ui/button";
 import { useGetFundById } from "@/react-query/query/Funds/useGetFundById";

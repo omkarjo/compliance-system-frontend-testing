@@ -1,4 +1,4 @@
-import BadgeStatusTask from "@/components/includes/badge-status";
+import StatusLozenge from "@/components/common/includes/StatusLozenge";
 import { DataTableColumnHeader } from "@/components/Table/DataTableColumnHeader";
 import { currencyFormatter } from "@/lib/formatter";
 import React from "react";
@@ -118,7 +118,7 @@ export function unitAllotmentTableColumns() {
         const type = statusKeyType[status] || "Pending";
         return (
           <div className="flex justify-end">
-            <BadgeStatusTask text={status} type={type} />
+            <StatusLozenge status={status} />
           </div>
         );
       },
